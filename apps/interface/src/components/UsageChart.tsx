@@ -3,6 +3,7 @@
 import { Column } from "@ant-design/charts";
 import dayjs from "dayjs";
 import type { Bill, ElectricBillData, WaterBillData } from "@apartment-tracker/types";
+import { useTheme } from "./ThemeProvider";
 
 interface ChartRow {
   period: string;
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export default function UsageChart({ data }: Props) {
+  const { isDark } = useTheme();
   const chartData: ChartRow[] = data.map((bill) => {
     const { usage, period, year } = bill.data as ElectricBillData | WaterBillData;
     const days = dayjs(bill.end_date).diff(dayjs(bill.start_date), "day");
@@ -32,6 +34,7 @@ export default function UsageChart({ data }: Props) {
       yField="avgUsagePerDay"
       colorField="year"
       group
+      theme={{ type: isDark ? "classicDark" : "classic" }}
       scale={{ y: { domainMin: 0, zero: true, nice: true } }}
       legend={{ color: { position: "top", layout: { justifyContent: "center" } } }}
       axis={{
