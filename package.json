@@ -1,0 +1,16 @@
+{
+  "name": "apartment-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --parallel -r dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["@nestjs/core", "sharp", "unrs-resolver"]
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "@apartment-tracker/interface",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 3000",
+    "build": "next build",
+    "start": "next start --port 3000",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@ant-design/charts": "^2.6.7",
+    "@ant-design/icons": "^6.3.1",
+    "@apartment-tracker/types": "workspace:^",
+    "antd": "^6.4.5",
+    "dayjs": "^1.11.21",
+    "next": "^15.3.3",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "zustand": "^5.0.14"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.29",
+    "@types/react": "^19.1.6",
+    "@types/react-dom": "^19.1.2",
+    "eslint": "^9.29.0",
+    "eslint-config-next": "^15.3.3",
+    "typescript": "^5.4.5"
+  }
+}
