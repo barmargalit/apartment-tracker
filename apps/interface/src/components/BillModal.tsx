@@ -1,0 +1,165 @@
+"use client";
+
+import { useEffect } from "react";
+import { DatePicker, Form, InputNumber, Modal, Select } from "antd";
+import dayjs, { Dayjs } from "dayjs";
+import type { Bill, BillPeriod, BillType, ElectricBillData, WaterBillData } from "@apartment-tracker/types";
+import { useBillsStore } from "@/store/billsStore";
+import { useResidencesStore } from "@/store/residencesStore";
+import { useProvidersStore } from "@/store/providersStore";
+
+interface Props {
+  open: boolean;
+  bill?: Bill | null;
+  defaultType?: BillType;
+  onClose: () => void;
+}
+
+interface FormValues {
+  type: BillType;
+  start_date: Dayjs;
+  end_date: Dayjs;
+  price: number;
+  residence_id?: string | null;
+  provider_id?: string | null;
+  // electric & water only
+  usage?: number;
+  period?: BillPeriod;
+  year?: number;
+}
+
+const BILL_TYPE_OPTIONS = [
+  { value: "electric", label: "Electric" },
+  { value: "water",    label: "Water" },
+  { value: "internet", label: "Internet" },
+  { value: "gas",      label: "Gas" },
+];
+
+const PERIOD_OPTIONS = [1, 2, 3, 4, 5, 6].map((p) => ({ value: p, label: `Period ${p}` }));
+
+const USAGE_TYPES = new Set(["electric", "water"]);
+
+export default function BillModal({ open, bill, defaultType, onClose }: Props) {
+  const [form] = Form.useForm<FormValues>();
+  const selectedType = Form.useWatch("type", form);
+  const showUsage = USAGE_TYPES.has(selectedType);
+
+  const { createBill, updateBill } = useBillsStore();
+  const { residences, fetchAll: fetchResidences } = useResidencesStore();
+  const { providers, fetchAll: fetchProviders } = useProvidersStore();
+  const isEdit = !!bill;
+
+  useEffect(() => {
+    if (open) {
+      fetchResidences();
+      fetchProviders();
+
+      if (bill) {
+        const data = bill.data as ElectricBillData & WaterBillData;
+        form.setFieldsValue({
+          type: bill.type,
+          start_date: dayjs(bill.start_date),
+          end_date: dayjs(bill.end_date),
+          price: bill.price,
+          residence_id: bill.residence_id,
+          provider_id: bill.provider_id,
+          usage: data.usage,
+          period: data.period,
+          year: data.year,
+        });
+      } else {
+        form.resetFields();
+        if (defaultType) form.setFieldValue("type", defaultType);
+      }
+    }
+  }, [open, bill]);
+
+  const handleOk = async () => {
+    const values = await form.validateFields();
+    const data: Record<string, unknown> = {};
+    if (showUsage) {
+      data.usage  = values.usage;
+      data.period = values.period;
+      data.year   = values.year;
+    }
+
+    const payload = {
+      type:         values.type,
+      start_date:   values.start_date.toISOString(),
+      end_date:     values.end_date.toISOString(),
+      price:        values.price,
+      residence_id: values.residence_id ?? null,
+      provider_id:  values.provider_id ?? null,
+      data,
+    };
+
+    if (isEdit) {
+      await updateBill(bill.id, bill.type, payload);
+    } else {
+      await createBill(payload);
+    }
+    onClose();
+  };
+
+  return (
+    <Modal
+      title={isEdit ? "Edit Bill" : "New Bill"}
+      open={open}
+      onCancel={onClose}
+      onOk={handleOk}
+      okText="Save"
+      destroyOnHidden
+    >
+      <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
+        <Form.Item name="type" label="Type" rules={[{ required: true, message: "Required" }]}>
+          <Select options={BILL_TYPE_OPTIONS} />
+        </Form.Item>
+
+        <div style={{ display: "flex", gap: 24 }}>
+          <Form.Item name="start_date" label="Start Date" rules={[{ required: true, message: "Required" }]} style={{ flex: 1 }}>
+            <DatePicker format="DD/MM/YY" style={{ width: "100%" }} />
+          </Form.Item>
+          <Form.Item name="end_date" label="End Date" rules={[{ required: true, message: "Required" }]} style={{ flex: 1 }}>
+            <DatePicker format="DD/MM/YY" style={{ width: "100%" }} />
+          </Form.Item>
+        </div>
+
+        <Form.Item name="price" label="Price" rules={[{ required: true, message: "Required" }]}>
+          <InputNumber min={0} precision={2} prefix="₪" style={{ width: "100%" }} />
+        </Form.Item>
+
+        {showUsage && (
+          <>
+            <Form.Item name="usage" label="Usage" rules={[{ required: true, message: "Required" }]}>
+              <InputNumber min={0} style={{ width: "100%" }} />
+            </Form.Item>
+
+            <Form.Item name="period" label="Period" rules={[{ required: true, message: "Required" }]}>
+              <Select options={PERIOD_OPTIONS} />
+            </Form.Item>
+
+            <Form.Item name="year" label="Year" rules={[{ required: true, message: "Required" }]}>
+              <InputNumber min={2000} max={2100} style={{ width: "100%" }} />
+            </Form.Item>
+          </>
+        )}
+
+        <Form.Item name="residence_id" label="Residence">
+          <Select
+            allowClear
+            placeholder="None"
+            options={residences.map((r) => ({ value: r.id, label: `${r.street}, ${r.city}` }))}
+          />
+        </Form.Item>
+
+        <Form.Item name="provider_id" label="Provider">
+          <Select
+            allowClear
+            placeholder="None"
+            options={providers.map((p) => ({ value: p.id, label: p.name }))}
+          />
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
+}

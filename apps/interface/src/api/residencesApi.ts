@@ -1,5 +1,21 @@
 import { Residence } from "@apartment-tracker/types";
 
+export interface CreateResidencePayload {
+  city: string;
+  street: string;
+  current?: number;
+  start_date: string;
+  end_date?: string | null;
+}
+
+export interface UpdateResidencePayload {
+  city?: string;
+  street?: string;
+  current?: number;
+  start_date?: string;
+  end_date?: string | null;
+}
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -19,10 +35,10 @@ export const residencesApi = {
   fetchOne: (id: string): Promise<Residence> =>
     request<Residence>(`/residences/${id}`),
 
-  create: (payload: { city: string; street: string }): Promise<Residence> =>
+  create: (payload: CreateResidencePayload): Promise<Residence> =>
     request<Residence>("/residences", { method: "POST", body: JSON.stringify(payload) }),
 
-  update: (id: string, payload: { city?: string; street?: string }): Promise<Residence> =>
+  update: (id: string, payload: UpdateResidencePayload): Promise<Residence> =>
     request<Residence>(`/residences/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
 
   delete: (id: string): Promise<void> =>

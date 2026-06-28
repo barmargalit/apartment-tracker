@@ -1,0 +1,3 @@
+ALTER TABLE residences
+  ADD COLUMN start_date TIMESTAMPTZ NOT NULL DEFAULT now(),
+  ADD COLUMN end_date   TIMESTAMPTZ;

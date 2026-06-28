@@ -7,6 +7,7 @@ import { usePageHeader } from "@/components/PageHeaderContext";
 import PageTabs from "@/components/PageTabs";
 import BillsTable from "@/components/BillsTable";
 import UsageChart from "@/components/UsageChart";
+import BillModal from "@/components/BillModal";
 import { useBillsStore } from "@/store/billsStore";
 import { useResidencesStore } from "@/store/residencesStore";
 import { Bill, BillType } from "@apartment-tracker/types";
@@ -63,7 +64,6 @@ function BillTab({ type, showUsage, onEdit, onDelete }: BillTabProps) {
 
 export default function BillsPage() {
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedBill, setSelectedBill] = useState<Bill | null>(null);
   const [activeTab, setActiveTab] = useState<BillType>(BillType.Electric);
   const { deleteBill, fetchByType, loading } = useBillsStore();
@@ -74,15 +74,17 @@ export default function BillsPage() {
   };
 
   const handleDelete = (bill: Bill) => {
-    setSelectedBill(bill);
-    setDeleteModalOpen(true);
+    Modal.confirm({
+      title: "Delete Bill",
+      content: "Are you sure you want to delete this bill? This action cannot be undone.",
+      okText: "Delete",
+      okButtonProps: { danger: true },
+      onOk: () => deleteBill(bill.id, bill.type),
+    });
   };
 
-  const handleDeleteConfirm = async () => {
-    if (selectedBill) {
-      await deleteBill(selectedBill.id, selectedBill.type);
-    }
-    setDeleteModalOpen(false);
+  const handleClose = () => {
+    setEditModalOpen(false);
     setSelectedBill(null);
   };
 
@@ -96,7 +98,7 @@ export default function BillsPage() {
           loading={loading[activeTab]}
           onClick={() => fetchByType(activeTab)}
         />
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => setEditModalOpen(true)}>
+        <Button type="primary" icon={<PlusOutlined />} onClick={() => { setSelectedBill(null); setEditModalOpen(true); }}>
           New
         </Button>
       </>
@@ -147,26 +149,12 @@ export default function BillsPage() {
         }))}
       />
 
-      <Modal
-        title="New Bill"
+      <BillModal
         open={editModalOpen}
-        onCancel={() => { setEditModalOpen(false); setSelectedBill(null); }}
-        onOk={() => { setEditModalOpen(false); setSelectedBill(null); }}
-        okText="Save"
-      >
-        <p>Bill form coming soon.</p>
-      </Modal>
-
-      <Modal
-        title="Delete Bill"
-        open={deleteModalOpen}
-        onCancel={() => { setDeleteModalOpen(false); setSelectedBill(null); }}
-        onOk={handleDeleteConfirm}
-        okText="Delete"
-        okButtonProps={{ danger: true }}
-      >
-        <p>Are you sure you want to delete this bill? This action cannot be undone.</p>
-      </Modal>
+        bill={selectedBill}
+        defaultType={activeTab}
+        onClose={handleClose}
+      />
     </>
   );
 }

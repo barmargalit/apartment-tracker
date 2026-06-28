@@ -128,7 +128,7 @@ export default function Sidebar() {
           }
         >
           <EnvironmentOutlined style={{ fontSize: 16 }} />
-          {!collapsed && <span style={{ fontSize: 14 }}>My Address</span>}
+          {!collapsed && <span style={{ fontSize: 14 }}>My Residence</span>}
         </div>
 
         <Popover

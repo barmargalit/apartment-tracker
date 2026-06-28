@@ -6,4 +6,8 @@ export interface Residence {
   state: number;
   city: string;
   street: string;
+  /** 0 = previous, 1 = current */
+  current: number;
+  start_date: Date;
+  end_date: Date | null;
 }

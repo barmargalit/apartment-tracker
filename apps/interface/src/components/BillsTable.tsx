@@ -86,7 +86,7 @@ export default function BillsTable({ data, loading, showUsage, residences = [], 
       title: "Price",
       dataIndex: "price",
       key: "price",
-      render: (value: number) => `$${value.toFixed(2)}`,
+      render: (value: number) => `₪${value.toFixed(2)}`,
     },
     {
       key: "actions",
