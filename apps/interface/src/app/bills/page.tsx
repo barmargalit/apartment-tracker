@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button, Divider, Modal } from "antd";
+import { Button, Divider } from "antd";
 import { PlusOutlined, ReloadOutlined, ThunderboltOutlined, ExperimentOutlined, WifiOutlined, FireOutlined } from "@ant-design/icons";
 import { usePageHeader } from "@/components/PageHeaderContext";
 import PageTabs from "@/components/PageTabs";
@@ -11,6 +11,7 @@ import BillModal from "@/components/BillModal";
 import { useBillsStore } from "@/store/billsStore";
 import { useResidencesStore } from "@/store/residencesStore";
 import { Bill, BillType } from "@apartment-tracker/types";
+import { useModal } from "@/components/ThemeProvider";
 import styles from "./bills.module.css";
 
 interface BillTabProps {
@@ -67,6 +68,7 @@ export default function BillsPage() {
   const [selectedBill, setSelectedBill] = useState<Bill | null>(null);
   const [activeTab, setActiveTab] = useState<BillType>(BillType.Electric);
   const { deleteBill, fetchByType, loading } = useBillsStore();
+  const modal = useModal();
 
   const handleEdit = (bill: Bill) => {
     setSelectedBill(bill);
@@ -74,7 +76,7 @@ export default function BillsPage() {
   };
 
   const handleDelete = (bill: Bill) => {
-    Modal.confirm({
+    modal.confirm({
       title: "Delete Bill",
       content: "Are you sure you want to delete this bill? This action cannot be undone.",
       okText: "Delete",

@@ -1,24 +1,39 @@
 import { create } from "zustand";
-import { Provider } from "@apartment-tracker/types";
+import { BillType, Provider } from "@apartment-tracker/types";
 import { providersApi } from "@/api/providersApi";
 
 interface ProvidersState {
   providers: Provider[];
   loading: boolean;
-  fetchAll: () => Promise<void>;
+  fetchAll: (type?: BillType) => Promise<void>;
+  createProvider: (name: string, type: BillType) => Promise<Provider>;
+  updateProvider: (id: string, name: string, type: BillType) => Promise<void>;
 }
 
 export const useProvidersStore = create<ProvidersState>((set) => ({
   providers: [],
   loading: false,
 
-  fetchAll: async () => {
+  fetchAll: async (type) => {
     set({ loading: true });
     try {
-      const data = await providersApi.fetchAll();
+      const data = await providersApi.fetchAll(type);
       set({ providers: data });
     } finally {
       set({ loading: false });
     }
+  },
+
+  createProvider: async (name, type) => {
+    const created = await providersApi.create({ name, type });
+    set((s) => ({ providers: [...s.providers, created] }));
+    return created;
+  },
+
+  updateProvider: async (id, name, type) => {
+    const updated = await providersApi.update(id, { name, type });
+    set((s) => ({
+      providers: s.providers.map((p) => (p.id === id ? updated : p)),
+    }));
   },
 }));

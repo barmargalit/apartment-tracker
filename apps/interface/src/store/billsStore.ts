@@ -1,6 +1,17 @@
 import { create } from "zustand";
-import { Bill, BillType } from "@apartment-tracker/types";
+import { Bill, BillType, ElectricBillData, WaterBillData } from "@apartment-tracker/types";
 import { billsApi, CreateBillPayload, UpdateBillPayload } from "@/api/billsApi";
+
+function sortBills(bills: Bill[]): Bill[] {
+  return [...bills].sort((a, b) => {
+    const ad = a.data as Partial<ElectricBillData & WaterBillData>;
+    const bd = b.data as Partial<ElectricBillData & WaterBillData>;
+    const yearA = ad.year ?? 0;
+    const yearB = bd.year ?? 0;
+    if (yearA !== yearB) return yearA - yearB;
+    return (ad.period ?? 0) - (bd.period ?? 0);
+  });
+}
 
 type BillsByType = Record<BillType, Bill[]>;
 type LoadingByType = Record<BillType, boolean>;
@@ -28,7 +39,7 @@ export const useBillsStore = create<BillsState>((set, get) => ({
     set((s) => ({ loading: { ...s.loading, [type]: true } }));
     try {
       const data = await billsApi.fetchByType(type);
-      set((s) => ({ bills: { ...s.bills, [type]: data } }));
+      set((s) => ({ bills: { ...s.bills, [type]: sortBills(data) } }));
     } finally {
       set((s) => ({ loading: { ...s.loading, [type]: false } }));
     }
@@ -37,7 +48,7 @@ export const useBillsStore = create<BillsState>((set, get) => ({
   createBill: async (payload) => {
     const bill = await billsApi.create(payload);
     set((s) => ({
-      bills: { ...s.bills, [bill.type]: [...s.bills[bill.type], bill] },
+      bills: { ...s.bills, [bill.type]: sortBills([...s.bills[bill.type], bill]) },
     }));
   },
 
@@ -46,7 +57,7 @@ export const useBillsStore = create<BillsState>((set, get) => ({
     set((s) => ({
       bills: {
         ...s.bills,
-        [type]: s.bills[type].map((b) => (b.id === id ? updated : b)),
+        [type]: sortBills(s.bills[type].map((b) => (b.id === id ? updated : b))),
       },
     }));
   },

@@ -1,6 +1,7 @@
 "use client";
 
-import { Card, Modal, Tooltip, Typography, theme } from "antd";
+import { Card, Tooltip, Typography, theme } from "antd";
+import { useModal } from "./ThemeProvider";
 import { DeleteOutlined, EditOutlined, HeartFilled, HeartOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { Residence } from "@apartment-tracker/types";
@@ -16,10 +17,11 @@ interface Props {
 
 export default function ResidenceCard({ residence, onToggleCurrent, onEdit, onDelete }: Props) {
   const { token } = theme.useToken();
+  const modal = useModal();
   const isCurrent = residence.current === 1;
 
   const handleDelete = () => {
-    Modal.confirm({
+    modal.confirm({
       title: "Delete Residence",
       content: `Are you sure you want to delete ${residence.street}, ${residence.city}?`,
       okText: "Delete",

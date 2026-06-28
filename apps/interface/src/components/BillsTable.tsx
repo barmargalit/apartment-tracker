@@ -38,15 +38,15 @@ export default function BillsTable({ data, loading, showUsage, residences = [], 
 
   const usageColumns: TableColumnsType<Bill> = [
     {
-      title: "Usage",
+      title: "Usage (kWh)",
       key: "usage",
       render: (_: unknown, bill: Bill) => (bill.data as ElectricBillData | WaterBillData).usage,
     },
     {
-      title: "Avg. Usage/Day",
+      title: "Avg. Usage/Day (kWh)",
       key: "avg_usage_day",
       render: (_: unknown, bill: Bill) => {
-        const days = dayjs(bill.end_date).diff(dayjs(bill.start_date), "day");
+        const days = dayjs(bill.end_date).diff(dayjs(bill.start_date), "day") + 1;
         const usage = (bill.data as ElectricBillData | WaterBillData).usage;
         return days > 0 ? (usage / days).toFixed(2) : "-";
       },
@@ -79,14 +79,14 @@ export default function BillsTable({ data, loading, showUsage, residences = [], 
     {
       title: "# Days",
       key: "days",
-      render: (_: unknown, bill: Bill) => dayjs(bill.end_date).diff(dayjs(bill.start_date), "day"),
+      render: (_: unknown, bill: Bill) => dayjs(bill.end_date).diff(dayjs(bill.start_date), "day") + 1,
     },
     ...(showUsage ? usageColumns : []),
     {
       title: "Price",
       dataIndex: "price",
       key: "price",
-      render: (value: number) => `₪${value.toFixed(2)}`,
+      render: (value: number | string) => `₪${parseFloat(String(value)).toFixed(2)}`,
     },
     {
       key: "actions",

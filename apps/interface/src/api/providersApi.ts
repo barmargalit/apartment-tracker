@@ -1,4 +1,4 @@
-import { Provider } from "@apartment-tracker/types";
+import { BillType, Provider } from "@apartment-tracker/types";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
@@ -13,6 +13,12 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const providersApi = {
-  fetchAll: (): Promise<Provider[]> =>
-    request<Provider[]>("/providers"),
+  fetchAll: (type?: BillType): Promise<Provider[]> =>
+    request<Provider[]>(type ? `/providers?type=${type}` : "/providers"),
+
+  create: (payload: { name: string; type: BillType }): Promise<Provider> =>
+    request<Provider>("/providers", { method: "POST", body: JSON.stringify(payload) }),
+
+  update: (id: string, payload: { name?: string; type?: BillType }): Promise<Provider> =>
+    request<Provider>(`/providers/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
 };

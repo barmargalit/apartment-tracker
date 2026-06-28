@@ -1,7 +1,16 @@
 "use client";
 
 import { createContext, useContext, useState } from "react";
-import { ConfigProvider, theme } from "antd";
+import { App, ConfigProvider, theme } from "antd";
+import type { useApp } from "antd";
+
+type ModalType = ReturnType<typeof useApp>["modal"];
+
+const ModalContext = createContext<ModalType>(null as unknown as ModalType);
+
+export function useModal() {
+  return useContext(ModalContext);
+}
 
 interface ThemeContextValue {
   isDark: boolean;
@@ -15,6 +24,11 @@ const ThemeContext = createContext<ThemeContextValue>({
 
 export function useTheme() {
   return useContext(ThemeContext);
+}
+
+function ModalProvider({ children }: { children: React.ReactNode }) {
+  const { modal } = App.useApp();
+  return <ModalContext.Provider value={modal}>{children}</ModalContext.Provider>;
 }
 
 export default function ThemeProvider({ children }: { children: React.ReactNode }) {
@@ -31,7 +45,11 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
           algorithm: isDark ? theme.darkAlgorithm : theme.defaultAlgorithm,
         }}
       >
-        {children}
+        <App>
+          <ModalProvider>
+            {children}
+          </ModalProvider>
+        </App>
       </ConfigProvider>
     </ThemeContext.Provider>
   );

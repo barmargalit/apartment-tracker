@@ -1,13 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { ProvidersService, CreateProviderDto, UpdateProviderDto } from './providers.service';
+import { BillType } from '@apartment-tracker/types';
 
 @Controller('providers')
 export class ProvidersController {
   constructor(private readonly providersService: ProvidersService) {}
 
   @Get()
-  findAll() {
-    return this.providersService.findAll();
+  findAll(@Query('type') type?: BillType) {
+    return this.providersService.findAll(type);
   }
 
   @Get(':id')

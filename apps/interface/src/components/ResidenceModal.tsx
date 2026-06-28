@@ -76,10 +76,34 @@ export default function ResidenceModal({ open, residence, onClose }: Props) {
           <Input placeholder="e.g. Tel Aviv" />
         </Form.Item>
         <div style={{ display: "flex", gap: 24 }}>
-          <Form.Item name="start_date" label="Start Date" rules={[{ required: true, message: "Required" }]} style={{ flex: 1 }}>
+          <Form.Item
+            name="start_date"
+            label="Start Date"
+            hasFeedback
+            rules={[{ required: true, message: "Required" }]}
+            style={{ flex: 1 }}
+          >
             <DatePicker format="DD/MM/YY" style={{ width: "100%" }} />
           </Form.Item>
-          <Form.Item name="end_date" label="End Date" style={{ flex: 1 }}>
+          <Form.Item
+            name="end_date"
+            label="End Date"
+            hasFeedback
+            dependencies={["start_date"]}
+            rules={[
+              {
+                validator: (_, value) => {
+                  if (!value) return Promise.resolve();
+                  const start = form.getFieldValue("start_date");
+                  if (start && value.isBefore(start, "day")) {
+                    return Promise.reject("End date must be after start date");
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
+            style={{ flex: 1 }}
+          >
             <DatePicker format="DD/MM/YY" style={{ width: "100%" }} placeholder="Leave empty if current" />
           </Form.Item>
         </div>

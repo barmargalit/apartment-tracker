@@ -2,13 +2,16 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Pool } from 'pg';
 import { DATABASE_POOL } from '../database/database.provider';
 import { ProviderEntity } from './provider.entity';
+import { BillType } from '@apartment-tracker/types';
 
 export interface CreateProviderDto {
   name: string;
+  type: BillType;
 }
 
 export interface UpdateProviderDto {
   name?: string;
+  type?: BillType;
 }
 
 @Injectable()
@@ -17,11 +20,16 @@ export class ProvidersService {
 
   constructor(@Inject(DATABASE_POOL) private readonly pool: Pool) {}
 
-  async findAll(): Promise<ProviderEntity[]> {
-    this.logger.log('Fetching all providers');
-    const result = await this.pool.query<ProviderEntity>(
-      'SELECT * FROM providers WHERE state = 0 ORDER BY name ASC',
-    );
+  async findAll(type?: BillType): Promise<ProviderEntity[]> {
+    this.logger.log(type ? `Fetching providers of type "${type}"` : 'Fetching all providers');
+    const result = type
+      ? await this.pool.query<ProviderEntity>(
+          'SELECT * FROM providers WHERE state = 0 AND type = $1 ORDER BY name ASC',
+          [type],
+        )
+      : await this.pool.query<ProviderEntity>(
+          'SELECT * FROM providers WHERE state = 0 ORDER BY name ASC',
+        );
     return result.rows;
   }
 
@@ -35,10 +43,10 @@ export class ProvidersService {
   }
 
   async create(dto: CreateProviderDto): Promise<ProviderEntity> {
-    this.logger.log(`Creating provider name="${dto.name}"`);
+    this.logger.log(`Creating provider name="${dto.name}" type="${dto.type}"`);
     const result = await this.pool.query<ProviderEntity>(
-      `INSERT INTO providers (name) VALUES ($1) RETURNING *`,
-      [dto.name],
+      `INSERT INTO providers (name, type) VALUES ($1, $2) RETURNING *`,
+      [dto.name, dto.type],
     );
     return result.rows[0];
   }
@@ -50,6 +58,7 @@ export class ProvidersService {
     let idx = 1;
 
     if (dto.name !== undefined) { fields.push(`name = $${idx++}`); values.push(dto.name); }
+    if (dto.type !== undefined) { fields.push(`type = $${idx++}`); values.push(dto.type); }
 
     values.push(id);
     const result = await this.pool.query<ProviderEntity>(

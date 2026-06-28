@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect } from "react";
-import { DatePicker, Form, InputNumber, Modal, Select } from "antd";
+import { useEffect, useState } from "react";
+import { Button, DatePicker, Divider, Form, InputNumber, Modal, Select } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import dayjs, { Dayjs } from "dayjs";
-import type { Bill, BillPeriod, BillType, ElectricBillData, WaterBillData } from "@apartment-tracker/types";
+import type { Bill, BillPeriod, BillType, ElectricBillData, Provider, WaterBillData } from "@apartment-tracker/types";
 import { useBillsStore } from "@/store/billsStore";
 import { useResidencesStore } from "@/store/residencesStore";
 import { useProvidersStore } from "@/store/providersStore";
+import ProviderModal from "./ProviderModal";
 
 interface Props {
   open: boolean;
@@ -44,15 +46,25 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
   const selectedType = Form.useWatch("type", form);
   const showUsage = USAGE_TYPES.has(selectedType);
 
+  const [providerModalOpen, setProviderModalOpen] = useState(false);
+
   const { createBill, updateBill } = useBillsStore();
   const { residences, fetchAll: fetchResidences } = useResidencesStore();
   const { providers, fetchAll: fetchProviders } = useProvidersStore();
   const isEdit = !!bill;
 
+  const handleProviderCreated = (created?: Provider) => {
+    setProviderModalOpen(false);
+    if (created) form.setFieldValue("provider_id", created.id);
+  };
+
+  useEffect(() => {
+    if (selectedType) fetchProviders(selectedType as BillType);
+  }, [selectedType]);
+
   useEffect(() => {
     if (open) {
       fetchResidences();
-      fetchProviders();
 
       if (bill) {
         const data = bill.data as ElectricBillData & WaterBillData;
@@ -116,10 +128,35 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
         </Form.Item>
 
         <div style={{ display: "flex", gap: 24 }}>
-          <Form.Item name="start_date" label="Start Date" rules={[{ required: true, message: "Required" }]} style={{ flex: 1 }}>
+          <Form.Item
+            name="start_date"
+            label="Start Date"
+            hasFeedback
+            rules={[{ required: true, message: "Required" }]}
+            style={{ flex: 1 }}
+          >
             <DatePicker format="DD/MM/YY" style={{ width: "100%" }} />
           </Form.Item>
-          <Form.Item name="end_date" label="End Date" rules={[{ required: true, message: "Required" }]} style={{ flex: 1 }}>
+          <Form.Item
+            name="end_date"
+            label="End Date"
+            hasFeedback
+            dependencies={["start_date"]}
+            rules={[
+              { required: true, message: "Required" },
+              {
+                validator: (_, value) => {
+                  if (!value) return Promise.resolve();
+                  const start = form.getFieldValue("start_date");
+                  if (start && value.isBefore(start, "day")) {
+                    return Promise.reject("End date must be after start date");
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
+            style={{ flex: 1 }}
+          >
             <DatePicker format="DD/MM/YY" style={{ width: "100%" }} />
           </Form.Item>
         </div>
@@ -130,7 +167,7 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
 
         {showUsage && (
           <>
-            <Form.Item name="usage" label="Usage" rules={[{ required: true, message: "Required" }]}>
+            <Form.Item name="usage" label="Usage (kWh)" rules={[{ required: true, message: "Required" }]}>
               <InputNumber min={0} style={{ width: "100%" }} />
             </Form.Item>
 
@@ -138,8 +175,32 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
               <Select options={PERIOD_OPTIONS} />
             </Form.Item>
 
-            <Form.Item name="year" label="Year" rules={[{ required: true, message: "Required" }]}>
-              <InputNumber min={2000} max={2100} style={{ width: "100%" }} />
+            <Form.Item
+              name="year"
+              label="Year"
+              hasFeedback
+              rules={[
+                { required: true, message: "Required" },
+                {
+                  validator: (_, value) => {
+                    if (value === undefined || value === null) return Promise.resolve();
+                    const current = new Date().getFullYear();
+                    if (!Number.isInteger(value) || value < 1 || value > current) {
+                      return Promise.reject(`Year must be between 1 and ${current}`);
+                    }
+                    return Promise.resolve();
+                  },
+                },
+              ]}
+            >
+              <InputNumber
+                min={1}
+                max={new Date().getFullYear()}
+                precision={0}
+                parser={(val) => (val ? parseInt(val.replace(/\D/g, ""), 10) : (0 as never))}
+                placeholder={String(new Date().getFullYear())}
+                style={{ width: "100%" }}
+              />
             </Form.Item>
           </>
         )}
@@ -157,9 +218,30 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
             allowClear
             placeholder="None"
             options={providers.map((p) => ({ value: p.id, label: p.name }))}
+            popupRender={(menu) => (
+              <>
+                {menu}
+                <Divider style={{ margin: 0 }} />
+                <Button
+                  type="text"
+                  icon={<PlusOutlined />}
+                  style={{ width: "100%", textAlign: "left", margin: "6px 0" }}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => setProviderModalOpen(true)}
+                >
+                  Add provider
+                </Button>
+              </>
+            )}
           />
         </Form.Item>
       </Form>
+
+      <ProviderModal
+        open={providerModalOpen}
+        defaultType={selectedType as BillType}
+        onClose={handleProviderCreated}
+      />
     </Modal>
   );
 }
