@@ -4,7 +4,7 @@ import { Table, TableProps, TablePaginationConfig } from "antd";
 import EmptyState from "./EmptyState";
 
 const pagination: TablePaginationConfig = {
-  pageSize: 5,
+  pageSize: 6,
   showSizeChanger: false,
 };
 

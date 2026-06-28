@@ -52,16 +52,25 @@ export default function UsageChart({ data }: Props) {
     return <EmptyState description="No data to display" />;
   }
 
-  const chartData: ChartRow[] = data
-    .map((bill) => {
-      const { usage, period, year } = bill.data as ElectricBillData | WaterBillData;
-      const days = dayjs(bill.end_date).diff(dayjs(bill.start_date), "day") + 1;
-      return {
-        period: `P${period}`,
-        avgUsagePerDay: days > 0 ? parseFloat((usage / days).toFixed(2)) : 0,
-        year: String(year),
-      };
-    })
+  const grouped = new Map<string, { totalUsage: number; totalDays: number; year: string; period: string }>();
+  for (const bill of data) {
+    const { usage, period, year } = bill.data as ElectricBillData | WaterBillData;
+    const key = `${year}-${period}`;
+    const days = dayjs(bill.end_date).diff(dayjs(bill.start_date), "day") + 1;
+    if (!grouped.has(key)) {
+      grouped.set(key, { totalUsage: 0, totalDays: 0, year: String(year), period: `P${period}` });
+    }
+    const entry = grouped.get(key)!;
+    entry.totalUsage += usage;
+    entry.totalDays += days;
+  }
+
+  const chartData: ChartRow[] = Array.from(grouped.values())
+    .map(({ totalUsage, totalDays, year, period }) => ({
+      period,
+      avgUsagePerDay: totalDays > 0 ? parseFloat((totalUsage / totalDays).toFixed(2)) : 0,
+      year,
+    }))
     .sort((a, b) => {
       const yearDiff = parseInt(a.year) - parseInt(b.year);
       if (yearDiff !== 0) return yearDiff;
