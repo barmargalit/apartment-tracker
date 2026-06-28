@@ -121,8 +121,16 @@ export default function UsageChart({ data }: Props) {
           legend={{ color: { position: "top", layout: { justifyContent: "center" } } }}
           axis={{
             y: { title: "Avg. Usage / Day (kWh)" },
-            x: { title: "Period" },
+            // x: { title: "Period" },
           }}
+          annotations={["P1", "P3", "P5"].map((period) => ({
+            type: "rangeX",
+            data: [period, period],
+            style: {
+              fill: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)",
+              fillOpacity: 1,
+            },
+          }))}
         />
       </div>
     </div>
