@@ -1,0 +1,2 @@
+ALTER TABLE bills
+  ADD COLUMN residence_id UUID REFERENCES residences(id) ON DELETE SET NULL;

@@ -1,0 +1,19 @@
+.splitLayout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.chartPane {
+  height: 50%;
+  min-height: 0;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.tablePane {
+  height: 50%;
+  min-height: 0;
+  overflow: auto;
+}

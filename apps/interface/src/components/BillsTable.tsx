@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 import { Button, Space } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import type { TableColumnsType } from "antd";
-import type { Bill, ElectricBillData, WaterBillData } from "@apartment-tracker/types";
+import type { Bill, ElectricBillData, Residence, WaterBillData } from "@apartment-tracker/types";
 import DataTable from "./DataTable";
 
 const DATE_FORMAT = "DD/MM/YY";
@@ -14,11 +14,13 @@ interface Props {
   data: Bill[];
   loading?: boolean;
   showUsage?: boolean;
+  residences?: Residence[];
   onEdit: (bill: Bill) => void;
   onDelete: (bill: Bill) => void;
 }
 
-export default function BillsTable({ data, loading, showUsage, onEdit, onDelete }: Props) {
+export default function BillsTable({ data, loading, showUsage, residences = [], onEdit, onDelete }: Props) {
+  const residenceById = Object.fromEntries(residences.map((r) => [r.id, r]));
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   const periodYearColumns: TableColumnsType<Bill> = [
@@ -53,6 +55,15 @@ export default function BillsTable({ data, loading, showUsage, onEdit, onDelete 
 
   const columns: TableColumnsType<Bill> = [
     ...(showUsage ? periodYearColumns : []),
+    {
+      title: "Residence",
+      key: "residence_id",
+      render: (_: unknown, bill: Bill) => {
+        if (!bill.residence_id) return "-";
+        const r = residenceById[bill.residence_id];
+        return r ? `${r.street} ${r.city}` : "-";
+      },
+    },
     {
       title: "Start Date",
       dataIndex: "start_date",

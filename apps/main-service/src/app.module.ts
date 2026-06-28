@@ -3,6 +3,9 @@ import { ConfigModule } from "@nestjs/config";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { DatabaseModule } from "./database/database.module";
+import { BillsModule } from "./bills/bills.module";
+import { ProvidersModule } from "./providers/providers.module";
+import { ResidencesModule } from "./residences/residences.module";
 import config from "./config";
 
 @Module({
@@ -12,6 +15,9 @@ import config from "./config";
       isGlobal: true,
     }),
     DatabaseModule,
+    BillsModule,
+    ProvidersModule,
+    ResidencesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

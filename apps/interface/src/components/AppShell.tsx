@@ -21,6 +21,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               padding: 24,
               background: token.colorBgContainer,
               flex: 1,
+              minHeight: 0,
+              display: "flex",
+              flexDirection: "column",
             }}
           >
             {children}

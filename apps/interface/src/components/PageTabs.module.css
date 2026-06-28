@@ -1,3 +1,25 @@
+.pageTabs {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.pageTabs :global(.ant-tabs-content-holder) {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.pageTabs :global(.ant-tabs-content) {
+  height: 100%;
+}
+
+.pageTabs :global(.ant-tabs-tabpane) {
+  height: 100%;
+  overflow: auto;
+}
+
 .pageTabs :global(.ant-tabs-tab) {
   --ant-tabs-horizontal-item-padding: 6px 0;
   padding: 6px 0 !important;

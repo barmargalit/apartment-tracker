@@ -1,0 +1,2 @@
+ALTER TABLE bills
+  ADD COLUMN provider_id UUID REFERENCES providers(id) ON DELETE SET NULL;

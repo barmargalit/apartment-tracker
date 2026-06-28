@@ -67,6 +67,24 @@ apps/
 - Use **dayjs** for all date formatting, parsing, and arithmetic — never use `new Date()` or manual date string manipulation in the frontend.
 - The standard display format across the app is `DD/MM/YY`.
 
+### Data Flow
+Every entity follows this pattern — no direct `fetch` calls in components.
+
+```
+useEffect (component mount)
+  → store action (e.g. fetchByType)     src/store/*Store.ts
+    → API module function               src/api/*Api.ts
+      → fetch to backend
+    ← response
+  ← store updates state
+← component re-renders from store
+```
+
+For each new entity:
+1. **API module** (`src/api/<entity>Api.ts`) — exports a plain object with methods (`fetchBy*`, `create`, `update`, `delete`). All HTTP calls go through a shared `request<T>` wrapper that reads `NEXT_PUBLIC_API_URL`. Never call `fetch` directly in a component or store.
+2. **Zustand store** (`src/store/<entity>Store.ts`) — owns all state for that entity (data keyed by a relevant discriminator, loading flags). Actions call the API module, then `set` the new state. The component never touches the API module directly.
+3. **Component** — calls the store action inside a `useEffect` on mount (scoped to the relevant key). Reads data and loading state from the store. Has no knowledge of the API layer.
+
 ### Styling
 - Use CSS Modules (`*.module.css`) for component-scoped styles.
 - Global styles go in `src/globals.css` only.

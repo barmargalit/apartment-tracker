@@ -29,9 +29,13 @@ export interface Bill {
   id: string;
   created: Date;
   modified: Date;
+  /** 0 = active, 1 = deleted */
+  state: number;
   type: BillType;
   start_date: Date;
   end_date: Date;
   price: number;
   data: BillData;
+  provider_id: string | null;
+  residence_id: string | null;
 }
