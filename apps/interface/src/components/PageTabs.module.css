@@ -17,7 +17,7 @@
 
 .pageTabs :global(.ant-tabs-tabpane) {
   height: 100%;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .pageTabs :global(.ant-tabs-tab) {

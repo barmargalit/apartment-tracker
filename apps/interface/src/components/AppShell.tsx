@@ -12,7 +12,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <PageHeaderProvider>
-      <Layout style={{ minHeight: "100vh" }}>
+      <Layout style={{ height: "100vh", overflow: "hidden" }}>
         <Sidebar />
         <Layout style={{ display: "flex", flexDirection: "column" }}>
           <PageHeader />

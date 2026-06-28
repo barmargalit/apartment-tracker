@@ -8,8 +8,8 @@ function sortBills(bills: Bill[]): Bill[] {
     const bd = b.data as Partial<ElectricBillData & WaterBillData>;
     const yearA = ad.year ?? 0;
     const yearB = bd.year ?? 0;
-    if (yearA !== yearB) return yearA - yearB;
-    return (ad.period ?? 0) - (bd.period ?? 0);
+    if (yearA !== yearB) return yearB - yearA;
+    return (bd.period ?? 0) - (ad.period ?? 0);
   });
 }
 

@@ -6,13 +6,14 @@
 }
 
 .chartPane {
-  /*height: 50%;*/
+  flex: 1;
   min-height: 0;
+  overflow: hidden;
   box-sizing: border-box;
 }
 
 .tablePane {
-  height: 50%;
+  flex: 1;
   min-height: 0;
   overflow: auto;
 }
