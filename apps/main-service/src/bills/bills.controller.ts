@@ -6,6 +6,11 @@ import { BillType } from './bill.entity';
 export class BillsController {
   constructor(private readonly billsService: BillsService) {}
 
+  @Get('last')
+  findLast() {
+    return this.billsService.findLast();
+  }
+
   @Get()
   findByType(@Query('type') type: BillType) {
     return this.billsService.findByType(type);

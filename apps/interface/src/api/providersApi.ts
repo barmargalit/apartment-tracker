@@ -21,4 +21,7 @@ export const providersApi = {
 
   update: (id: string, payload: { name?: string; type?: BillType }): Promise<Provider> =>
     request<Provider>(`/providers/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
+
+  delete: (id: string): Promise<void> =>
+    request<void>(`/providers/${id}`, { method: "DELETE" }),
 };

@@ -19,7 +19,10 @@ type LoadingByType = Record<BillType, boolean>;
 interface BillsState {
   bills: BillsByType;
   loading: LoadingByType;
+  lastBills: Bill[];
+  lastBillsLoading: boolean;
   fetchByType: (type: BillType) => Promise<void>;
+  fetchLastBills: () => Promise<void>;
   createBill: (payload: CreateBillPayload) => Promise<void>;
   updateBill: (id: string, type: BillType, payload: UpdateBillPayload) => Promise<void>;
   deleteBill: (id: string, type: BillType) => Promise<void>;
@@ -34,6 +37,18 @@ const emptyLoading = (): LoadingByType =>
 export const useBillsStore = create<BillsState>((set, get) => ({
   bills: emptyBills(),
   loading: emptyLoading(),
+  lastBills: [],
+  lastBillsLoading: false,
+
+  fetchLastBills: async () => {
+    set({ lastBillsLoading: true });
+    try {
+      const data = await billsApi.fetchLast();
+      set({ lastBills: data });
+    } finally {
+      set({ lastBillsLoading: false });
+    }
+  },
 
   fetchByType: async (type) => {
     set((s) => ({ loading: { ...s.loading, [type]: true } }));

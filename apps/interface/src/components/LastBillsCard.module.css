@@ -1,0 +1,55 @@
+.table {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  align-items: center;
+  gap: 0 16px;
+}
+
+.row {
+  display: contents;
+}
+
+.row > * {
+  padding: 6px 0;
+}
+
+.typeCell {
+  display: flex;
+  align-items: center;
+}
+
+.type {
+  text-transform: capitalize;
+  font-weight: 500;
+}
+
+.meta {
+  color: var(--color-text-secondary-light);
+  font-size: 12px;
+}
+
+.price {
+  font-weight: 600;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.divider {
+  margin: 8px 0;
+}
+
+.sumRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 4px;
+}
+
+.sumLabel {
+  color: var(--color-text-secondary-light);
+}
+
+.sumValue {
+  font-weight: 700;
+  font-size: 15px;
+}

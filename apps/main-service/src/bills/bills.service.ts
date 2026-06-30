@@ -12,6 +12,7 @@ export interface CreateBillDto {
   data: BillData;
   provider_id?: string | null;
   residence_id?: string | null;
+  comment?: string | null;
 }
 
 export interface UpdateBillDto {
@@ -22,6 +23,7 @@ export interface UpdateBillDto {
   data?: BillData;
   provider_id?: string | null;
   residence_id?: string | null;
+  comment?: string | null;
 }
 
 @Injectable()
@@ -39,13 +41,24 @@ export class BillsService {
     return result.rows;
   }
 
+  async findLast(): Promise<BillEntity[]> {
+    this.logger.log('Fetching last bill per type');
+    const result = await this.pool.query<BillEntity>(
+      `SELECT DISTINCT ON (type) *
+       FROM bills
+       WHERE state = 0
+       ORDER BY type, start_date DESC`,
+    );
+    return result.rows;
+  }
+
   async create(dto: CreateBillDto): Promise<BillEntity> {
     this.logger.log(`Creating bill of type "${dto.type}"`);
     const result = await this.pool.query<BillEntity>(
-      `INSERT INTO bills (type, start_date, end_date, price, data, provider_id, residence_id)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `INSERT INTO bills (type, start_date, end_date, price, data, provider_id, residence_id, comment)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        RETURNING *`,
-      [dto.type, dto.start_date, dto.end_date, dto.price, JSON.stringify(dto.data), dto.provider_id ?? null, dto.residence_id ?? null],
+      [dto.type, dto.start_date, dto.end_date, dto.price, JSON.stringify(dto.data), dto.provider_id ?? null, dto.residence_id ?? null, dto.comment ?? null],
     );
     return result.rows[0];
   }
@@ -63,6 +76,7 @@ export class BillsService {
     if (dto.data !== undefined)        { fields.push(`data = $${idx++}`);        values.push(JSON.stringify(dto.data)); }
     if (dto.provider_id !== undefined)  { fields.push(`provider_id = $${idx++}`);  values.push(dto.provider_id); }
     if (dto.residence_id !== undefined) { fields.push(`residence_id = $${idx++}`); values.push(dto.residence_id); }
+    if (dto.comment !== undefined)      { fields.push(`comment = $${idx++}`);      values.push(dto.comment); }
 
     values.push(id);
     const result = await this.pool.query<BillEntity>(

@@ -1,14 +1,14 @@
 "use client";
 
-import { Typography } from "antd";
 import { usePageHeader } from "@/components/PageHeaderContext";
-
-const { Paragraph } = Typography;
+import LastBillsCard from "@/components/LastBillsCard";
 
 export default function HomePage() {
   usePageHeader({ title: "Home" });
 
   return (
-    <Paragraph>Welcome to Apartment Tracker.</Paragraph>
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
+      <LastBillsCard />
+    </div>
   );
 }

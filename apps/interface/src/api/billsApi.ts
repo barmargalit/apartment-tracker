@@ -29,6 +29,9 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const billsApi = {
+  fetchLast: (): Promise<Bill[]> =>
+    request<Bill[]>('/bills/last'),
+
   fetchByType: (type: BillType): Promise<Bill[]> =>
     request<Bill[]>(`/bills?type=${type}`),
 

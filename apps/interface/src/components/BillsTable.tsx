@@ -102,6 +102,11 @@ export default function BillsTable({ data, loading, showUsage, type, residences 
           return r ? `${r.street}, ${r.city}` : "-";
         },
       },
+        {
+            title: "Comment",
+            key: "comment",
+            render: (_: unknown, bill: Bill) => bill.comment ? bill.comment : "-",
+        },
       {
         title: "Start Date",
         dataIndex: "start_date",

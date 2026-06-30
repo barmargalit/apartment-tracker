@@ -8,6 +8,7 @@ interface ProvidersState {
   fetchAll: (type?: BillType) => Promise<void>;
   createProvider: (name: string, type: BillType) => Promise<Provider>;
   updateProvider: (id: string, name: string, type: BillType) => Promise<void>;
+  deleteProvider: (id: string) => Promise<void>;
 }
 
 export const useProvidersStore = create<ProvidersState>((set) => ({
@@ -35,5 +36,10 @@ export const useProvidersStore = create<ProvidersState>((set) => ({
     set((s) => ({
       providers: s.providers.map((p) => (p.id === id ? updated : p)),
     }));
+  },
+
+  deleteProvider: async (id) => {
+    await providersApi.delete(id);
+    set((s) => ({ providers: s.providers.filter((p) => p.id !== id) }));
   },
 }));
