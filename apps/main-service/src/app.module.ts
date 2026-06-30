@@ -5,6 +5,7 @@ import { AppService } from "./app.service";
 import { DatabaseModule } from "./database/database.module";
 import { BillsModule } from "./bills/bills.module";
 import { ProvidersModule } from "./providers/providers.module";
+import { ProspectsModule } from "./prospects/prospects.module";
 import { ResidencesModule } from "./residences/residences.module";
 import config from "./config";
 
@@ -17,6 +18,7 @@ import config from "./config";
     DatabaseModule,
     BillsModule,
     ProvidersModule,
+    ProspectsModule,
     ResidencesModule,
   ],
   controllers: [AppController],

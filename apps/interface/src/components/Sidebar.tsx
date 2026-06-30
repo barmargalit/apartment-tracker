@@ -12,6 +12,8 @@ import {
     SettingOutlined,
     BulbOutlined,
     TeamOutlined,
+    EyeOutlined,
+    BankOutlined,
 } from "@ant-design/icons";
 import Image from "next/image";
 import {useTheme} from "./ThemeProvider";
@@ -38,7 +40,15 @@ export default function Sidebar() {
                 {key: "/providers", icon: <TeamOutlined/>, label: "Providers"},
             ],
         },
-        {key: "/purchase", icon: <ShopOutlined/>, label: "Purchase"},
+        {
+            key: "purchase-group",
+            icon: <ShopOutlined/>,
+            label: "Purchase",
+            children: [
+                {key: "/purchase/prospects", icon: <EyeOutlined/>, label: "Prospects"},
+                {key: "/purchase/mortgage", icon: <BankOutlined/>, label: "Mortgage"},
+            ],
+        },
     ];
 
     const settingsContent = (
@@ -113,7 +123,7 @@ export default function Sidebar() {
                         <Menu
                             mode="inline"
                             selectedKeys={[pathname]}
-                            defaultOpenKeys={["bills-group"]}
+                            defaultOpenKeys={["bills-group", "purchase-group"]}
                             items={menuItems}
                             onClick={({key}) => {
                                 if (!key.includes("-group")) router.push(key);
