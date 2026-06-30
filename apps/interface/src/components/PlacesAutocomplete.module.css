@@ -1,0 +1,37 @@
+.container {
+  width: 100%;
+}
+
+/* Style the web component's internal input to match Ant Design Input */
+.container gmp-place-autocomplete {
+  width: 100%;
+}
+
+.container input,
+.container gmp-place-autocomplete input {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 4px 11px;
+  font-size: 14px;
+  line-height: 1.5714;
+  color: rgba(0, 0, 0, 0.88);
+  background-color: #ffffff;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: inherit;
+  height: 32px;
+}
+
+.container input:focus,
+.container gmp-place-autocomplete input:focus {
+  border-color: #4096ff;
+  box-shadow: 0 0 0 2px rgba(5, 145, 255, 0.1);
+}
+
+.container input:hover,
+.container gmp-place-autocomplete input:hover {
+  border-color: #4096ff;
+}

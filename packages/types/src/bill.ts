@@ -38,4 +38,5 @@ export interface Bill {
   data: BillData;
   provider_id: string | null;
   residence_id: string | null;
+  comment: string | null;
 }

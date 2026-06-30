@@ -43,6 +43,7 @@ function BillTab({ type, showUsage, onEdit, onDelete }: BillTabProps) {
             data={data}
             loading={loading[type]}
             showUsage
+            type={type}
             residences={residences}
             onEdit={onEdit}
             onDelete={onDelete}

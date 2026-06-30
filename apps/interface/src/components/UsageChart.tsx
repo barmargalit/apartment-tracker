@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { Column } from "@ant-design/charts";
 import { ColorPicker, Space, Typography } from "antd";
-import dayjs from "dayjs";
 import type { Bill, ElectricBillData, WaterBillData } from "@apartment-tracker/types";
+import { calcPeriodDays, calcPeriodUsage } from "@/lib/billUtils";
 import { useTheme } from "./ThemeProvider";
 import EmptyState from "./EmptyState";
 
@@ -52,17 +52,17 @@ export default function UsageChart({ data }: Props) {
     return <EmptyState description="No data to display" />;
   }
 
-  const grouped = new Map<string, { totalUsage: number; totalDays: number; year: string; period: string }>();
+  const buckets = new Map<string, { bills: Bill[]; year: string; period: string }>();
   for (const bill of data) {
-    const { usage, period, year } = bill.data as ElectricBillData | WaterBillData;
+    const { period, year } = bill.data as ElectricBillData | WaterBillData;
     const key = `${year}-${period}`;
-    const days = dayjs(bill.end_date).diff(dayjs(bill.start_date), "day") + 1;
-    if (!grouped.has(key)) {
-      grouped.set(key, { totalUsage: 0, totalDays: 0, year: String(year), period: `P${period}` });
-    }
-    const entry = grouped.get(key)!;
-    entry.totalUsage += usage;
-    entry.totalDays += days;
+    if (!buckets.has(key)) buckets.set(key, { bills: [], year: String(year), period: `P${period}` });
+    buckets.get(key)!.bills.push(bill);
+  }
+
+  const grouped = new Map<string, { totalUsage: number; totalDays: number; year: string; period: string }>();
+  for (const [key, { bills, year, period }] of buckets.entries()) {
+    grouped.set(key, { totalUsage: calcPeriodUsage(bills), totalDays: calcPeriodDays(bills), year, period });
   }
 
   const chartData: ChartRow[] = Array.from(grouped.values())

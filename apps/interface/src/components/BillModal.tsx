@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button, DatePicker, Divider, Form, InputNumber, Modal, Select } from "antd";
+import { Button, DatePicker, Divider, Form, Input, InputNumber, Modal, Select } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import dayjs, { Dayjs } from "dayjs";
 import type { Bill, BillPeriod, BillType, ElectricBillData, Provider, WaterBillData } from "@apartment-tracker/types";
@@ -24,6 +24,7 @@ interface FormValues {
   price: number;
   residence_id?: string | null;
   provider_id?: string | null;
+  comment?: string | null;
   // electric & water only
   usage?: number;
   period?: BillPeriod;
@@ -45,6 +46,7 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
   const [form] = Form.useForm<FormValues>();
   const selectedType = Form.useWatch("type", form);
   const showUsage = USAGE_TYPES.has(selectedType);
+  const usageSuffix = selectedType === "electric" ? "kWh" : "m³";
 
   const [providerModalOpen, setProviderModalOpen] = useState(false);
 
@@ -66,6 +68,8 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
     if (open) {
       fetchResidences();
 
+      const currentResidence = residences.find((r) => r.current === 1) ?? null;
+
       if (bill) {
         const data = bill.data as ElectricBillData & WaterBillData;
         form.setFieldsValue({
@@ -78,10 +82,12 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
           usage: data.usage,
           period: data.period,
           year: data.year,
+          comment: bill.comment,
         });
       } else {
         form.resetFields();
         if (defaultType) form.setFieldValue("type", defaultType);
+        if (currentResidence) form.setFieldValue("residence_id", currentResidence.id);
       }
     }
   }, [open, bill]);
@@ -102,6 +108,7 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
       price:        values.price,
       residence_id: values.residence_id ?? null,
       provider_id:  values.provider_id ?? null,
+      comment:      values.comment ?? null,
       data,
     };
 
@@ -161,49 +168,61 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
           </Form.Item>
         </div>
 
-        <Form.Item name="price" label="Price" rules={[{ required: true, message: "Required" }]}>
-          <InputNumber min={0} precision={2} prefix="₪" style={{ width: "100%" }} />
-        </Form.Item>
+        {showUsage ? (
+          <div style={{ display: "flex", gap: 24 }}>
+            <Form.Item name="price" label="Price" rules={[{ required: true, message: "Required" }]} style={{ flex: 1 }}>
+              <InputNumber min={0} precision={2} prefix="₪" style={{ width: "100%" }} />
+            </Form.Item>
+            <Form.Item name="usage" label="Usage" rules={[{ required: true, message: "Required" }]} style={{ flex: 1 }}>
+              <InputNumber min={0} suffix={usageSuffix} style={{ width: "100%" }} />
+            </Form.Item>
+          </div>
+        ) : (
+          <Form.Item name="price" label="Price" rules={[{ required: true, message: "Required" }]}>
+            <InputNumber min={0} precision={2} prefix="₪" style={{ width: "100%" }} />
+          </Form.Item>
+        )}
 
         {showUsage && (
-          <>
-            <Form.Item name="usage" label="Usage (kWh)" rules={[{ required: true, message: "Required" }]}>
-              <InputNumber min={0} style={{ width: "100%" }} />
-            </Form.Item>
+          <div style={{ display: "flex", gap: 24 }}>
+              <Form.Item name="period" label="Period" rules={[{ required: true, message: "Required" }]} style={{ flex: 1 }}>
+                <Select options={PERIOD_OPTIONS} />
+              </Form.Item>
 
-            <Form.Item name="period" label="Period" rules={[{ required: true, message: "Required" }]}>
-              <Select options={PERIOD_OPTIONS} />
-            </Form.Item>
-
-            <Form.Item
-              name="year"
-              label="Year"
-              hasFeedback
-              rules={[
-                { required: true, message: "Required" },
-                {
-                  validator: (_, value) => {
-                    if (value === undefined || value === null) return Promise.resolve();
-                    const current = new Date().getFullYear();
-                    if (!Number.isInteger(value) || value < 1 || value > current) {
-                      return Promise.reject(`Year must be between 1 and ${current}`);
-                    }
-                    return Promise.resolve();
+              <Form.Item
+                name="year"
+                label="Year"
+                hasFeedback
+                rules={[
+                  { required: true, message: "Required" },
+                  {
+                    validator: (_, value) => {
+                      if (value === undefined || value === null) return Promise.resolve();
+                      const current = new Date().getFullYear();
+                      if (!Number.isInteger(value) || value < 1 || value > current) {
+                        return Promise.reject(`Year must be between 1 and ${current}`);
+                      }
+                      return Promise.resolve();
+                    },
                   },
-                },
-              ]}
-            >
-              <InputNumber
-                min={1}
-                max={new Date().getFullYear()}
-                precision={0}
-                parser={(val) => (val ? parseInt(val.replace(/\D/g, ""), 10) : (0 as never))}
-                placeholder={String(new Date().getFullYear())}
-                style={{ width: "100%" }}
-              />
-            </Form.Item>
-          </>
+                ]}
+                style={{ flex: 1 }}
+              >
+                <InputNumber
+                  min={1}
+                  max={new Date().getFullYear()}
+                  precision={0}
+                  parser={(val) => (val ? parseInt(val.replace(/\D/g, ""), 10) : (0 as never))}
+                  placeholder={String(new Date().getFullYear())}
+                  style={{ width: "100%" }}
+                />
+              </Form.Item>
+          </div>
         )}
+
+        <Form.Item name="comment" label="Comment">
+          <Input.TextArea maxLength={200} showCount autoSize={{ minRows: 2, maxRows: 4 }} />
+        </Form.Item>
 
         <Form.Item name="residence_id" label="Residence">
           <Select
