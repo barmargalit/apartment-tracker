@@ -5,7 +5,9 @@ import dayjs from "dayjs";
 import { Button, Space, Table } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import type { TableColumnsType } from "antd";
+import { BillType } from "@apartment-tracker/types";
 import type { Bill, ElectricBillData, Residence, WaterBillData } from "@apartment-tracker/types";
+import { calcPeriodDays, calcPeriodUsage } from "@/lib/billUtils";
 import DataTable from "./DataTable";
 
 const DATE_FORMAT = "DD/MM/YY";
@@ -27,6 +29,7 @@ interface Props {
   data: Bill[];
   loading?: boolean;
   showUsage?: boolean;
+  type?: BillType;
   residences?: Residence[];
   onEdit: (bill: Bill) => void;
   onDelete: (bill: Bill) => void;
@@ -46,8 +49,8 @@ function groupBills(bills: Bill[], residenceById: Record<string, Residence>): Gr
     const sorted = [...group].sort((a, b) => dayjs(a.start_date).valueOf() - dayjs(b.start_date).valueOf());
     const { year, period } = sorted[0].data as ElectricBillData | WaterBillData;
 
-    const days = sorted.reduce((sum, b) => sum + dayjs(b.end_date).diff(dayjs(b.start_date), "day") + 1, 0);
-    const usage = sorted.reduce((sum, b) => sum + (b.data as ElectricBillData | WaterBillData).usage, 0);
+    const days = calcPeriodDays(sorted);
+    const usage = calcPeriodUsage(sorted);
     const price = sorted.reduce((sum, b) => sum + parseFloat(String(b.price)), 0);
 
     const seenIds = new Set<string>();
@@ -81,8 +84,9 @@ function groupBills(bills: Bill[], residenceById: Record<string, Residence>): Gr
   });
 }
 
-export default function BillsTable({ data, loading, showUsage, residences = [], onEdit, onDelete }: Props) {
+export default function BillsTable({ data, loading, showUsage, type, residences = [], onEdit, onDelete }: Props) {
   const residenceById = Object.fromEntries(residences.map((r) => [r.id, r]));
+  const usageUnit = type === BillType.Electric ? "kWh" : "m³";
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   if (showUsage) {
@@ -116,12 +120,12 @@ export default function BillsTable({ data, loading, showUsage, residences = [], 
         render: (_: unknown, bill: Bill) => dayjs(bill.end_date).diff(dayjs(bill.start_date), "day") + 1,
       },
       {
-        title: "Usage (kWh)",
+        title: `Usage (${usageUnit})`,
         key: "usage",
-        render: (_: unknown, bill: Bill) => (bill.data as ElectricBillData | WaterBillData).usage,
+        render: (_: unknown, bill: Bill) => ((bill.data as ElectricBillData | WaterBillData).usage ?? 0).toFixed(2),
       },
       {
-        title: "Avg. Usage/Day (kWh)",
+        title: `Avg. Usage/Day (${usageUnit})`,
         key: "avg_usage_day",
         render: (_: unknown, bill: Bill) => {
           const d = dayjs(bill.end_date).diff(dayjs(bill.start_date), "day") + 1;
@@ -165,9 +169,9 @@ export default function BillsTable({ data, loading, showUsage, residences = [], 
         render: (value: Date) => dayjs(value).format(DATE_FORMAT),
       },
       { title: "# Days", dataIndex: "days", key: "days" },
-      { title: "Usage (kWh)", dataIndex: "usage", key: "usage" },
+      { title: `Usage (${usageUnit})`, dataIndex: "usage", key: "usage", render: (v: number) => (v ?? 0).toFixed(2) },
       {
-        title: "Avg. Usage/Day (kWh)",
+        title: `Avg. Usage/Day (${usageUnit})`,
         key: "avg_usage_day",
         render: (_: unknown, row: GroupedRow) => row.days > 0 ? (row.usage / row.days).toFixed(2) : "-",
       },
