@@ -4,5 +4,5 @@ import { Tabs, TabsProps } from "antd";
 import styles from "./PageTabs.module.css";
 
 export default function PageTabs(props: TabsProps) {
-  return <Tabs className={styles.pageTabs} {...props} />;
+  return <Tabs className={styles.pageTabs} destroyInactiveTabPane {...props} />;
 }
