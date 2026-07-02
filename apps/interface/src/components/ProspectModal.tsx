@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { Form, Input, InputNumber, Modal, Select, Switch } from "antd";
+import { Form, Input, Modal, Select, Switch } from "antd";
+import NumericInput from "./NumericInput";
 import type { Prospect, SafeSpace } from "@apartment-tracker/types";
 import { useProspectsStore } from "@/store/prospectsStore";
 
@@ -92,13 +93,13 @@ export default function ProspectModal({ open, prospect, onClose }: Props) {
 
         <div style={{ display: "flex", gap: 16 }}>
           <Form.Item name="square_meters" label="m²" rules={[{ required: true, message: "Required" }]} style={{ flex: 1 }}>
-            <InputNumber min={1} precision={1} style={{ width: "100%" }} />
+            <NumericInput min={1} precision={1} style={{ width: "100%" }} />
           </Form.Item>
           <Form.Item name="balcony_square_meters" label="Balcony m²" style={{ flex: 1 }}>
-            <InputNumber min={0} precision={1} style={{ width: "100%" }} />
+            <NumericInput min={0} precision={1} style={{ width: "100%" }} />
           </Form.Item>
           <Form.Item name="rooms" label="Rooms" rules={[{ required: true, message: "Required" }]} style={{ flex: 1 }}>
-            <InputNumber min={1} step={0.5} precision={1} style={{ width: "100%" }} />
+            <NumericInput min={1} step={0.5} precision={1} style={{ width: "100%" }} />
           </Form.Item>
         </div>
 

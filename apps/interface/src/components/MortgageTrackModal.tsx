@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { Divider, Form, InputNumber, Modal, Select } from "antd";
+import { Divider, Form, Modal, Select } from "antd";
+import NumericInput from "./NumericInput";
 import { MortgageTrack, MortgageTrackType, TRACK_LABELS } from "./MortgageTrackCollapse";
 import { TrackInputs } from "@/lib/mortgageUtils";
 
@@ -99,7 +100,7 @@ export default function MortgageTrackModal({ open, editingTrack, onClose, onSave
                 rules={[{ required: true, message: "Required" }]}
                 style={{ flex: 1 }}
               >
-                <InputNumber min={1} precision={0} style={{ width: "100%" }} prefix="₪" />
+                <NumericInput min={1} precision={0} style={{ width: "100%" }} prefix="₪" />
               </Form.Item>
               <Form.Item
                 name="years"
@@ -107,7 +108,7 @@ export default function MortgageTrackModal({ open, editingTrack, onClose, onSave
                 rules={[{ required: true, message: "Required" }]}
                 style={{ flex: 1 }}
               >
-                <InputNumber min={1} max={40} precision={0} style={{ width: "100%" }} />
+                <NumericInput min={1} max={40} precision={0} style={{ width: "100%" }} />
               </Form.Item>
             </div>
 
@@ -117,7 +118,7 @@ export default function MortgageTrackModal({ open, editingTrack, onClose, onSave
                 label="Annual Interest Rate (%)"
                 rules={[{ required: true, message: "Required" }]}
               >
-                <InputNumber min={0} max={30} precision={2} step={0.1} suffix="%" style={{ width: "100%" }} />
+                <NumericInput min={0} max={30} precision={2} step={0.1} suffix="%" style={{ width: "100%" }} />
               </Form.Item>
             )}
 
@@ -127,7 +128,7 @@ export default function MortgageTrackModal({ open, editingTrack, onClose, onSave
                 label="Expected Annual CPI (%)"
                 rules={[{ required: true, message: "Required" }]}
               >
-                <InputNumber min={0} max={20} precision={2} step={0.1} suffix="%" style={{ width: "100%" }} />
+                <NumericInput min={0} max={20} precision={2} step={0.1} suffix="%" style={{ width: "100%" }} />
               </Form.Item>
             )}
 
@@ -139,7 +140,7 @@ export default function MortgageTrackModal({ open, editingTrack, onClose, onSave
                   rules={[{ required: true, message: "Required" }]}
                   style={{ flex: 1 }}
                 >
-                  <InputNumber min={0} max={20} precision={2} step={0.1} suffix="%" style={{ width: "100%" }} />
+                  <NumericInput min={0} max={20} precision={2} step={0.1} suffix="%" style={{ width: "100%" }} />
                 </Form.Item>
                 <Form.Item
                   name="primeSpread"
@@ -148,7 +149,7 @@ export default function MortgageTrackModal({ open, editingTrack, onClose, onSave
                   rules={[{ required: true, message: "Required" }]}
                   style={{ flex: 1 }}
                 >
-                  <InputNumber min={-5} max={5} precision={2} step={0.1} suffix="%" style={{ width: "100%" }} />
+                  <NumericInput min={-5} max={5} precision={2} step={0.1} suffix="%" style={{ width: "100%" }} />
                 </Form.Item>
               </div>
             )}
@@ -160,7 +161,7 @@ export default function MortgageTrackModal({ open, editingTrack, onClose, onSave
                 tooltip="Positive = foreign currency appreciates (loan costs more in ILS over time)"
                 rules={[{ required: true, message: "Required" }]}
               >
-                <InputNumber min={-20} max={20} precision={2} step={0.1} suffix="%" style={{ width: "100%" }} />
+                <NumericInput min={-20} max={20} precision={2} step={0.1} suffix="%" style={{ width: "100%" }} />
               </Form.Item>
             )}
           </>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button, DatePicker, Divider, Form, Input, InputNumber, Modal, Select } from "antd";
+import NumericInput from "./NumericInput";
 import { PlusOutlined } from "@ant-design/icons";
 import dayjs, { Dayjs } from "dayjs";
 import type { Bill, BillPeriod, BillType, ElectricBillData, Provider, WaterBillData } from "@apartment-tracker/types";
@@ -9,6 +10,7 @@ import { useBillsStore } from "@/store/billsStore";
 import { useResidencesStore } from "@/store/residencesStore";
 import { useProvidersStore } from "@/store/providersStore";
 import ProviderModal from "./ProviderModal";
+import { BILL_TYPE_OPTIONS } from "@/lib/billTypes";
 
 interface Props {
   open: boolean;
@@ -31,21 +33,17 @@ interface FormValues {
   year?: number;
 }
 
-const BILL_TYPE_OPTIONS = [
-  { value: "electric", label: "Electric" },
-  { value: "water",    label: "Water" },
-  { value: "internet", label: "Internet" },
-  { value: "gas",      label: "Gas" },
-];
 
 const PERIOD_OPTIONS = [1, 2, 3, 4, 5, 6].map((p) => ({ value: p, label: `Period ${p}` }));
 
 const USAGE_TYPES = new Set(["electric", "water"]);
+const YEAR_TYPES = new Set(["electric", "water", "property_tax"]);
 
 export default function BillModal({ open, bill, defaultType, onClose }: Props) {
   const [form] = Form.useForm<FormValues>();
   const selectedType = Form.useWatch("type", form);
   const showUsage = USAGE_TYPES.has(selectedType);
+  const showYear = YEAR_TYPES.has(selectedType);
   const usageSuffix = selectedType === "electric" ? "kWh" : "m³";
 
   const [providerModalOpen, setProviderModalOpen] = useState(false);
@@ -99,6 +97,8 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
       data.usage  = values.usage;
       data.period = values.period;
       data.year   = values.year;
+    } else if (showYear) {
+      data.year = values.year;
     }
 
     const payload = {
@@ -171,15 +171,15 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
         {showUsage ? (
           <div style={{ display: "flex", gap: 24 }}>
             <Form.Item name="price" label="Price" rules={[{ required: true, message: "Required" }]} style={{ flex: 1 }}>
-              <InputNumber min={0} precision={2} prefix="₪" style={{ width: "100%" }} />
+              <NumericInput min={0} precision={2} prefix="₪" style={{ width: "100%" }} />
             </Form.Item>
             <Form.Item name="usage" label="Usage" rules={[{ required: true, message: "Required" }]} style={{ flex: 1 }}>
-              <InputNumber min={0} suffix={usageSuffix} style={{ width: "100%" }} />
+              <NumericInput min={0} suffix={usageSuffix} style={{ width: "100%" }} />
             </Form.Item>
           </div>
         ) : (
           <Form.Item name="price" label="Price" rules={[{ required: true, message: "Required" }]}>
-            <InputNumber min={0} precision={2} prefix="₪" style={{ width: "100%" }} />
+            <NumericInput min={0} precision={2} prefix="₪" style={{ width: "100%" }} />
           </Form.Item>
         )}
 
@@ -218,6 +218,36 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
                 />
               </Form.Item>
           </div>
+        )}
+
+        {showYear && !showUsage && (
+          <Form.Item
+            name="year"
+            label="Year"
+            hasFeedback
+            rules={[
+              { required: true, message: "Required" },
+              {
+                validator: (_, value) => {
+                  if (value === undefined || value === null) return Promise.resolve();
+                  const current = new Date().getFullYear();
+                  if (!Number.isInteger(value) || value < 1 || value > current) {
+                    return Promise.reject(`Year must be between 1 and ${current}`);
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
+          >
+            <InputNumber
+              min={1}
+              max={new Date().getFullYear()}
+              precision={0}
+              parser={(val) => (val ? parseInt(val.replace(/\D/g, ""), 10) : (0 as never))}
+              placeholder={String(new Date().getFullYear())}
+              style={{ width: "100%" }}
+            />
+          </Form.Item>
         )}
 
         <Form.Item name="comment" label="Comment">

@@ -12,6 +12,12 @@ import DataTable from "./DataTable";
 
 const DATE_FORMAT = "DD/MM/YY";
 
+const fmtPrice = (n: number | string) =>
+  `₪${parseFloat(String(n)).toLocaleString("en", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+const fmtNum = (n: number, decimals = 2) =>
+  n.toLocaleString("en", { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+
 interface GroupedRow {
   key: string;
   year: number;
@@ -25,10 +31,21 @@ interface GroupedRow {
   bills: Bill[];
 }
 
+interface ResidenceGroupedRow {
+  key: string;
+  residence: string;
+  year: number;
+  price: number;
+  start_date: Date;
+  end_date: Date;
+  bills: Bill[];
+}
+
 interface Props {
   data: Bill[];
   loading?: boolean;
   showUsage?: boolean;
+  groupByResidence?: boolean;
   type?: BillType;
   residences?: Residence[];
   onEdit: (bill: Bill) => void;
@@ -84,7 +101,30 @@ function groupBills(bills: Bill[], residenceById: Record<string, Residence>): Gr
   });
 }
 
-export default function BillsTable({ data, loading, showUsage, type, residences = [], onEdit, onDelete }: Props) {
+function groupBillsByResidence(bills: Bill[], residenceById: Record<string, Residence>): ResidenceGroupedRow[] {
+  const map = new Map<string, Bill[]>();
+  for (const bill of bills) {
+    const year = (bill.data as { year?: number }).year ?? 0;
+    const key = `${bill.residence_id ?? "__none__"}__${year}`;
+    if (!map.has(key)) map.set(key, []);
+    map.get(key)!.push(bill);
+  }
+  const rows: ResidenceGroupedRow[] = [];
+  for (const [key, group] of map.entries()) {
+    const residenceId = group[0].residence_id;
+    const r = residenceId ? residenceById[residenceId] : undefined;
+    const label = r ? `${r.street}, ${r.city}` : "-";
+    const year = (group[0].data as { year?: number }).year ?? 0;
+    const price = group.reduce((sum, b) => sum + parseFloat(String(b.price)), 0);
+    const sorted = [...group].sort((a, b) => dayjs(a.start_date).valueOf() - dayjs(b.start_date).valueOf());
+    const start_date = sorted[0].start_date as Date;
+    const end_date = sorted[sorted.length - 1].end_date as Date;
+    rows.push({ key, residence: label, year, price, start_date, end_date, bills: group });
+  }
+  return rows.sort((a, b) => b.year - a.year || a.residence.localeCompare(b.residence));
+}
+
+export default function BillsTable({ data, loading, showUsage, groupByResidence, type, residences = [], onEdit, onDelete }: Props) {
   const residenceById = Object.fromEntries(residences.map((r) => [r.id, r]));
   const usageUnit = type === BillType.Electric ? "kWh" : "m³";
   const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -127,7 +167,7 @@ export default function BillsTable({ data, loading, showUsage, type, residences 
       {
         title: `Usage (${usageUnit})`,
         key: "usage",
-        render: (_: unknown, bill: Bill) => ((bill.data as ElectricBillData | WaterBillData).usage ?? 0).toFixed(2),
+        render: (_: unknown, bill: Bill) => fmtNum((bill.data as ElectricBillData | WaterBillData).usage ?? 0),
       },
       {
         title: `Avg. Usage/Day (${usageUnit})`,
@@ -135,14 +175,14 @@ export default function BillsTable({ data, loading, showUsage, type, residences 
         render: (_: unknown, bill: Bill) => {
           const d = dayjs(bill.end_date).diff(dayjs(bill.start_date), "day") + 1;
           const u = (bill.data as ElectricBillData | WaterBillData).usage;
-          return d > 0 ? (u / d).toFixed(2) : "-";
+          return d > 0 ? fmtNum(u / d) : "-";
         },
       },
       {
         title: "Price",
         dataIndex: "price",
         key: "price",
-        render: (value: number | string) => `₪${parseFloat(String(value)).toFixed(2)}`,
+        render: (value: number | string) => fmtPrice(value),
       },
       {
         key: "actions",
@@ -174,17 +214,17 @@ export default function BillsTable({ data, loading, showUsage, type, residences 
         render: (value: Date) => dayjs(value).format(DATE_FORMAT),
       },
       { title: "# Days", dataIndex: "days", key: "days" },
-      { title: `Usage (${usageUnit})`, dataIndex: "usage", key: "usage", render: (v: number) => (v ?? 0).toFixed(2) },
+      { title: `Usage (${usageUnit})`, dataIndex: "usage", key: "usage", render: (v: number) => fmtNum(v ?? 0) },
       {
         title: `Avg. Usage/Day (${usageUnit})`,
         key: "avg_usage_day",
-        render: (_: unknown, row: GroupedRow) => row.days > 0 ? (row.usage / row.days).toFixed(2) : "-",
+        render: (_: unknown, row: GroupedRow) => row.days > 0 ? fmtNum(row.usage / row.days) : "-",
       },
       {
         title: "Price",
         dataIndex: "price",
         key: "price",
-        render: (value: number) => `₪${value.toFixed(2)}`,
+        render: (value: number) => fmtPrice(value),
       },
       {
         key: "actions",
@@ -202,6 +242,116 @@ export default function BillsTable({ data, loading, showUsage, type, residences 
 
     return (
       <DataTable<GroupedRow>
+        rowKey="key"
+        columns={groupedColumns}
+        dataSource={grouped}
+        loading={loading}
+        expandable={{
+          expandedRowRender: (row) => (
+            <Table<Bill>
+              size="small"
+              columns={childColumns}
+              dataSource={row.bills}
+              rowKey="id"
+              pagination={false}
+              onRow={(bill) => ({
+                onMouseEnter: () => setHoveredId(bill.id),
+                onMouseLeave: () => setHoveredId(null),
+              })}
+            />
+          ),
+          rowExpandable: (row) => row.bills.length > 1,
+        }}
+        onRow={(row) => ({
+          onMouseEnter: () => setHoveredId(row.key),
+          onMouseLeave: () => setHoveredId(null),
+        })}
+      />
+    );
+  }
+
+  if (groupByResidence) {
+    const grouped = groupBillsByResidence(data, residenceById);
+
+    const childColumns: TableColumnsType<Bill> = [
+      {
+        title: "Start Date",
+        dataIndex: "start_date",
+        key: "start_date",
+        render: (value: Date) => dayjs(value).format(DATE_FORMAT),
+      },
+      {
+        title: "End Date",
+        dataIndex: "end_date",
+        key: "end_date",
+        render: (value: Date) => dayjs(value).format(DATE_FORMAT),
+      },
+      {
+        title: "# Days",
+        key: "days",
+        render: (_: unknown, bill: Bill) => dayjs(bill.end_date).diff(dayjs(bill.start_date), "day") + 1,
+      },
+      {
+        title: "Price",
+        dataIndex: "price",
+        key: "price",
+        render: (value: number | string) => fmtPrice(value),
+      },
+      {
+        title: "Comment",
+        key: "comment",
+        render: (_: unknown, bill: Bill) => bill.comment ?? "-",
+      },
+      {
+        key: "actions",
+        fixed: "right",
+        width: 80,
+        render: (_: unknown, bill: Bill) => (
+          <Space style={{ opacity: hoveredId === bill.id ? 1 : 0, transition: "opacity 0.15s" }}>
+            <Button type="text" icon={<EditOutlined />} onClick={() => onEdit(bill)} />
+            <Button type="text" danger icon={<DeleteOutlined />} onClick={() => onDelete(bill)} />
+          </Space>
+        ),
+      },
+    ];
+
+    const groupedColumns: TableColumnsType<ResidenceGroupedRow> = [
+      { title: "Year", dataIndex: "year", key: "year" },
+      { title: "Residence", dataIndex: "residence", key: "residence" },
+      {
+        title: "Start Date",
+        dataIndex: "start_date",
+        key: "start_date",
+        render: (value: Date) => dayjs(value).format(DATE_FORMAT),
+      },
+      {
+        title: "End Date",
+        dataIndex: "end_date",
+        key: "end_date",
+        render: (value: Date) => dayjs(value).format(DATE_FORMAT),
+      },
+      {
+        title: "Total Price",
+        dataIndex: "price",
+        key: "price",
+        render: (value: number) => fmtPrice(value),
+      },
+      {
+        key: "actions",
+        fixed: "right",
+        width: 80,
+        render: (_: unknown, row: ResidenceGroupedRow) =>
+          row.bills.length === 1 ? (
+            <Space style={{ opacity: hoveredId === row.key ? 1 : 0, transition: "opacity 0.15s" }}>
+              <Button type="text" icon={<EditOutlined />} onClick={() => onEdit(row.bills[0])} />
+              <Button type="text" danger icon={<DeleteOutlined />} onClick={() => onDelete(row.bills[0])} />
+            </Space>
+          ) : null,
+      },
+    ];
+
+    return (
+      <DataTable<ResidenceGroupedRow>
         rowKey="key"
         columns={groupedColumns}
         dataSource={grouped}

@@ -3,6 +3,7 @@ export enum BillType {
   Water = 'water',
   Internet = 'internet',
   Gas = 'gas',
+  PropertyTax = 'property_tax',
 }
 
 export type BillPeriod = 1 | 2 | 3 | 4 | 5 | 6;
@@ -23,7 +24,11 @@ export interface InternetBillData {}
 
 export interface GasBillData {}
 
-export type BillData = ElectricBillData | WaterBillData | InternetBillData | GasBillData;
+export interface PropertyTaxData {
+  year: number;
+}
+
+export type BillData = ElectricBillData | WaterBillData | InternetBillData | GasBillData | PropertyTaxData;
 
 export interface Bill {
   id: string;

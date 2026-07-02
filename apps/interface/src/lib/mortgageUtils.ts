@@ -1,4 +1,4 @@
-import { MortgageTrackType } from "@/components/MortgageTrackCollapse";
+import type { MortgageTrackType, MortgageTrackData, MortgageTrack as ApiMortgageTrack } from "@apartment-tracker/types";
 
 export interface TrackInputs {
   principal: number;
@@ -120,5 +120,53 @@ export function calcAmortization(type: MortgageTrackType, inputs: TrackInputs): 
       const fx = (inputs.fxAnnualChange ?? 0) / 100 / 12;
       return calcInflationLinkedAmortization(principal, months, r, fx);
     }
+  }
+}
+
+export interface LocalTrack {
+  localId: string;
+  dbId?: string;
+  type: MortgageTrackType;
+  inputs: TrackInputs;
+}
+
+export interface LocalPlan {
+  localId: string;
+  dbId?: string;
+  totalLoan: number;
+  bankId?: string | null;
+  tracks: LocalTrack[];
+}
+
+export function deepClone<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value));
+}
+
+/** Convert an API MortgageTrack's data blob → TrackInputs used by the calculator. */
+export function apiTrackToInputs(track: ApiMortgageTrack): TrackInputs {
+  const d = track.data as unknown as Record<string, number>;
+  return {
+    principal: track.amount,
+    years: track.years,
+    annualRate: d.annualRate,
+    annualCpi: d.annualCpi,
+    primeRate: d.primeRate,
+    primeSpread: d.primeSpread,
+    fxAnnualChange: d.fxAnnualChange,
+  };
+}
+
+/** Convert TrackInputs → the data blob stored in the DB. */
+export function inputsToApiData(type: MortgageTrackType, inputs: TrackInputs): MortgageTrackData {
+  switch (type) {
+    case "fixed_unlinked":
+      return { annualRate: inputs.annualRate ?? 0 };
+    case "fixed_index_linked":
+    case "variable_index_linked":
+      return { annualRate: inputs.annualRate ?? 0, annualCpi: inputs.annualCpi ?? 0 };
+    case "prime":
+      return { primeRate: inputs.primeRate ?? 0, primeSpread: inputs.primeSpread ?? 0 };
+    case "foreign_currency":
+      return { annualRate: inputs.annualRate ?? 0, fxAnnualChange: inputs.fxAnnualChange ?? 0 };
   }
 }

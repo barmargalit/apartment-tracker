@@ -1,96 +1,142 @@
 "use client";
 
-import { useEffect } from "react";
-import { Card, Divider, Skeleton, Tag, Tooltip, Typography } from "antd";
+import {useEffect} from "react";
+import {Card, Divider, Skeleton, Tooltip, Typography} from "antd";
 import dayjs from "dayjs";
-import { Bill, BillType, ElectricBillData, WaterBillData } from "@apartment-tracker/types";
-import { useBillsStore } from "@/store/billsStore";
+import {Bill, BillType, ElectricBillData, WaterBillData} from "@apartment-tracker/types";
+import {useBillsStore} from "@/store/billsStore";
+import {BILL_TYPE_LABEL, BillTypeTag} from "@/lib/billTypes";
 import styles from "./LastBillsCard.module.css";
 
-const { Text } = Typography;
+const {Text} = Typography;
 
-const TYPE_COLOR: Record<BillType, string> = {
-  [BillType.Electric]: "gold",
-  [BillType.Water]: "blue",
-  [BillType.Internet]: "purple",
-  [BillType.Gas]: "orange",
-};
+const fmtPrice = (n: number) =>
+    `₪${n.toLocaleString("en", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
 
-function getPeriod(bill: Bill): string | null {
-  const d = bill.data as Partial<ElectricBillData & WaterBillData>;
-  if (d.year != null && d.period != null) return `${d.year} P${d.period}`;
-  if (d.year != null) return String(d.year);
-  return null;
+interface BillGroup {
+    type: BillType;
+    bills: Bill[];
+    totalPrice: number;
+    startDate: Date;
+    endDate: Date;
+    period: string | null;
 }
 
-function billDurationMonths(bill: Bill): number {
-  const d = bill.data as Partial<ElectricBillData & WaterBillData>;
-  if (d.period != null) return 2;
-  const diff = dayjs(bill.end_date).diff(dayjs(bill.start_date), "day") / 30;
-  return diff > 0 ? diff : 1;
+function getPeriodLabel(bill: Bill): string | null {
+    const d = bill.data as Partial<ElectricBillData & WaterBillData>;
+    if (d.year != null && d.period != null) return `${d.year} P${d.period}`;
+    if (d.year != null) return String(d.year);
+    return null;
 }
 
-function monthlyRate(bill: Bill): number {
-  return bill.price / billDurationMonths(bill);
+function groupDurationMonths(group: BillGroup): number {
+    const firstBill = group.bills[0];
+    const d = firstBill.data as Partial<ElectricBillData & WaterBillData>;
+    if (d.period != null) return 2;
+    const diff = dayjs(group.endDate).diff(dayjs(group.startDate), "day") / 30;
+    return diff > 0 ? diff : 1;
+}
+
+function groupBillsByType(bills: Bill[]): BillGroup[] {
+    const map = new Map<BillType, Bill[]>();
+    for (const bill of bills) {
+        const existing = map.get(bill.type) ?? [];
+        map.set(bill.type, [...existing, bill]);
+    }
+    return Array.from(map.entries()).map(([type, typeBills]) => {
+        const sorted = [...typeBills].sort((a, b) => dayjs(a.start_date).valueOf() - dayjs(b.start_date).valueOf());
+        const totalPrice = sorted.reduce((sum, b) => sum + Number(b.price), 0);
+        return {
+            type,
+            bills: sorted,
+            totalPrice,
+            startDate: sorted[0].start_date as unknown as Date,
+            endDate: sorted[sorted.length - 1].end_date as unknown as Date,
+            period: getPeriodLabel(sorted[0]),
+        };
+    });
 }
 
 export default function LastBillsCard() {
-  const { lastBills, lastBillsLoading, fetchLastBills } = useBillsStore();
+    const {lastBills, lastBillsLoading, fetchLastBills} = useBillsStore();
 
-  useEffect(() => {
-    fetchLastBills();
-  }, [fetchLastBills]);
+    useEffect(() => {
+        fetchLastBills();
+    }, [fetchLastBills]);
 
-  const totalPerMonth = lastBills.reduce((sum, b) => sum + monthlyRate(b), 0);
+    const groups = groupBillsByType(lastBills);
+    const totalPerMonth = groups.reduce((sum, g) => sum + g.totalPrice / groupDurationMonths(g), 0);
 
-  const tooltipContent = (
-    <>
-      {lastBills.map((b) => {
-        const months = billDurationMonths(b);
-        const rate = monthlyRate(b);
-        return (
-          <div key={b.id}>{b.type}: ₪{Number(b.price).toFixed(2)} ÷ {months}mo = ₪{rate.toFixed(2)}/mo</div>
-        );
-      })}
-    </>
-  );
-
-  return (
-    <Card title="Last Bills" style={{ width: "50%" }}>
-      {lastBillsLoading ? (
-        <Skeleton active paragraph={{ rows: 4 }} />
-      ) : lastBills.length === 0 ? (
-        <Text type="secondary">No bills recorded yet.</Text>
-      ) : (
+    const tooltipContent = (
         <>
-          <div className={styles.table}>
-            {lastBills.map((bill) => {
-              const period = getPeriod(bill);
-              const dateRange = `${dayjs(bill.start_date).format("DD/MM/YY")} – ${dayjs(bill.end_date).format("DD/MM/YY")}`;
-              return (
-                <div key={bill.id} className={styles.row}>
-                  <div className={styles.typeCell}>
-                    <Tag color={TYPE_COLOR[bill.type]} style={{ margin: 0 }}>
-                      <span className={styles.type}>{bill.type}</span>
-                    </Tag>
-                  </div>
-                  <span className={styles.meta}>
-                    {period ? `${period} · ` : ""}{dateRange}
-                  </span>
-                  <span className={styles.price}>₪{Number(bill.price).toFixed(2)}</span>
-                </div>
-              );
+            {groups.map((g) => {
+                const months = groupDurationMonths(g);
+                const rate = g.totalPrice / months;
+                return (
+                    <div key={g.type}>
+                        {BILL_TYPE_LABEL[g.type]}: {fmtPrice(g.totalPrice)} ÷ {Number(months).toFixed(0)}mo
+                        = {fmtPrice(rate)}/mo
+                    </div>
+                );
             })}
-          </div>
-          <Divider className={styles.divider} />
-          <div className={styles.sumRow}>
-              <Typography.Title level={5} className={styles.sumLabel} style={{ cursor: "default", margin: 0 }}>Avg / month</Typography.Title>
-              <Tooltip title={tooltipContent} styles={{ container: { width: "max-content" } }}>
-                  <span className={styles.sumValue} style={{borderBottom: "1px dashed"}}>₪{totalPerMonth.toFixed(2)}</span>
-              </Tooltip>
-          </div>
         </>
-      )}
-    </Card>
-  );
+    );
+
+    return (
+        <Card title="Last Bills" style={{width: "50%"}}>
+            {lastBillsLoading ? (
+                <Skeleton active paragraph={{rows: 4}}/>
+            ) : groups.length === 0 ? (
+                <Text type="secondary">No bills recorded yet.</Text>
+            ) : (
+                <>
+                    <div className={styles.table}>
+                        {groups.map((group) => {
+                            const dateRange = `${dayjs(group.startDate).format("DD/MM/YY")} – ${dayjs(group.endDate).format("DD/MM/YY")}`;
+                            const billsTooltip = (
+                                <div style={{display: "flex", flexDirection: "column", gap: 8}}>
+                                    {group.bills.map((b) => (
+                                        <div key={b.id} style={{display: "flex", gap: 16, alignItems: "baseline"}}>
+                                            <span style={{whiteSpace: "nowrap"}}>
+                                                {dayjs(b.start_date).format("DD/MM/YY")} – {dayjs(b.end_date).format("DD/MM/YY")}
+                                            </span>
+                                            <span style={{whiteSpace: "nowrap"}}>{fmtPrice(Number(b.price))}</span>
+                                            {b.comment && <span style={{opacity: 0.75}}>{b.comment}</span>}
+                                        </div>
+                                    ))}
+                                </div>
+                            );
+                            return (
+                                <Tooltip key={group.type} title={billsTooltip} placement="right" destroyOnHidden
+                                         styles={{container: {minWidth: 320}}}>
+                                    <div className={styles.row}>
+                                        <div className={styles.typeCell}>
+                                            <BillTypeTag type={group.type} style={{margin: 0}}/>
+                                        </div>
+                                        <span className={styles.meta}>
+                                            {group.period ? `${group.period} · ` : ""}{dateRange}
+                                            {group.bills.length > 1 ? ` (${group.bills.length} bills)` : ""}
+                                        </span>
+                                        {group.bills.length === 1 && group.bills[0].comment && (
+                                            <span className={styles.meta}>{group.bills[0].comment}</span>
+                                        )}
+                                        <span className={styles.price}>{fmtPrice(group.totalPrice)}</span>
+                                    </div>
+                                </Tooltip>
+                            );
+                        })}
+                    </div>
+                    <Divider className={styles.divider}/>
+                    <div className={styles.sumRow}>
+                        <Typography.Title level={5} className={styles.sumLabel} style={{cursor: "default", margin: 0}}>Avg
+                            / month</Typography.Title>
+                        <Tooltip title={tooltipContent} styles={{container: {width: "max-content"}}}>
+                            <span className={styles.sumValue}
+                                  style={{borderBottom: "1px dashed"}}>{fmtPrice(totalPerMonth)}</span>
+                        </Tooltip>
+                    </div>
+                </>
+            )}
+        </Card>
+    );
 }

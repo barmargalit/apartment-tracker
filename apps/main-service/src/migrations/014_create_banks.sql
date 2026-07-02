@@ -1,0 +1,7 @@
+CREATE TABLE banks (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  created TIMESTAMPTZ NOT NULL DEFAULT now(),
+  modified TIMESTAMPTZ NOT NULL DEFAULT now(),
+  state INTEGER NOT NULL DEFAULT 0,
+  name TEXT NOT NULL
+);

@@ -6,13 +6,9 @@ import { CaretRightOutlined, DeleteOutlined, EditOutlined, ExpandAltOutlined } f
 import TrackSummary from "./TrackSummary";
 import AmortizationTable from "./AmortizationTable";
 import { calcAmortization, TrackInputs } from "@/lib/mortgageUtils";
+import type { MortgageTrackType } from "@apartment-tracker/types";
 
-export type MortgageTrackType =
-    | "fixed_index_linked"
-    | "variable_index_linked"
-    | "prime"
-    | "fixed_unlinked"
-    | "foreign_currency";
+export type { MortgageTrackType };
 
 export const TRACK_LABELS: Record<MortgageTrackType, string> = {
     fixed_index_linked: "Fixed Interest, Index-Linked",
@@ -32,9 +28,10 @@ interface Props {
     tracks: MortgageTrack[];
     onEdit: (track: MortgageTrack) => void;
     onDelete: (id: string) => void;
+    planTotalLoan?: number;
 }
 
-export default function MortgageTrackCollapse({ tracks, onEdit, onDelete }: Props) {
+export default function MortgageTrackCollapse({ tracks, onEdit, onDelete, planTotalLoan }: Props) {
     const { token } = theme.useToken();
     const [expandedTrack, setExpandedTrack] = useState<MortgageTrack | null>(null);
 
@@ -66,7 +63,21 @@ export default function MortgageTrackCollapse({ tracks, onEdit, onDelete }: Prop
 
     const items = tracks.map((track) => ({
         key: track.id,
-        label: TRACK_LABELS[track.type],
+        label: (
+            <span style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                <span>{TRACK_LABELS[track.type]}</span>
+                {track.inputs && (
+                    <span style={{ display: "flex", gap: 12, color: token.colorTextSecondary, fontSize: 13, fontWeight: "normal" }}>
+                        <span>{fmt(track.inputs.principal)}</span>
+                        <span>{track.inputs.years} yrs</span>
+                        {track.type !== "prime"
+                            ? <span>{track.inputs.annualRate ?? 0}%</span>
+                            : <span>{(track.inputs.primeRate ?? 0) + (track.inputs.primeSpread ?? 0)}% (P{track.inputs.primeSpread !== undefined && track.inputs.primeSpread >= 0 ? `+${track.inputs.primeSpread}` : track.inputs.primeSpread})</span>
+                        }
+                    </span>
+                )}
+            </span>
+        ),
         style: panelStyle,
         extra: (
             <div style={{ display: "flex", gap: 2 }} onClick={(e) => e.stopPropagation()}>
@@ -87,7 +98,20 @@ export default function MortgageTrackCollapse({ tracks, onEdit, onDelete }: Prop
         <>
             {configuredTracks.length > 0 && (
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 24, padding: "16px 24px", background: token.colorFillAlter, borderRadius: token.borderRadiusLG }}>
-                    <Statistic title="Total Loan" value={totalLoan} prefix="₪" precision={2} />
+                    <Statistic
+                        title="Total Loan"
+                        value={totalLoan}
+                        formatter={() => {
+                            if (planTotalLoan === undefined) return <span>{fmt(totalLoan)}</span>;
+                            const color = totalLoan === planTotalLoan ? token.colorSuccess : token.colorError;
+                            return (
+                                <span>
+                                    <span style={{ color }}>{fmt(totalLoan)}</span>
+                                    <span style={{ fontSize: 14, color: token.colorTextSecondary }}> / {fmt(planTotalLoan)}</span>
+                                </span>
+                            );
+                        }}
+                    />
                     <Statistic title="Longest Term" value={longestTerm} suffix={`yrs (${longestTerm * 12} mo)`} />
                     <Statistic title="Total Repayment" value={totalRepayment} prefix="₪" precision={2} />
                     <Statistic title="Total Interest" value={totalRepayment - totalLoan} prefix="₪" precision={2} styles={{ content: { color: token.colorError } }} />

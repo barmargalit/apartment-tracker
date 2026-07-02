@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button, Space, Tag } from "antd";
+import { Button, Space } from "antd";
 import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import type { TableColumnsType } from "antd";
 import type { Provider } from "@apartment-tracker/types";
@@ -9,13 +9,7 @@ import { usePageHeader } from "@/components/PageHeaderContext";
 import { useProvidersStore } from "@/store/providersStore";
 import ProviderModal from "@/components/ProviderModal";
 import DataTable from "@/components/DataTable";
-
-const TYPE_COLOR: Record<string, string> = {
-  electric: "gold",
-  water: "blue",
-  internet: "purple",
-  gas: "orange",
-};
+import { BillTypeTag } from "@/lib/billTypes";
 
 export default function ProvidersPage() {
   usePageHeader({
@@ -47,11 +41,7 @@ export default function ProvidersPage() {
       title: "Bill Type",
       dataIndex: "type",
       key: "type",
-      render: (type: string) => (
-        <Tag color={TYPE_COLOR[type]} style={{ textTransform: "capitalize" }}>
-          {type}
-        </Tag>
-      ),
+      render: (type: string) => <BillTypeTag type={type} />,
     },
     {
       key: "actions",

@@ -14,6 +14,7 @@ import {
     TeamOutlined,
     EyeOutlined,
     BankOutlined,
+    DollarOutlined
 } from "@ant-design/icons";
 import Image from "next/image";
 import {useTheme} from "./ThemeProvider";
@@ -46,7 +47,8 @@ export default function Sidebar() {
             label: "Purchase",
             children: [
                 {key: "/purchase/prospects", icon: <EyeOutlined/>, label: "Prospects"},
-                {key: "/purchase/mortgage", icon: <BankOutlined/>, label: "Mortgage"},
+                {key: "/purchase/mortgage", icon: <DollarOutlined/>, label: "Mortgage"},
+                {key: "/banks", icon: <BankOutlined/>, label: "Banks"},
             ],
         },
     ];

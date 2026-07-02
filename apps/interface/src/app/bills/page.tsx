@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button, Divider } from "antd";
-import { PlusOutlined, ReloadOutlined, ThunderboltOutlined, ExperimentOutlined, WifiOutlined, FireOutlined } from "@ant-design/icons";
+import { PlusOutlined, ReloadOutlined, ThunderboltOutlined, ExperimentOutlined, WifiOutlined, FireOutlined, HomeOutlined } from "@ant-design/icons";
 import { usePageHeader } from "@/components/PageHeaderContext";
 import PageTabs from "@/components/PageTabs";
 import BillsTable from "@/components/BillsTable";
@@ -17,11 +17,12 @@ import styles from "./bills.module.css";
 interface BillTabProps {
   type: BillType;
   showUsage?: boolean;
+  groupByResidence?: boolean;
   onEdit: (bill: Bill) => void;
   onDelete: (bill: Bill) => void;
 }
 
-function BillTab({ type, showUsage, onEdit, onDelete }: BillTabProps) {
+function BillTab({ type, showUsage, groupByResidence, onEdit, onDelete }: BillTabProps) {
   const { bills, loading, fetchByType } = useBillsStore();
   const { residences, fetchAll: fetchResidences } = useResidencesStore();
   const data = bills[type];
@@ -57,6 +58,7 @@ function BillTab({ type, showUsage, onEdit, onDelete }: BillTabProps) {
     <BillsTable
       data={data}
       loading={loading[type]}
+      groupByResidence={groupByResidence}
       residences={residences}
       onEdit={onEdit}
       onDelete={onDelete}
@@ -132,6 +134,12 @@ export default function BillsPage() {
       label: "Gas",
       icon: <FireOutlined />,
       content: <BillTab type={BillType.Gas} onEdit={handleEdit} onDelete={handleDelete} />,
+    },
+    {
+      key: BillType.PropertyTax,
+      label: "Property Tax",
+      icon: <HomeOutlined />,
+      content: <BillTab type={BillType.PropertyTax} groupByResidence onEdit={handleEdit} onDelete={handleDelete} />,
     },
   ];
 

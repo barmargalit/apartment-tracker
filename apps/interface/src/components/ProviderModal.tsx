@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { Form, Input, Modal, Select } from "antd";
 import type { BillType, Provider } from "@apartment-tracker/types";
 import { useProvidersStore } from "@/store/providersStore";
+import { BILL_TYPE_OPTIONS } from "@/lib/billTypes";
 
 interface Props {
   open: boolean;
@@ -17,12 +18,6 @@ interface FormValues {
   type: BillType;
 }
 
-const BILL_TYPE_OPTIONS = [
-  { value: "electric", label: "Electric" },
-  { value: "water",    label: "Water" },
-  { value: "internet", label: "Internet" },
-  { value: "gas",      label: "Gas" },
-];
 
 export default function ProviderModal({ open, provider, defaultType, onClose }: Props) {
   const [form] = Form.useForm<FormValues>();

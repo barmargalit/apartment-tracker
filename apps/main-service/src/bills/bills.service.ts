@@ -42,12 +42,45 @@ export class BillsService {
   }
 
   async findLast(): Promise<BillEntity[]> {
-    this.logger.log('Fetching last bill per type');
+    this.logger.log('Fetching last bills per type (all bills in the latest period)');
     const result = await this.pool.query<BillEntity>(
-      `SELECT DISTINCT ON (type) *
-       FROM bills
-       WHERE state = 0
-       ORDER BY type, start_date DESC`,
+      `WITH latest_period AS (
+         -- For period-based types, find the latest (year, period) or (year) per type
+         SELECT DISTINCT ON (type)
+           type,
+           (data->>'year')::int    AS year,
+           (data->>'period')::int  AS period
+         FROM bills
+         WHERE state = 0
+           AND type IN ('electric', 'water', 'property_tax')
+           AND data->>'year' IS NOT NULL
+         ORDER BY type,
+                  (data->>'year')::int DESC,
+                  COALESCE((data->>'period')::int, 0) DESC
+       ),
+       period_bills AS (
+         -- All bills matching that latest period for each type
+         SELECT b.*
+         FROM bills b
+         JOIN latest_period lp ON lp.type = b.type
+           AND (b.data->>'year')::int = lp.year
+           AND (
+             lp.period IS NULL
+             OR (b.data->>'period')::int = lp.period
+           )
+         WHERE b.state = 0
+       ),
+       simple_bills AS (
+         -- For non-period types, just the most recent bill
+         SELECT DISTINCT ON (type) *
+         FROM bills
+         WHERE state = 0
+           AND type NOT IN ('electric', 'water', 'property_tax')
+         ORDER BY type, start_date DESC
+       )
+       SELECT * FROM period_bills
+       UNION ALL
+       SELECT * FROM simple_bills`,
     );
     return result.rows;
   }
