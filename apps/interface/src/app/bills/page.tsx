@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button, Divider } from "antd";
-import { PlusOutlined, ReloadOutlined, ThunderboltOutlined, ExperimentOutlined, WifiOutlined, FireOutlined, HomeOutlined } from "@ant-design/icons";
+import { PlusOutlined, ReloadOutlined, ThunderboltOutlined, ExperimentOutlined, WifiOutlined, FireOutlined, HomeOutlined, BuildOutlined } from "@ant-design/icons";
 import { usePageHeader } from "@/components/PageHeaderContext";
 import PageTabs from "@/components/PageTabs";
 import BillsTable from "@/components/BillsTable";
@@ -140,6 +140,12 @@ export default function BillsPage() {
       label: "Property Tax",
       icon: <HomeOutlined />,
       content: <BillTab type={BillType.PropertyTax} groupByResidence onEdit={handleEdit} onDelete={handleDelete} />,
+    },
+    {
+      key: BillType.BuildingFee,
+      label: "Building Fee",
+      icon: <BuildOutlined />,
+      content: <BillTab type={BillType.BuildingFee} onEdit={handleEdit} onDelete={handleDelete} />,
     },
   ];
 

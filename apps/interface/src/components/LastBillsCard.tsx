@@ -83,7 +83,7 @@ export default function LastBillsCard() {
     );
 
     return (
-        <Card title="Last Bills" style={{width: "50%"}}>
+        <Card title="Last Bills" style={{flex: 1, minWidth: 0}}>
             {lastBillsLoading ? (
                 <Skeleton active paragraph={{rows: 4}}/>
             ) : groups.length === 0 ? (
