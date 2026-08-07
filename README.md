@@ -140,11 +140,7 @@ The default `apps/interface/.env.local`:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3001
-NEXT_PUBLIC_GOOGLE_MAPS_ENABLED=false
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
 ```
-
-Set `NEXT_PUBLIC_GOOGLE_MAPS_ENABLED=true` and provide an API key to enable address autocomplete on the Prospects page.
 
 ### 5. Set up the database
 
@@ -221,5 +217,3 @@ Run from the repo root:
 | Variable | Default | Description |
 |---|---|---|
 | `NEXT_PUBLIC_API_URL` | `http://localhost:3001` | Backend API base URL |
-| `NEXT_PUBLIC_GOOGLE_MAPS_ENABLED` | `false` | Enable Google Maps address autocomplete |
-| `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | — | Google Maps API key (required if enabled) |
