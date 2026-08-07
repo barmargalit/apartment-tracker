@@ -48,7 +48,7 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
 
   const [providerModalOpen, setProviderModalOpen] = useState(false);
 
-  const { createBill, updateBill } = useBillsStore();
+  const { bills, createBill, updateBill } = useBillsStore();
   const { residences, fetchAll: fetchResidences } = useResidencesStore();
   const { providers, fetchAll: fetchProviders } = useProvidersStore();
   const isEdit = !!bill;
@@ -86,6 +86,8 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
         form.resetFields();
         if (defaultType) form.setFieldValue("type", defaultType);
         if (currentResidence) form.setFieldValue("residence_id", currentResidence.id);
+        const latestProvider = defaultType ? bills[defaultType][0]?.provider_id : null;
+        if (latestProvider) form.setFieldValue("provider_id", latestProvider);
       }
     }
   }, [open, bill]);

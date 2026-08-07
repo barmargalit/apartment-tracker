@@ -111,7 +111,7 @@ export default function BillsPieCard() {
                             const pct = total > 0 ? ((d.avgPerMonth / total) * 100).toFixed(0) : "0";
                             return `${d.label}\n${pct}%`;
                         },
-                        style: {fontSize: 12, textAlign: "center", fontWeight: 600},
+                        style: {fontSize: 12, textAlign: "center", fontWeight: 500},
                     }}
                     tooltip={{
                         items: [
