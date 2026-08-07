@@ -1,0 +1,22 @@
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { UsagesService, CreateUsageDto } from './usages.service';
+import { BillType } from './usage.entity';
+
+@Controller('usages')
+export class UsagesController {
+  constructor(private readonly usagesService: UsagesService) {}
+
+  @Get()
+  findByType(
+    @Query('type') type: BillType,
+    @Query('from') from?: string,
+    @Query('to') to?: string,
+  ) {
+    return this.usagesService.findByType({ type, from, to });
+  }
+
+  @Post()
+  createMany(@Body() dtos: CreateUsageDto[]) {
+    return this.usagesService.createMany(dtos);
+  }
+}
