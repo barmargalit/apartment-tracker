@@ -2,9 +2,7 @@
 
 import { createContext, useContext, useState } from "react";
 import { App, ConfigProvider, theme } from "antd";
-import type { useApp } from "antd";
-
-type ModalType = ReturnType<typeof useApp>["modal"];
+type ModalType = ReturnType<typeof App.useApp>["modal"];
 
 const ModalContext = createContext<ModalType>(null as unknown as ModalType);
 

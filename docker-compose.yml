@@ -1,0 +1,30 @@
+name: apartment-tracker
+
+services:
+  main-service:
+    build:
+      context: .
+      dockerfile: apps/main-service/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      DB_HOST: host.docker.internal
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: admin
+      DB_NAME: apartment_tracker
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  interface:
+    build:
+      context: .
+      dockerfile: apps/interface/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:3001
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - main-service
