@@ -93,6 +93,55 @@ apartment-tracker/
 
 ---
 
+## Running with Docker (recommended)
+
+The easiest way to run the app locally. Requires [Docker Desktop](https://www.docker.com/products/docker-desktop/) and an existing PostgreSQL instance with the `apartment_tracker` database and migrations already applied.
+
+### Prerequisites
+
+- Docker Desktop running
+- PostgreSQL accessible on `localhost:5432` with the following credentials:
+
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=admin
+DB_NAME=apartment_tracker
+```
+
+If your credentials differ, update the `environment` block under `main-service` in `docker-compose.yml` before building.
+
+### First run
+
+Build the images and start the containers:
+
+```bash
+docker compose up --build -d
+```
+
+The app will be available at [http://localhost:3000](http://localhost:3000).
+
+### Day-to-day usage
+
+```bash
+# Start
+docker compose start
+
+# Stop (containers and data persist)
+docker compose stop
+
+# Check status
+docker compose ps
+
+# View logs
+docker compose logs -f
+```
+
+Use `start` / `stop` for daily on/off — they preserve container state. Only re-run `up --build` when you pull new code and need to rebuild the images.
+
+---
+
 ## Installation
 
 ### Prerequisites
