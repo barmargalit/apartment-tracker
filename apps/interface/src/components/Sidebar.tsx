@@ -96,7 +96,7 @@ export default function Sidebar() {
                 >
                     {collapsed ? (
                         <Image
-                            src="/logo.png"
+                            src="/logo-v2.png"
                             alt="Apartment Tracker"
                             width={32}
                             height={32}
@@ -104,7 +104,7 @@ export default function Sidebar() {
                         />
                     ) : (
                         <Image
-                            src="/logo-sidebar.png"
+                            src="/logo-v2-sidebar.png"
                             alt="Apartment Tracker"
                             fill
                             style={{objectFit: "contain", objectPosition: "center"}}
