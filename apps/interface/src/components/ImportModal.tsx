@@ -58,8 +58,8 @@ export default function ImportModal({open, onClose, defaultType}: ImportModalPro
         }
         setLoading(true);
         try {
-            await createMany(rows);
-            message.success(`Imported ${rows.length} entries`);
+            const saved = await createMany(rows);
+            message.success(`Imported ${saved.length} new entries`);
             handleClose();
         } catch {
             message.error("Import failed");

@@ -1,4 +1,4 @@
-import { Usage, BillType } from "@apartment-tracker/types";
+import { Usage, UsageBounds, BillType } from "@apartment-tracker/types";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
@@ -30,6 +30,9 @@ export const usagesApi = {
     if (to) params.set("to", to);
     return request<Usage[]>(`/usages?${params.toString()}`);
   },
+
+  fetchBounds: (type: BillType): Promise<UsageBounds> =>
+    request<UsageBounds>(`/usages/bounds?type=${type}`),
 
   createMany: (payload: CreateUsagePayload[]): Promise<Usage[]> =>
     request<Usage[]>("/usages", { method: "POST", body: JSON.stringify(payload) }),

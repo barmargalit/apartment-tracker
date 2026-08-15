@@ -1,15 +1,18 @@
 import { create } from "zustand";
-import { Usage, BillType } from "@apartment-tracker/types";
+import { Usage, UsageBounds, BillType } from "@apartment-tracker/types";
 import { usagesApi, CreateUsagePayload, UsageFilterParams } from "@/api/usagesApi";
 
 type UsagesByType = Record<BillType, Usage[]>;
 type LoadingByType = Record<BillType, boolean>;
+type BoundsByType = Record<BillType, UsageBounds | null>;
 
 interface UsagesState {
   usages: UsagesByType;
   loading: LoadingByType;
+  bounds: BoundsByType;
   fetchByType: (params: UsageFilterParams) => Promise<void>;
-  createMany: (payload: CreateUsagePayload[]) => Promise<void>;
+  fetchBounds: (type: BillType) => Promise<void>;
+  createMany: (payload: CreateUsagePayload[]) => Promise<Usage[]>;
 }
 
 const emptyUsages = (): UsagesByType =>
@@ -18,9 +21,13 @@ const emptyUsages = (): UsagesByType =>
 const emptyLoading = (): LoadingByType =>
   Object.values(BillType).reduce((acc, t) => ({ ...acc, [t]: false }), {} as LoadingByType);
 
+const emptyBounds = (): BoundsByType =>
+  Object.values(BillType).reduce((acc, t) => ({ ...acc, [t]: null }), {} as BoundsByType);
+
 export const useUsagesStore = create<UsagesState>((set) => ({
   usages: emptyUsages(),
   loading: emptyLoading(),
+  bounds: emptyBounds(),
 
   fetchByType: async (params) => {
     set((s) => ({ loading: { ...s.loading, [params.type]: true } }));
@@ -32,8 +39,13 @@ export const useUsagesStore = create<UsagesState>((set) => ({
     }
   },
 
+  fetchBounds: async (type) => {
+    const data = await usagesApi.fetchBounds(type);
+    set((s) => ({ bounds: { ...s.bounds, [type]: data } }));
+  },
+
   createMany: async (payload) => {
-    if (payload.length === 0) return;
+    if (payload.length === 0) return [];
     const created = await usagesApi.createMany(payload);
     for (const usage of created) {
       set((s) => ({
@@ -43,5 +55,6 @@ export const useUsagesStore = create<UsagesState>((set) => ({
         },
       }));
     }
+    return created;
   },
 }));

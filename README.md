@@ -28,7 +28,14 @@ The home page shows:
 - **Bills Breakdown** — a donut chart of total spending split by bill type
 
 ### Usage Statistics
-The Bills page includes a per-type **usage chart** for Electric and Water bills, letting you spot consumption trends over time across billing periods.
+A dedicated **Usage** page provides deep insight into Electric, Water, and Gas consumption:
+
+- **CSV import** — drag-and-drop a meter export file to bulk-load readings; duplicate entries are silently skipped and the confirmation reports only the number of rows actually saved
+- **Smart date range** — on load the view defaults to the last 7 days; the range picker is pre-populated and restricts selectable dates to the span covered by your data (no empty queries)
+- **Quick presets** — one-click shortcuts for Today, Yesterday, Last 7 Days, Last Week, Last 30 Days, and Last Month, each automatically clamped to your data bounds
+- **Granularity toggle** — switch between raw readings (All), daily totals (Day), and weekly totals (Week)
+- **Single mode** — area chart for a single date range with Total, Day-hours, and Night-hours statistics
+- **Compare mode** — overlay up to five date ranges on a cascade area chart; the X axis is normalised to Day N / Week N so ranges of any absolute dates can be meaningfully compared; per-range statistics are shown below the chart
 
 ### Providers
 Manage the utility companies behind your bills. Each provider has a name and an associated bill type, and can be linked to individual bill records.

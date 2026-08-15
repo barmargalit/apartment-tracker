@@ -6,6 +6,11 @@ import { BillType } from './usage.entity';
 export class UsagesController {
   constructor(private readonly usagesService: UsagesService) {}
 
+  @Get('bounds')
+  getBounds(@Query('type') type: BillType) {
+    return this.usagesService.getBounds(type);
+  }
+
   @Get()
   findByType(
     @Query('type') type: BillType,

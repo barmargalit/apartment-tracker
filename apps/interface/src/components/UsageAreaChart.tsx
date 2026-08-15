@@ -1,7 +1,7 @@
 "use client";
 
 import {useEffect, useState} from "react";
-import {Button, DatePicker, Radio, Spin, Statistic} from "antd";
+import {Button, ConfigProvider, DatePicker, Radio, Segmented, Spin, Statistic, theme as antTheme} from "antd";
 import {Area} from "@ant-design/charts";
 import dayjs, {Dayjs} from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
@@ -9,37 +9,19 @@ import {BillType, Usage} from "@apartment-tracker/types";
 import {useUsagesStore} from "@/store/usagesStore";
 import {useTheme} from "./ThemeProvider";
 import EmptyState from "./EmptyState";
+import UsageCompareChart from "./UsageCompareChart";
+import {
+    ViewMode,
+    calcPeriodStats,
+    clampRange,
+    defaultRange,
+    weekStart,
+} from "@/lib/usageChartUtils";
 
 dayjs.extend(customParseFormat);
 
 const {RangePicker} = DatePicker;
 const CHART_DATE_FORMAT = "DD/MM/YYYY HH:mm";
-
-type ViewMode = "all" | "day";
-
-function isNight(dt: Dayjs): boolean {
-    const h = dt.hour();
-    return h >= 23 || h < 7;
-}
-
-function calcPeriodStats(data: Usage[]) {
-    const totalUsage = data.reduce((sum, row) => sum + row.usage, 0);
-    const uniqueDates = new Set(data.map((row) => dayjs(row.datetime).format("YYYY-MM-DD")));
-    const isMultiDay = uniqueDates.size > 1;
-    const nightTotal = data.filter((row) => isNight(dayjs(row.datetime))).reduce((sum, row) => sum + row.usage, 0);
-    const dayTotal = data.filter((row) => !isNight(dayjs(row.datetime))).reduce((sum, row) => sum + row.usage, 0);
-
-    if (isMultiDay) {
-        return {
-            totalUsage,
-            nightUsage: nightTotal / uniqueDates.size,
-            dayUsage: dayTotal / uniqueDates.size,
-            averaged: true,
-            isMultiDay
-        };
-    }
-    return {totalUsage, nightUsage: nightTotal, dayUsage: dayTotal, averaged: false, isMultiDay};
-}
 
 function buildChartData(data: Usage[], mode: ViewMode) {
     if (mode === "day") {
@@ -52,6 +34,21 @@ function buildChartData(data: Usage[], mode: ViewMode) {
             .sort((a, b) => dayjs(a[0], "DD/MM/YYYY").valueOf() - dayjs(b[0], "DD/MM/YYYY").valueOf())
             .map(([datetime, usage]) => ({datetime, usage: parseFloat(usage.toFixed(3))}));
     }
+    if (mode === "week") {
+        const byWeek = new Map<string, { sum: number; sunday: Dayjs }>();
+        for (const row of data) {
+            const sunday = weekStart(dayjs(row.datetime));
+            const key = sunday.format("YYYY-MM-DD");
+            const existing = byWeek.get(key);
+            byWeek.set(key, {sum: (existing?.sum ?? 0) + row.usage, sunday});
+        }
+        return Array.from(byWeek.values())
+            .sort((a, b) => a.sunday.valueOf() - b.sunday.valueOf())
+            .map(({sum, sunday}) => ({
+                datetime: sunday.format("DD/MM/YYYY"),
+                usage: parseFloat(sum.toFixed(3)),
+            }));
+    }
     return data.map((row) => ({
         datetime: dayjs(row.datetime).format(CHART_DATE_FORMAT),
         usage: row.usage,
@@ -62,25 +59,64 @@ interface Props {
     type: BillType;
 }
 
-export default function UsageAreaChart({type}: Props) {
-    const {usages, loading, fetchByType} = useUsagesStore();
-    const {isDark} = useTheme();
+type ChartMode = "chart" | "compare";
 
-    const [range, setRange] = useState<[Dayjs, Dayjs] | null>(null);
+export default function UsageAreaChart({type}: Props) {
+    const {usages, loading, bounds, fetchByType, fetchBounds} = useUsagesStore();
+    const {isDark} = useTheme();
+    const {token} = antTheme.useToken();
+
+    const [chartMode, setChartMode] = useState<ChartMode>("chart");
+    const [range, setRange] = useState<[Dayjs, Dayjs]>(defaultRange);
     const [viewMode, setViewMode] = useState<ViewMode>("all");
+
+    useEffect(() => {
+        fetchBounds(type);
+    }, [type]);
 
     useEffect(() => {
         fetchByType({
             type,
-            from: range?.[0].toISOString(),
-            to: range?.[1].toISOString(),
+            from: range[0].toISOString(),
+            to: range[1].toISOString(),
         });
     }, [type, range]);
 
     const data: Usage[] = usages[type];
     const isLoading = loading[type];
+    const firstEntry = bounds[type]?.first ? dayjs(bounds[type].first) : null;
+    const lastEntry = bounds[type]?.last ? dayjs(bounds[type].last) : null;
+
+    const presets = [
+        {
+            label: "Today",
+            value: clampRange(dayjs().startOf("day"), dayjs().endOf("day").startOf("minute"), firstEntry, lastEntry)
+        },
+        {
+            label: "Yesterday",
+            value: clampRange(dayjs().subtract(1, "day").startOf("day"), dayjs().subtract(1, "day").endOf("day").startOf("minute"), firstEntry, lastEntry)
+        },
+        {
+            label: "Last 7 Days",
+            value: clampRange(dayjs().subtract(6, "day").startOf("day"), dayjs().endOf("day").startOf("minute"), firstEntry, lastEntry)
+        },
+        {
+            label: "Last Week",
+            value: clampRange(weekStart(dayjs().subtract(1, "week")), weekStart(dayjs().subtract(1, "week")).add(6, "day").endOf("day").startOf("minute"), firstEntry, lastEntry)
+        },
+        {
+            label: "Last 30 Days",
+            value: clampRange(dayjs().subtract(29, "day").startOf("day"), dayjs().endOf("day").startOf("minute"), firstEntry, lastEntry)
+        },
+        {
+            label: "Last Month",
+            value: clampRange(dayjs().subtract(1, "month").startOf("month"), dayjs().subtract(1, "month").endOf("month").endOf("day").startOf("minute"), firstEntry, lastEntry)
+        },
+    ];
 
     const {totalUsage, nightUsage, dayUsage, averaged, isMultiDay} = calcPeriodStats(data);
+    const uniqueWeeks = new Set(data.map((row) => weekStart(dayjs(row.datetime)).format("YYYY-MM-DD")));
+    const isMultiWeek = uniqueWeeks.size > 1;
     const chartData = buildChartData(data, viewMode);
     const avgSuffix = averaged ? " avg/day" : "";
 
@@ -94,21 +130,48 @@ export default function UsageAreaChart({type}: Props) {
             >
                 <Radio.Button value="all">All</Radio.Button>
                 <Radio.Button value="day" disabled={!isMultiDay}>Day</Radio.Button>
+                <Radio.Button value="week" disabled={!isMultiWeek}>Week</Radio.Button>
             </Radio.Group>
             <RangePicker
-                showTime={{format: "HH:mm"}}
+                showTime={{
+                    format: "HH:mm",
+                    defaultOpenValue: [dayjs().startOf("day"), dayjs().endOf("day").startOf("minute")]
+                }}
                 format={CHART_DATE_FORMAT}
                 value={range}
-                onChange={(val) => setRange(val as [Dayjs, Dayjs] | null)}
-                allowClear
+                onChange={(val) => {
+                    if (val) setRange(val as [Dayjs, Dayjs]);
+                }}
+                presets={presets}
+                disabledDate={(date) => {
+                    if (firstEntry && date.isBefore(firstEntry, "day")) return true;
+                    if (lastEntry && date.isAfter(lastEntry, "day")) return true;
+                    return false;
+                }}
+                allowClear={false}
             />
-            <Button disabled={!range} onClick={() => setRange(null)}>Clear</Button>
+            <Button onClick={() => setRange(defaultRange())}>Reset</Button>
         </div>
     );
 
     return (
         <div style={{display: "flex", flexDirection: "column", gap: 16, height: "100%"}}>
-            {isLoading ? (
+            <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+                <ConfigProvider theme={{components: {Segmented: {itemSelectedBg: token.colorPrimary, itemSelectedColor: token.colorWhite, trackBg: token.colorPrimaryBg}}}}>
+                    <Segmented
+                        value={chartMode}
+                        onChange={(val) => setChartMode(val as ChartMode)}
+                        options={[
+                            {label: "Single", value: "chart"},
+                            {label: "Compare", value: "compare"},
+                        ]}
+                    />
+                </ConfigProvider>
+            </div>
+
+            {chartMode === "compare" ? (
+                <UsageCompareChart type={type} firstEntry={firstEntry} lastEntry={lastEntry}/>
+            ) : isLoading ? (
                 <div style={{display: "flex", flex: 1, alignItems: "center", justifyContent: "center"}}>
                     <Spin/>
                 </div>

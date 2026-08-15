@@ -9,3 +9,8 @@ export interface Usage {
   type: BillType;
   usage: number;
 }
+
+export interface UsageBounds {
+  first: string | null;
+  last: string | null;
+}

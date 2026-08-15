@@ -2,6 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Pool } from 'pg';
 import { DATABASE_POOL } from '../database/database.provider';
 import { UsageEntity, BillType } from './usage.entity';
+import { UsageBounds } from '@apartment-tracker/types';
 
 export interface CreateUsageDto {
   datetime: string;
@@ -39,6 +40,14 @@ export class UsagesService {
       values,
     );
     return result.rows;
+  }
+
+  async getBounds(type: BillType): Promise<UsageBounds> {
+    const result = await this.pool.query<{ first: string | null; last: string | null }>(
+      `SELECT MIN(datetime)::text AS first, MAX(datetime)::text AS last FROM usages WHERE state = 0 AND type = $1`,
+      [type],
+    );
+    return result.rows[0] ?? { first: null, last: null };
   }
 
   async createMany(dtos: CreateUsageDto[]): Promise<UsageEntity[]> {
