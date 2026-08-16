@@ -1,5 +1,5 @@
 import { BaseEntity } from '../database/base.entity';
-import { Residence } from '@apartment-tracker/types';
+import { Residence, UtilitySettings } from '@apartment-tracker/types';
 
 export class ResidenceEntity extends BaseEntity implements Residence {
   city: string;
@@ -7,4 +7,6 @@ export class ResidenceEntity extends BaseEntity implements Residence {
   current: number;
   start_date: Date;
   end_date: Date | null;
+  electric_settings: UtilitySettings;
+  water_settings: UtilitySettings;
 }

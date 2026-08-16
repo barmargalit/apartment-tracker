@@ -1,4 +1,4 @@
-import { Residence } from "@apartment-tracker/types";
+import { Residence, UtilitySettings } from "@apartment-tracker/types";
 
 export interface CreateResidencePayload {
   city: string;
@@ -6,6 +6,8 @@ export interface CreateResidencePayload {
   current?: number;
   start_date: string;
   end_date?: string | null;
+  electric_settings?: UtilitySettings;
+  water_settings?: UtilitySettings;
 }
 
 export interface UpdateResidencePayload {
@@ -14,6 +16,8 @@ export interface UpdateResidencePayload {
   current?: number;
   start_date?: string;
   end_date?: string | null;
+  electric_settings?: UtilitySettings;
+  water_settings?: UtilitySettings;
 }
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";

@@ -42,6 +42,7 @@ const YEAR_TYPES = new Set(["electric", "water", "property_tax"]);
 export default function BillModal({ open, bill, defaultType, onClose }: Props) {
   const [form] = Form.useForm<FormValues>();
   const selectedType = Form.useWatch("type", form);
+  const selectedResidenceId = Form.useWatch("residence_id", form);
   const showUsage = USAGE_TYPES.has(selectedType);
   const showYear = YEAR_TYPES.has(selectedType);
   const usageSuffix = selectedType === "electric" ? "kWh" : "m³";
@@ -61,6 +62,21 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
   useEffect(() => {
     if (selectedType) fetchProviders(selectedType as BillType);
   }, [selectedType]);
+
+  useEffect(() => {
+    if (!open || isEdit) return;
+    const residence = residences.find((r) => r.id === selectedResidenceId) ?? null;
+    let autoProvider: string | null | undefined = null;
+    if (selectedType === "electric") {
+      autoProvider = residence?.electric_settings?.provider_id;
+    } else if (selectedType === "water") {
+      autoProvider = residence?.water_settings?.provider_id;
+    }
+    if (!autoProvider) {
+      autoProvider = selectedType ? bills[selectedType as BillType][0]?.provider_id : null;
+    }
+    form.setFieldValue("provider_id", autoProvider ?? null);
+  }, [selectedType, selectedResidenceId, open]);
 
   useEffect(() => {
     if (open) {
@@ -86,8 +102,6 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
         form.resetFields();
         if (defaultType) form.setFieldValue("type", defaultType);
         if (currentResidence) form.setFieldValue("residence_id", currentResidence.id);
-        const latestProvider = defaultType ? bills[defaultType][0]?.provider_id : null;
-        if (latestProvider) form.setFieldValue("provider_id", latestProvider);
       }
     }
   }, [open, bill]);

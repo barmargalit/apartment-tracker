@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Tooltip, Typography, theme } from "antd";
+import { Card, Tag, Tooltip, Typography, theme } from "antd";
 import { useModal } from "./ThemeProvider";
 import { DeleteOutlined, EditOutlined, HeartFilled, HeartOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
@@ -51,7 +51,6 @@ export default function ResidenceCard({ residence, onToggleCurrent, onEdit, onDe
       actions={actions}
       style={{
         minWidth: 360,
-        minHeight: 180,
         ...(isCurrent ? {
           borderColor: token.colorPrimary,
           boxShadow: `0 0 0 2px ${token.colorPrimary}26`,
@@ -66,6 +65,18 @@ export default function ResidenceCard({ residence, onToggleCurrent, onEdit, onDe
         {" — "}
         {residence.end_date ? dayjs(residence.end_date).format(DATE_FORMAT) : "Present"}
       </Typography.Text>
+      {residence.electric_settings?.meter_numbers && residence.electric_settings.meter_numbers.length > 0 && (
+        <div style={{ marginTop: 8 }}>
+          <Typography.Text type="secondary" style={{ fontSize: 12, marginRight: 6 }}>Electric:</Typography.Text>
+          {residence.electric_settings.meter_numbers.map((n) => <Tag key={n}>{n}</Tag>)}
+        </div>
+      )}
+      {residence.water_settings?.meter_numbers && residence.water_settings.meter_numbers.length > 0 && (
+        <div style={{ marginTop: 4 }}>
+          <Typography.Text type="secondary" style={{ fontSize: 12, marginRight: 6 }}>Water:</Typography.Text>
+          {residence.water_settings.meter_numbers.map((n) => <Tag key={n}>{n}</Tag>)}
+        </div>
+      )}
     </Card>
   );
 }

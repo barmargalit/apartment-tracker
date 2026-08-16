@@ -47,7 +47,7 @@ export default function MyAddressPage() {
 
   return (
     <>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "flex-start" }}>
         {residences.map((r) => (
           <ResidenceCard
             key={r.id}

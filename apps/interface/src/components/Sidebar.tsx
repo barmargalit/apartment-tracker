@@ -144,14 +144,14 @@ export default function Sidebar() {
                         gap: 10,
                         padding: collapsed ? "12px 30px" : "12px 24px",
                         cursor: "pointer",
-                        color: pathname === "/my-address" ? colors.menu.itemSelectedColor : settingsColor,
+                        color: pathname === "/my-residence" ? colors.menu.itemSelectedColor : settingsColor,
                         transition: "color 0.2s",
                     }}
-                    onClick={() => router.push("/my-address")}
+                    onClick={() => router.push("/my-residence")}
                     onMouseEnter={(e) => (e.currentTarget.style.color = settingsHoverColor)}
                     onMouseLeave={(e) =>
                         (e.currentTarget.style.color =
-                            pathname === "/my-address" ? colors.menu.itemSelectedColor : settingsColor)
+                            pathname === "/my-residence" ? colors.menu.itemSelectedColor : settingsColor)
                     }
                 >
                     <EnvironmentOutlined style={{fontSize: 16}}/>
