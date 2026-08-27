@@ -35,7 +35,20 @@ A dedicated **Usage** page provides deep insight into Electric, Water, and Gas c
 - **Quick presets** — one-click shortcuts for Today, Yesterday, Last 7 Days, Last Week, Last 30 Days, and Last Month, each automatically clamped to your data bounds
 - **Granularity toggle** — switch between raw readings (All), daily totals (Day), and weekly totals (Week)
 - **Single mode** — area chart for a single date range with Total, Day-hours, and Night-hours statistics
-- **Compare mode** — overlay up to five date ranges on a cascade area chart; the X axis is normalised to Day N / Week N so ranges of any absolute dates can be meaningfully compared; per-range statistics are shown below the chart
+- **Compare mode** — overlay up to five date ranges on a cascade area chart; the X axis is normalised to Day N / Week N so ranges of any absolute dates can be meaningfully compared
+  - A **comparison table** below the chart shows Total, Day, and Night usage side by side for all selected ranges
+  - When exactly two ranges are selected, a **Change** column shows the delta and percentage between the chronologically earlier and later range, and a **Cost Diff** column multiplies the usage delta by the current utility price to show the real monetary impact
+
+### Utility Prices
+A dedicated **Prices** page tracks the per-unit cost charged by your utility providers over time:
+
+- Separate tabs for **Electric** (₪/kWh) and **Water** (₪/m³)
+- The **current price** is displayed prominently above the chart
+- A **line chart** plots the full price history so you can see rate changes over time — hover a data point to see the price and any attached comment
+- A **history table** lists all past and current entries with their date, price, provider, and comment; past entries can be edited inline
+- Adding a price opens a modal with fields for price, provider, date set, and an optional comment
+  - If the date is **before** the current price's date, the entry goes directly into history without replacing the current price
+  - If the date is **on or after** the current price, it becomes the new current and the old one is archived automatically
 
 ### Providers
 Manage the utility companies behind your bills. Each provider has a name and an associated bill type, and can be linked to individual bill records.

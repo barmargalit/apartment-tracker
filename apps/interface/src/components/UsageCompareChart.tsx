@@ -1,13 +1,15 @@
 "use client";
 
-import {useEffect, useRef, useState} from "react";
-import {Button, DatePicker, Radio, Spin, Statistic} from "antd";
+import React, {useEffect, useRef, useState} from "react";
+import {Button, DatePicker, Radio, Spin, Table, theme as antTheme} from "antd";
 import {Area} from "@ant-design/charts";
 import {PlusOutlined, CloseOutlined} from "@ant-design/icons";
+import type {TableColumnsType} from "antd";
 import dayjs, {Dayjs} from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import {BillType, Usage} from "@apartment-tracker/types";
 import {usagesApi} from "@/api/usagesApi";
+import {usePricesStore} from "@/store/pricesStore";
 import {useTheme} from "./ThemeProvider";
 import EmptyState from "./EmptyState";
 import {
@@ -24,6 +26,12 @@ const {RangePicker} = DatePicker;
 const DATE_FORMAT = "DD/MM/YYYY HH:mm";
 const MAX_RANGES = 5;
 
+const UNIT: Partial<Record<BillType, string>> = {
+    [BillType.Electric]: "kWh",
+    [BillType.Water]: "m³",
+    [BillType.Gas]: "m³",
+};
+
 interface CompareRange {
     id: string;
     range: [Dayjs, Dayjs];
@@ -31,8 +39,35 @@ interface CompareRange {
     loading: boolean;
 }
 
+interface RangeStats {
+    total: number;
+    day: number;
+    night: number;
+    averaged: boolean;
+}
+
+interface MetricRow {
+    key: string;
+    metric: string;
+    values: number[];
+}
+
 function rangeLabel(range: [Dayjs, Dayjs]): string {
     return `${range[0].format("DD/MM")} – ${range[1].format("DD/MM")}`;
+}
+
+function computeRangeStats(data: Usage[]): RangeStats {
+    const stats = calcPeriodStats(data);
+    const uniqueDays = new Set(data.map((row) => dayjs(row.datetime).format("YYYY-MM-DD"))).size;
+    const divisor = stats.isMultiDay ? uniqueDays : 1;
+    const nightData = data.filter((row) => isNight(dayjs(row.datetime)));
+    const dayData = data.filter((row) => !isNight(dayjs(row.datetime)));
+    return {
+        total: stats.totalUsage,
+        day: dayData.reduce((s, row) => s + row.usage, 0) / divisor,
+        night: nightData.reduce((s, row) => s + row.usage, 0) / divisor,
+        averaged: stats.averaged,
+    };
 }
 
 function buildCompareChartData(ranges: CompareRange[], mode: ViewMode) {
@@ -70,7 +105,6 @@ function buildCompareChartData(ranges: CompareRange[], mode: ViewMode) {
                 }));
         }
 
-        // "all" — raw readings, x axis = hours offset from range start
         return data.map((row) => ({
             offset: `+${Math.round(dayjs(row.datetime).diff(origin, "hour"))}h`,
             usage: row.usage,
@@ -89,6 +123,8 @@ let nextId = 1;
 
 export default function UsageCompareChart({type, firstEntry, lastEntry}: Props) {
     const {isDark} = useTheme();
+    const {token} = antTheme.useToken();
+    const {current: currentPrices, fetchCurrentByType} = usePricesStore();
     const [viewMode, setViewMode] = useState<ViewMode>("day");
 
     const [ranges, setRanges] = useState<CompareRange[]>(() => [
@@ -123,12 +159,12 @@ export default function UsageCompareChart({type, firstEntry, lastEntry}: Props) 
         }
     };
 
-    // Fetch all ranges when the bill type changes.
     useEffect(() => {
         setRanges((prev) => {
             prev.forEach((r) => fetchRange(r.id, r.range, type));
             return prev;
         });
+        fetchCurrentByType(type);
     }, [type]);
 
     const updateRange = (id: string, newRange: [Dayjs, Dayjs]) => {
@@ -169,6 +205,119 @@ export default function UsageCompareChart({type, firstEntry, lastEntry}: Props) 
         return uniqueWeeks.size > 1;
     });
 
+    const unit = UNIT[type] ?? "kWh";
+    const statsPerRange = ranges.map((r) => computeRangeStats(r.data));
+
+    const metricRows: MetricRow[] = [
+        {key: "total", metric: "Total", values: statsPerRange.map((s) => s.total)},
+        {key: "day", metric: "Day (07:00–23:00)", values: statsPerRange.map((s) => s.day)},
+        {key: "night", metric: "Night (23:00–07:00)", values: statsPerRange.map((s) => s.night)},
+    ];
+
+    const tableColumns: TableColumnsType<MetricRow> = [
+        {
+            title: "Metric",
+            dataIndex: "metric",
+            key: "metric",
+            width: 180,
+        },
+        ...ranges.map((r, i) => ({
+            title: (
+                <span>
+                    <span style={{color: token.colorTextSecondary, marginRight: 4}}>{i + 1}.</span>
+                    {rangeLabel(r.range)}
+                    {statsPerRange[i].averaged && (
+                        <span style={{color: token.colorTextSecondary, fontSize: 11, marginLeft: 4}}>(avg/day)</span>
+                    )}
+                </span>
+            ),
+            key: r.id,
+            render: (_: unknown, row: MetricRow) =>
+                r.loading ? (
+                    <Spin size="small"/>
+                ) : (
+                    `${row.values[i].toFixed(3)} ${unit}`
+                ),
+        })),
+        ...(ranges.length === 2
+            ? (() => {
+                const isFirstEarlier = ranges[0].range[0].isBefore(ranges[1].range[0]);
+                const earlierIdx = isFirstEarlier ? 0 : 1;
+                const laterIdx = isFirstEarlier ? 1 : 0;
+                const fromLabel = rangeLabel(ranges[earlierIdx].range);
+                const toLabel = rangeLabel(ranges[laterIdx].range);
+                const currentPrice = currentPrices[type] ? Number(currentPrices[type]!.price) : null;
+
+                const renderDelta = (row: MetricRow): {delta: number; node: React.ReactNode} => {
+                    if (ranges[0].loading || ranges[1].loading) return {delta: 0, node: <Spin size="small"/>};
+                    const earlier = row.values[earlierIdx];
+                    const later = row.values[laterIdx];
+                    const delta = later - earlier;
+                    const pct = earlier !== 0 ? (delta / earlier) * 100 : null;
+                    if (delta === 0) return {delta: 0, node: <span style={{color: token.colorTextSecondary}}>No change</span>};
+                    const isIncrease = delta > 0;
+                    const color = isIncrease ? token.colorError : token.colorSuccess;
+                    const arrow = isIncrease ? "↑" : "↓";
+                    const sign = isIncrease ? "+" : "";
+                    return {
+                        delta,
+                        node: (
+                            <span style={{color}}>
+                                {arrow} {sign}{delta.toFixed(3)} {unit}
+                                {pct !== null && (
+                                    <span style={{fontSize: 12, marginLeft: 4}}>
+                                        ({sign}{pct.toFixed(1)}%)
+                                    </span>
+                                )}
+                            </span>
+                        ),
+                    };
+                };
+
+                return [
+                    {
+                        title: (
+                            <span>
+                                Change
+                                <span style={{color: token.colorTextSecondary, fontSize: 11, display: "block"}}>
+                                    {fromLabel} → {toLabel}
+                                </span>
+                            </span>
+                        ),
+                        key: "change",
+                        render: (_: unknown, row: MetricRow) => renderDelta(row).node,
+                    },
+                    ...(currentPrice !== null ? [{
+                        title: (
+                            <span>
+                                Cost Diff
+                                <span style={{color: token.colorTextSecondary, fontSize: 11, display: "block"}}>
+                                    @ ₪{currentPrice.toFixed(4)}/{unit}
+                                </span>
+                            </span>
+                        ),
+                        key: "cost_diff",
+                        render: (_: unknown, row: MetricRow) => {
+                            if (ranges[0].loading || ranges[1].loading) return <Spin size="small"/>;
+                            const result = renderDelta(row);
+                            if (result.delta === 0) return <span style={{color: token.colorTextSecondary}}>No change</span>;
+                            const cost = result.delta! * currentPrice;
+                            const isIncrease = cost > 0;
+                            const color = isIncrease ? token.colorError : token.colorSuccess;
+                            const arrow = isIncrease ? "↑" : "↓";
+                            const sign = isIncrease ? "+" : "";
+                            return (
+                                <span style={{color}}>
+                                    {arrow} {sign}₪{Math.abs(cost).toFixed(2)}
+                                </span>
+                            );
+                        },
+                    }] : []),
+                ];
+            })()
+            : []),
+    ];
+
     const controls = (
         <div style={{display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap"}}>
             <Radio.Group
@@ -191,7 +340,9 @@ export default function UsageCompareChart({type, firstEntry, lastEntry}: Props) 
                             showTime={{format: "HH:mm", defaultOpenValue: [dayjs().startOf("day"), dayjs().endOf("day").startOf("minute")]}}
                             format={DATE_FORMAT}
                             value={r.range}
-                            onChange={(val) => { if (val) updateRange(r.id, val as [Dayjs, Dayjs]); }}
+                            onChange={(val) => {
+                                if (val) updateRange(r.id, val as [Dayjs, Dayjs]);
+                            }}
                             disabledDate={disabledDate}
                             allowClear={false}
                         />
@@ -252,33 +403,13 @@ export default function UsageCompareChart({type, firstEntry, lastEntry}: Props) 
                         />
                     </div>
 
-                    <div style={{display: "flex", gap: 32, flexWrap: "wrap"}}>
-                        {ranges.map((r, i) => {
-                            const stats = calcPeriodStats(r.data);
-                            const avgSuffix = stats.averaged ? " avg/day" : "";
-                            const nightData = r.data.filter((row) => isNight(dayjs(row.datetime)));
-                            const dayData = r.data.filter((row) => !isNight(dayjs(row.datetime)));
-                            const nightUsage = stats.isMultiDay
-                                ? nightData.reduce((s, row) => s + row.usage, 0) / new Set(r.data.map((row) => dayjs(row.datetime).format("YYYY-MM-DD"))).size
-                                : nightData.reduce((s, row) => s + row.usage, 0);
-                            const dayUsage = stats.isMultiDay
-                                ? dayData.reduce((s, row) => s + row.usage, 0) / new Set(r.data.map((row) => dayjs(row.datetime).format("YYYY-MM-DD"))).size
-                                : dayData.reduce((s, row) => s + row.usage, 0);
-
-                            return (
-                                <div key={r.id} style={{display: "flex", flexDirection: "column", gap: 4}}>
-                                    <span style={{fontSize: 12, color: "var(--color-text-secondary)", marginBottom: 4}}>
-                                        {i + 1}. {rangeLabel(r.range)}
-                                    </span>
-                                    <div style={{display: "flex", gap: 32}}>
-                                        <Statistic title="Total" value={stats.totalUsage} precision={3} suffix="kWh"/>
-                                        <Statistic title={`Day (07:00–23:00)${avgSuffix}`} value={dayUsage} precision={3} suffix="kWh"/>
-                                        <Statistic title={`Night (23:00–07:00)${avgSuffix}`} value={nightUsage} precision={3} suffix="kWh"/>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
+                    <Table<MetricRow>
+                        dataSource={metricRows}
+                        columns={tableColumns}
+                        rowKey="key"
+                        pagination={false}
+                        size="middle"
+                    />
                 </>
             )}
         </div>

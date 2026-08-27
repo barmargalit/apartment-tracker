@@ -11,6 +11,7 @@ import { BanksModule } from "./banks/banks.module";
 import { MortgagePlansModule } from "./mortgage-plans/mortgage-plans.module";
 import { MortgageTracksModule } from "./mortgage-tracks/mortgage-tracks.module";
 import { UsagesModule } from "./usages/usages.module";
+import { PricesModule } from "./prices/prices.module";
 import config from "./config";
 
 @Module({
@@ -28,6 +29,7 @@ import config from "./config";
     MortgagePlansModule,
     MortgageTracksModule,
     UsagesModule,
+    PricesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

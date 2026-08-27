@@ -1,0 +1,13 @@
+.tabContent {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.currentPrice {
+  padding: 16px 0 8px;
+}
+
+.chart {
+  height: 360px;
+}
