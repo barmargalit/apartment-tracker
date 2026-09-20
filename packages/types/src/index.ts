@@ -6,3 +6,5 @@ export * from './provider';
 export * from './residence';
 export * from './price';
 export * from './usage';
+export * from './contract';
+export * from './resident';

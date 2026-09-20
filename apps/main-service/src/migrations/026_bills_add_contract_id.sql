@@ -1,0 +1,1 @@
+ALTER TABLE bills ADD COLUMN contract_id UUID REFERENCES contracts(id) ON DELETE SET NULL;

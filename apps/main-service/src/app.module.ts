@@ -12,6 +12,8 @@ import { MortgagePlansModule } from "./mortgage-plans/mortgage-plans.module";
 import { MortgageTracksModule } from "./mortgage-tracks/mortgage-tracks.module";
 import { UsagesModule } from "./usages/usages.module";
 import { PricesModule } from "./prices/prices.module";
+import { ContractsModule } from "./contracts/contracts.module";
+import { ResidentsModule } from "./residents/residents.module";
 import config from "./config";
 
 @Module({
@@ -30,6 +32,8 @@ import config from "./config";
     MortgageTracksModule,
     UsagesModule,
     PricesModule,
+    ContractsModule,
+    ResidentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

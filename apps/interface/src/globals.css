@@ -12,6 +12,9 @@
   --color-menu-item-selected-bg: #e6f4ff;
   --color-menu-item-selected: #1677ff;
 
+  /* Table */
+  --color-row-warning-bg: rgba(250, 173, 20, 0.12);
+
   /* Text */
   --color-text-secondary-light: rgba(0, 0, 0, 0.65);
   --color-text-secondary-dark: rgba(255, 255, 255, 0.65);

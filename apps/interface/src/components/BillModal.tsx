@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button, DatePicker, Divider, Form, Input, InputNumber, Modal, Select } from "antd";
 import NumericInput from "./NumericInput";
 import { PlusOutlined } from "@ant-design/icons";
@@ -9,6 +9,8 @@ import type { Bill, BillPeriod, BillType, ElectricBillData, Provider, WaterBillD
 import { useBillsStore } from "@/store/billsStore";
 import { useResidencesStore } from "@/store/residencesStore";
 import { useProvidersStore } from "@/store/providersStore";
+import { useContractsStore } from "@/store/contractsStore";
+import { useResidentsStore } from "@/store/residentsStore";
 import ProviderModal from "./ProviderModal";
 import { BILL_TYPE_OPTIONS } from "@/lib/billTypes";
 
@@ -25,7 +27,9 @@ interface FormValues {
   end_date: Dayjs;
   price: number;
   residence_id?: string | null;
+  resident_id?: string | null;
   provider_id?: string | null;
+  contract_id?: string | null;
   comment?: string | null;
   // electric & water only
   usage?: number;
@@ -43,15 +47,20 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
   const [form] = Form.useForm<FormValues>();
   const selectedType = Form.useWatch("type", form);
   const selectedResidenceId = Form.useWatch("residence_id", form);
+  const selectedResidentId = Form.useWatch("resident_id", form);
+  const selectedContractId = Form.useWatch("contract_id", form);
   const showUsage = USAGE_TYPES.has(selectedType);
   const showYear = YEAR_TYPES.has(selectedType);
   const usageSuffix = selectedType === "electric" ? "kWh" : "m³";
 
   const [providerModalOpen, setProviderModalOpen] = useState(false);
+  const skipContractPriceFill = useRef(false);
 
   const { bills, createBill, updateBill } = useBillsStore();
   const { residences, fetchAll: fetchResidences } = useResidencesStore();
   const { providers, fetchAll: fetchProviders } = useProvidersStore();
+  const { contracts, fetchAll: fetchContracts } = useContractsStore();
+  const { residents, fetchAll: fetchResidents } = useResidentsStore();
   const isEdit = !!bill;
 
   const handleProviderCreated = (created?: Provider) => {
@@ -73,18 +82,37 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
       autoProvider = residence?.water_settings?.provider_id;
     }
     if (!autoProvider) {
-      autoProvider = selectedType ? bills[selectedType as BillType][0]?.provider_id : null;
+      autoProvider = selectedType ? (bills[selectedType as BillType] ?? [])[0]?.provider_id : null;
     }
     form.setFieldValue("provider_id", autoProvider ?? null);
   }, [selectedType, selectedResidenceId, open]);
 
   useEffect(() => {
+    if (!selectedContractId) return;
+    const contract = contracts.find((c) => c.id === selectedContractId);
+    if (!contract) return;
+    const patch: Partial<FormValues> = {
+      provider_id: contract.provider_id ?? null,
+      residence_id: contract.residence_id ?? null,
+      resident_id: contract.resident_id ?? null,
+    };
+    if (!skipContractPriceFill.current) {
+      patch.price = contract.monthly_price;
+    }
+    skipContractPriceFill.current = false;
+    form.setFieldsValue(patch);
+  }, [selectedContractId]);
+
+  useEffect(() => {
     if (open) {
       fetchResidences();
+      fetchContracts();
+      fetchResidents();
 
       const currentResidence = residences.find((r) => r.current === 1) ?? null;
 
       if (bill) {
+        skipContractPriceFill.current = true;
         const data = bill.data as ElectricBillData & WaterBillData;
         form.setFieldsValue({
           type: bill.type,
@@ -92,7 +120,9 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
           end_date: dayjs(bill.end_date),
           price: bill.price,
           residence_id: bill.residence_id,
+          resident_id: bill.resident_id,
           provider_id: bill.provider_id,
+          contract_id: bill.contract_id,
           usage: data.usage,
           period: data.period,
           year: data.year,
@@ -123,7 +153,9 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
       end_date:     values.end_date.toISOString(),
       price:        values.price,
       residence_id: values.residence_id ?? null,
+      resident_id:  values.resident_id ?? null,
       provider_id:  values.provider_id ?? null,
+      contract_id:  values.contract_id ?? null,
       comment:      values.comment ?? null,
       data,
     };
@@ -135,6 +167,24 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
     }
     onClose();
   };
+
+  const providerById = Object.fromEntries(providers.map((p) => [p.id, p]));
+  const residenceById = Object.fromEntries(residences.map((r) => [r.id, r]));
+  const residentById = Object.fromEntries(residents.map((r) => [r.id, r]));
+
+  const contractOptions = contracts
+    .filter((c) => !selectedType || c.bill_type === selectedType)
+    .map((c) => {
+      const providerName = providerById[c.provider_id]?.name ?? c.bill_type;
+      const assignee = c.resident_id
+        ? residentById[c.resident_id]?.name
+        : c.residence_id
+        ? (() => { const r = residenceById[c.residence_id!]; return r ? `${r.street}, ${r.city}` : undefined; })()
+        : undefined;
+      const dates = `${dayjs(c.start_date).format("DD/MM/YY")}${c.end_date ? ` → ${dayjs(c.end_date).format("DD/MM/YY")}` : ""}`;
+      const label = [providerName, assignee, dates].filter(Boolean).join(" · ");
+      return { value: c.id, label };
+    });
 
   return (
     <Modal
@@ -270,13 +320,29 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
           <Input.TextArea maxLength={200} showCount autoSize={{ minRows: 2, maxRows: 4 }} />
         </Form.Item>
 
-        <Form.Item name="residence_id" label="Residence">
-          <Select
-            allowClear
-            placeholder="None"
-            options={residences.map((r) => ({ value: r.id, label: `${r.street}, ${r.city}` }))}
-          />
+        <Form.Item name="contract_id" label="Contract">
+          <Select allowClear placeholder="None" options={contractOptions} />
         </Form.Item>
+
+        <div style={{ display: "flex", gap: 24 }}>
+          <Form.Item name="residence_id" label="Residence" style={{ flex: 1 }}>
+            <Select
+              allowClear
+              placeholder="None"
+              disabled={!!selectedResidentId}
+              options={residences.map((r) => ({ value: r.id, label: `${r.street}, ${r.city}` }))}
+            />
+          </Form.Item>
+
+          <Form.Item name="resident_id" label="Resident" style={{ flex: 1 }}>
+            <Select
+              allowClear
+              placeholder="None"
+              disabled={!!selectedResidenceId}
+              options={residents.map((r) => ({ value: r.id, label: r.name }))}
+            />
+          </Form.Item>
+        </div>
 
         <Form.Item name="provider_id" label="Provider">
           <Select

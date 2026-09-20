@@ -11,5 +11,7 @@ export class BillEntity extends BaseEntity implements Bill {
   data: BillData;
   provider_id: string | null;
   residence_id: string | null;
+  resident_id: string | null;
+  contract_id: string | null;
   comment: string | null;
 }

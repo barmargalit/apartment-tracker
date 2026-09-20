@@ -16,7 +16,8 @@ import {
     BankOutlined,
     DollarOutlined,
     ThunderboltOutlined,
-    StockOutlined
+    StockOutlined,
+    FileTextOutlined
 } from "@ant-design/icons";
 import Image from "next/image";
 import {useTheme} from "./ThemeProvider";
@@ -43,6 +44,7 @@ export default function Sidebar() {
                 {key: "/usage", icon: <ThunderboltOutlined/>, label: "Usage"},
                 {key: "/providers", icon: <TeamOutlined/>, label: "Providers"},
                 {key: "/prices", icon: <StockOutlined/>, label: "Prices"},
+                {key: "/contracts", icon: <FileTextOutlined/>, label: "Contracts"},
             ],
         },
         {

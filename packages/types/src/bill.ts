@@ -5,6 +5,7 @@ export enum BillType {
   Gas = 'gas',
   PropertyTax = 'property_tax',
   BuildingFee = 'building_fee',
+  Cellular = 'cellular',
 }
 
 export type BillPeriod = 1 | 2 | 3 | 4 | 5 | 6;
@@ -31,7 +32,9 @@ export interface PropertyTaxData {
 
 export interface BuildingFeeData {}
 
-export type BillData = ElectricBillData | WaterBillData | InternetBillData | GasBillData | PropertyTaxData | BuildingFeeData;
+export interface CellularBillData {}
+
+export type BillData = ElectricBillData | WaterBillData | InternetBillData | GasBillData | PropertyTaxData | BuildingFeeData | CellularBillData;
 
 export interface Bill {
   id: string;
@@ -46,5 +49,7 @@ export interface Bill {
   data: BillData;
   provider_id: string | null;
   residence_id: string | null;
+  resident_id: string | null;
+  contract_id: string | null;
   comment: string | null;
 }

@@ -6,7 +6,7 @@ import { Button, Space, Table } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import type { TableColumnsType } from "antd";
 import { BillType } from "@apartment-tracker/types";
-import type { Bill, ElectricBillData, Residence, WaterBillData } from "@apartment-tracker/types";
+import type { Bill, ElectricBillData, Residence, Resident, WaterBillData } from "@apartment-tracker/types";
 import { calcPeriodDays, calcPeriodUsage } from "@/lib/billUtils";
 import DataTable from "./DataTable";
 
@@ -48,6 +48,7 @@ interface Props {
   groupByResidence?: boolean;
   type?: BillType;
   residences?: Residence[];
+  residents?: Resident[];
   onEdit: (bill: Bill) => void;
   onDelete: (bill: Bill) => void;
 }
@@ -124,8 +125,9 @@ function groupBillsByResidence(bills: Bill[], residenceById: Record<string, Resi
   return rows.sort((a, b) => b.year - a.year || a.residence.localeCompare(b.residence));
 }
 
-export default function BillsTable({ data, loading, showUsage, groupByResidence, type, residences = [], onEdit, onDelete }: Props) {
+export default function BillsTable({ data, loading, showUsage, groupByResidence, type, residences = [], residents = [], onEdit, onDelete }: Props) {
   const residenceById = Object.fromEntries(residences.map((r) => [r.id, r]));
+  const residentById = Object.fromEntries(residents.map((r) => [r.id, r]));
   const usageUnit = type === BillType.Electric ? "kWh" : "m³";
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
@@ -134,9 +136,13 @@ export default function BillsTable({ data, loading, showUsage, groupByResidence,
 
     const childColumns: TableColumnsType<Bill> = [
       {
-        title: "Residence",
+        title: "Residence / Resident",
         key: "residence_id",
         render: (_: unknown, bill: Bill) => {
+          if (bill.resident_id) {
+            const r = residentById[bill.resident_id];
+            return r ? r.name : "-";
+          }
           if (!bill.residence_id) return "-";
           const r = residenceById[bill.residence_id];
           return r ? `${r.street}, ${r.city}` : "-";
@@ -382,9 +388,13 @@ export default function BillsTable({ data, loading, showUsage, groupByResidence,
 
   const columns: TableColumnsType<Bill> = [
     {
-      title: "Residence",
+      title: "Residence / Resident",
       key: "residence_id",
       render: (_: unknown, bill: Bill) => {
+        if (bill.resident_id) {
+          const r = residentById[bill.resident_id];
+          return r ? r.name : "-";
+        }
         if (!bill.residence_id) return "-";
         const r = residenceById[bill.residence_id];
         return r ? `${r.street}, ${r.city}` : "-";

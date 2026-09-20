@@ -8,6 +8,8 @@ export interface CreateBillPayload {
   end_date: string;
   price: number;
   data: BillData;
+  resident_id?: string | null;
+  contract_id?: string | null;
 }
 
 export interface UpdateBillPayload {
@@ -16,6 +18,8 @@ export interface UpdateBillPayload {
   end_date?: string;
   price?: number;
   data?: BillData;
+  resident_id?: string | null;
+  contract_id?: string | null;
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {

@@ -12,7 +12,8 @@ import {
     HomeOutlined,
     BuildOutlined,
     LineChartOutlined,
-    BarChartOutlined
+    BarChartOutlined,
+    MobileOutlined
 } from "@ant-design/icons";
 import {usePageHeader} from "@/components/PageHeaderContext";
 import PageTabs from "@/components/PageTabs";
@@ -22,6 +23,7 @@ import PriceChart from "@/components/PriceChart";
 import BillModal from "@/components/BillModal";
 import {useBillsStore} from "@/store/billsStore";
 import {useResidencesStore} from "@/store/residencesStore";
+import {useResidentsStore} from "@/store/residentsStore";
 import {Bill, BillType} from "@apartment-tracker/types";
 import {useModal} from "@/components/ThemeProvider";
 import styles from "./bills.module.css";
@@ -37,11 +39,13 @@ interface BillTabProps {
 function BillTab({type, showUsage, groupByResidence, onEdit, onDelete}: BillTabProps) {
     const {bills, loading, fetchByType} = useBillsStore();
     const {residences, fetchAll: fetchResidences} = useResidencesStore();
-    const data = bills[type];
+    const {residents, fetchAll: fetchResidents} = useResidentsStore();
+    const data = bills[type] ?? [];
 
     useEffect(() => {
         fetchByType(type);
         fetchResidences();
+        fetchResidents();
     }, [type]);
 
     const chartPane = (
@@ -76,6 +80,7 @@ function BillTab({type, showUsage, groupByResidence, onEdit, onDelete}: BillTabP
                     type={type}
                     groupByResidence={groupByResidence}
                     residences={residences}
+                    residents={residents}
                     onEdit={onEdit}
                     onDelete={onDelete}
                 />
@@ -169,7 +174,12 @@ export default function BillsPage() {
             icon: <BuildOutlined/>,
             content: <BillTab type={BillType.BuildingFee} onEdit={handleEdit} onDelete={handleDelete}/>,
         },
-
+        {
+            key: BillType.Cellular,
+            label: "Cellular",
+            icon: <MobileOutlined/>,
+            content: <BillTab type={BillType.Cellular} onEdit={handleEdit} onDelete={handleDelete}/>,
+        },
     ];
 
     return (

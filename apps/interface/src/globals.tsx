@@ -8,6 +8,9 @@ export const colors = {
     itemSelectedBg: "#e6f4ff",
     itemSelectedColor: "#1677ff",
   },
+  table: {
+    rowWarningBg: "var(--color-row-warning-bg)",
+  },
   text: {
     secondaryLight: "rgba(0, 0, 0, 0.65)",
     secondaryDark: "rgba(255, 255, 255, 0.65)",

@@ -7,7 +7,7 @@ A personal home management app for tracking household bills, monitoring utility 
 ## Features
 
 ### Bill Tracking
-Track recurring and one-off household expenses across six bill types:
+Track recurring and one-off household expenses across seven bill types:
 
 | Type | Extra data captured |
 |---|---|
@@ -17,15 +17,33 @@ Track recurring and one-off household expenses across six bill types:
 | Gas | — |
 | Property Tax | Year |
 | Building Fee | — |
+| Cellular | — |
 
-- Attach a **provider** and **residence** to each bill
+- Attach a **provider**, **residence**, **resident**, and **contract** to each bill
+- Selecting a contract auto-fills the provider, residence/resident, and monthly price
 - Add free-text **comments** per bill
 - Electric and Water bills display a **usage-over-time chart** on the bills page
+
+### Contracts
+Track service provider contracts (cellular plans, internet subscriptions, and more) independently of individual bills:
+
+- Supports **type-specific fields**: data allowance, unlimited calls/SMS for cellular; speed for internet
+- **Active / Ended** status derived automatically from the end date
+- Optionally linked to a **residence** or a **resident**
+- **Expiry alerts** — contracts expiring in the next 2 months are highlighted with a warning row colour and icon in the table, and surfaced as an alert banner on the Contracts page and the home dashboard
+- Filter the table by provider, type, status, and date ranges
+
+### Residents
+Manage the people living at your residences from the **My Residence** page:
+
+- Each resident has a **name** and **birth date**
+- Bills and contracts can be associated with a resident instead of (or instead of) a residence — the two selectors are mutually exclusive and disable each other when one is filled
 
 ### Home Dashboard
 The home page shows:
 - **Last Bills** — the most recent bill for each active type at a glance
 - **Bills Breakdown** — a donut chart of total spending split by bill type
+- **Alerts** — expiring contracts surfaced in a dedicated card on the right
 
 ### Usage Statistics
 A dedicated **Usage** page provides deep insight into Electric, Water, and Gas consumption:
@@ -227,7 +245,7 @@ for f in apps/main-service/src/migrations/*.sql; do
 done
 ```
 
-Or apply them one by one using your preferred PostgreSQL client. The migration files are sequential — they must be run in order (001 → 018).
+Or apply them one by one using your preferred PostgreSQL client. The migration files are sequential — they must be run in order (001 → 028).
 
 ### 6. Build the shared types package
 

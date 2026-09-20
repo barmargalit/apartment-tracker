@@ -1,0 +1,2 @@
+ALTER TABLE contracts ADD COLUMN resident_id UUID REFERENCES residents(id) ON DELETE SET NULL;
+ALTER TABLE bills    ADD COLUMN resident_id UUID REFERENCES residents(id) ON DELETE SET NULL;

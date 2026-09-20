@@ -5,17 +5,21 @@ import { Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { usePageHeader } from "@/components/PageHeaderContext";
 import { useResidencesStore } from "@/store/residencesStore";
+import { useResidentsStore } from "@/store/residentsStore";
 import ResidenceCard from "@/components/ResidenceCard";
 import ResidenceModal from "@/components/ResidenceModal";
+import ResidentsCard from "@/components/ResidentsCard";
 import type { Residence } from "@apartment-tracker/types";
 
 export default function MyAddressPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedResidence, setSelectedResidence] = useState<Residence | null>(null);
   const { residences, fetchAll, updateResidence, deleteResidence } = useResidencesStore();
+  const { fetchAll: fetchResidents } = useResidentsStore();
 
   useEffect(() => {
     fetchAll();
+    fetchResidents();
   }, []);
 
   const handleEdit = (residence: Residence) => {
@@ -64,6 +68,10 @@ export default function MyAddressPage() {
         residence={selectedResidence}
         onClose={handleClose}
       />
+
+      <div style={{ marginTop: 24 }}>
+        <ResidentsCard />
+      </div>
     </>
   );
 }

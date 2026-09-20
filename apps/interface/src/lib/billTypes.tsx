@@ -8,6 +8,7 @@ export const BILL_TYPE_COLOR: Record<BillType, string> = {
   [BillType.Gas]: "orange",
   [BillType.PropertyTax]: "green",
   [BillType.BuildingFee]: "cyan",
+  [BillType.Cellular]: "magenta",
 };
 
 export const BILL_TYPE_LABEL: Record<BillType, string> = {
@@ -17,6 +18,7 @@ export const BILL_TYPE_LABEL: Record<BillType, string> = {
   [BillType.Gas]: "Gas",
   [BillType.PropertyTax]: "Property Tax",
   [BillType.BuildingFee]: "Building Fee",
+  [BillType.Cellular]: "Cellular",
 };
 
 export const BILL_TYPE_OPTIONS = (Object.values(BillType) as BillType[]).map((v) => ({
