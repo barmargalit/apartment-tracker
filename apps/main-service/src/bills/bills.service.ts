@@ -39,7 +39,7 @@ export class BillsService {
   async findByType(type: BillType): Promise<BillEntity[]> {
     this.logger.log(`Fetching bills of type "${type}"`);
     const result = await this.pool.query<BillEntity>(
-      'SELECT * FROM bills WHERE type = $1 AND state = 0 ORDER BY start_date ASC',
+      'SELECT * FROM bills WHERE type = $1 AND state = 0 ORDER BY start_date DESC',
       [type],
     );
     return result.rows;

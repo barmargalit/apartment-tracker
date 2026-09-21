@@ -75,6 +75,7 @@ export default function Sidebar() {
         <Sider
             collapsible
             collapsed={collapsed}
+            collapsedWidth={56}
             onCollapse={setCollapsed}
             style={{background: siderBg, boxShadow: `2px 0 8px 0 ${colors.sidebar.shadow}`}}
             theme={isDark ? "dark" : "light"}
@@ -145,8 +146,9 @@ export default function Sidebar() {
                     style={{
                         display: "flex",
                         alignItems: "center",
+                        justifyContent: collapsed ? "center" : undefined,
                         gap: 10,
-                        padding: collapsed ? "12px 30px" : "12px 24px",
+                        padding: collapsed ? "12px 0" : "12px 24px",
                         cursor: "pointer",
                         color: pathname === "/my-residence" ? colors.menu.itemSelectedColor : settingsColor,
                         transition: "color 0.2s",
@@ -173,8 +175,9 @@ export default function Sidebar() {
                         style={{
                             display: "flex",
                             alignItems: "center",
+                            justifyContent: collapsed ? "center" : undefined,
                             gap: 10,
-                            padding: collapsed ? "12px 30px" : "12px 24px",
+                            padding: collapsed ? "12px 0" : "12px 24px",
                             cursor: "pointer",
                             color: settingsColor,
                             transition: "color 0.2s",

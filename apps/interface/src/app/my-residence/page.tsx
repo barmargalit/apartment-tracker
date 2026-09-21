@@ -51,6 +51,10 @@ export default function MyAddressPage() {
 
   return (
     <>
+      <div style={{ marginBottom: 24 }}>
+        <ResidentsCard />
+      </div>
+
       <div style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "flex-start" }}>
         {residences.map((r) => (
           <ResidenceCard
@@ -68,10 +72,6 @@ export default function MyAddressPage() {
         residence={selectedResidence}
         onClose={handleClose}
       />
-
-      <div style={{ marginTop: 24 }}>
-        <ResidentsCard />
-      </div>
     </>
   );
 }

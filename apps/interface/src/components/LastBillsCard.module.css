@@ -5,9 +5,14 @@
 
 .row {
   display: grid;
-  grid-template-columns: 80px 1fr auto;
+  grid-template-columns: auto 80px 1fr auto;
   align-items: center;
-  gap: 0 16px;
+  gap: 0 12px;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
 }
 
 .row > * {

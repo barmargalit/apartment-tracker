@@ -7,7 +7,7 @@ A personal home management app for tracking household bills, monitoring utility 
 ## Features
 
 ### Bill Tracking
-Track recurring and one-off household expenses across seven bill types:
+Track recurring and one-off household expenses across eight bill types:
 
 | Type | Extra data captured |
 |---|---|
@@ -18,6 +18,7 @@ Track recurring and one-off household expenses across seven bill types:
 | Property Tax | Year |
 | Building Fee | — |
 | Cellular | — |
+| Rent | — |
 
 - Attach a **provider**, **residence**, **resident**, and **contract** to each bill
 - Selecting a contract auto-fills the provider, residence/resident, and monthly price
@@ -245,7 +246,7 @@ for f in apps/main-service/src/migrations/*.sql; do
 done
 ```
 
-Or apply them one by one using your preferred PostgreSQL client. The migration files are sequential — they must be run in order (001 → 028).
+Or apply them one by one using your preferred PostgreSQL client. The migration files are sequential — they must be run in order (001 → 029).
 
 ### 6. Build the shared types package
 

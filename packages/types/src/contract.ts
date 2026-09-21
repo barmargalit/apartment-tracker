@@ -14,10 +14,13 @@ export interface InternetContractData {
 
 export interface GenericContractData {}
 
+export interface RentContractData {}
+
 export type ContractData =
   | CellularContractData
   | InternetContractData
-  | GenericContractData;
+  | GenericContractData
+  | RentContractData;
 
 export interface Contract {
   id: string;

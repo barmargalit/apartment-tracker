@@ -16,7 +16,6 @@ import type { Contract, Provider, Residence, Resident } from "@apartment-tracker
 import DataTable from "./DataTable";
 import { BillTypeTag, BILL_TYPE_LABEL } from "@/lib/billTypes";
 import { BillType } from "@apartment-tracker/types";
-import { colors } from "@/globals";
 
 const DATE_FORMAT = "DD/MM/YY";
 
@@ -173,7 +172,6 @@ export default function ContractsTable({ data, loading, providers, residences = 
       onRow={(row) => ({
         onMouseEnter: () => setHoveredId(row.id),
         onMouseLeave: () => setHoveredId(null),
-        style: isExpiringSoon(row.end_date) ? { background: colors.table.rowWarningBg } : undefined,
       })}
     />
   );

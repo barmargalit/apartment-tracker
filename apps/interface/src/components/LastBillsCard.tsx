@@ -1,17 +1,15 @@
 "use client";
 
-import {useEffect} from "react";
-import {Card, Divider, Skeleton, Tooltip, Typography} from "antd";
+import {useEffect, useState} from "react";
+import {Card, Checkbox, Divider, Skeleton, Tooltip, Typography} from "antd";
 import dayjs from "dayjs";
 import {Bill, BillType, ElectricBillData, WaterBillData} from "@apartment-tracker/types";
 import {useBillsStore} from "@/store/billsStore";
 import {BILL_TYPE_LABEL, BillTypeTag} from "@/lib/billTypes";
+import {billDurationMonths, fmtPrice} from "@/lib/billUtils";
 import styles from "./LastBillsCard.module.css";
 
 const {Text} = Typography;
-
-const fmtPrice = (n: number) =>
-    `₪${n.toLocaleString("en", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
 
 interface BillGroup {
     type: BillType;
@@ -30,11 +28,7 @@ function getPeriodLabel(bill: Bill): string | null {
 }
 
 function groupDurationMonths(group: BillGroup): number {
-    const firstBill = group.bills[0];
-    const d = firstBill.data as Partial<ElectricBillData & WaterBillData>;
-    if (d.period != null) return 2;
-    const diff = dayjs(group.endDate).diff(dayjs(group.startDate), "day") / 30;
-    return diff > 0 ? diff : 1;
+    return billDurationMonths(group.startDate, group.endDate, group.bills[0].data);
 }
 
 function groupBillsByType(bills: Bill[]): BillGroup[] {
@@ -59,17 +53,28 @@ function groupBillsByType(bills: Bill[]): BillGroup[] {
 
 export default function LastBillsCard() {
     const {lastBills, lastBillsLoading, fetchLastBills} = useBillsStore();
+    const [excluded, setExcluded] = useState<Set<BillType>>(new Set());
 
     useEffect(() => {
         fetchLastBills();
     }, [fetchLastBills]);
 
     const groups = groupBillsByType(lastBills);
-    const totalPerMonth = groups.reduce((sum, g) => sum + g.totalPrice / groupDurationMonths(g), 0);
+    const activeGroups = groups.filter((g) => !excluded.has(g.type));
+    const totalPerMonth = activeGroups.reduce((sum, g) => sum + g.totalPrice / groupDurationMonths(g), 0);
+
+    const toggleType = (type: BillType) => {
+        setExcluded((prev) => {
+            const next = new Set(prev);
+            if (next.has(type)) next.delete(type);
+            else next.add(type);
+            return next;
+        });
+    };
 
     const tooltipContent = (
         <>
-            {groups.map((g) => {
+            {activeGroups.map((g) => {
                 const months = groupDurationMonths(g);
                 const rate = g.totalPrice / months;
                 return (
@@ -110,6 +115,11 @@ export default function LastBillsCard() {
                                 <Tooltip key={group.type} title={billsTooltip} placement="right" destroyOnHidden
                                          styles={{container: {minWidth: 320}}}>
                                     <div className={styles.row}>
+                                        <Checkbox
+                                            checked={!excluded.has(group.type)}
+                                            onChange={() => toggleType(group.type)}
+                                            className={styles.checkbox}
+                                        />
                                         <div className={styles.typeCell}>
                                             <BillTypeTag type={group.type} style={{margin: 0}}/>
                                         </div>

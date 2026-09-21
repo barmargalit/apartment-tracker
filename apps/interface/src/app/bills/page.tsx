@@ -13,7 +13,8 @@ import {
     BuildOutlined,
     LineChartOutlined,
     BarChartOutlined,
-    MobileOutlined
+    MobileOutlined,
+    DollarOutlined
 } from "@ant-design/icons";
 import {usePageHeader} from "@/components/PageHeaderContext";
 import PageTabs from "@/components/PageTabs";
@@ -179,6 +180,12 @@ export default function BillsPage() {
             label: "Cellular",
             icon: <MobileOutlined/>,
             content: <BillTab type={BillType.Cellular} onEdit={handleEdit} onDelete={handleDelete}/>,
+        },
+        {
+            key: BillType.Rent,
+            label: "Rent",
+            icon: <DollarOutlined/>,
+            content: <BillTab type={BillType.Rent} onEdit={handleEdit} onDelete={handleDelete}/>,
         },
     ];
 

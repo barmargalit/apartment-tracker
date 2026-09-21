@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put } from '@nestjs/common';
 import { ProspectsService, CreateProspectDto, UpdateProspectDto } from './prospects.service';
 
 @Controller('prospects')
@@ -20,6 +20,7 @@ export class ProspectsController {
     return this.prospectsService.update(id, dto);
   }
 
+  @HttpCode(204)
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.prospectsService.delete(id);

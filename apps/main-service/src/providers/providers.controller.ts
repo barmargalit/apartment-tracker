@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query } from '@nestjs/common';
 import { ProvidersService, CreateProviderDto, UpdateProviderDto } from './providers.service';
 import { BillType } from '@apartment-tracker/types';
 
@@ -26,6 +26,7 @@ export class ProvidersController {
     return this.providersService.update(id, dto);
   }
 
+  @HttpCode(204)
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.providersService.delete(id);

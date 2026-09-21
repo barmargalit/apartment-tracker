@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query } from '@nestjs/common';
 import { ContractsService, CreateContractDto, UpdateContractDto } from './contracts.service';
 import { BillType } from '../bills/bill.entity';
 
@@ -22,6 +22,7 @@ export class ContractsController {
     return this.contractsService.update(id, dto);
   }
 
+  @HttpCode(204)
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.contractsService.delete(id);

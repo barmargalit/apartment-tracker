@@ -3,21 +3,11 @@
 import {useEffect} from "react";
 import {Card, Skeleton, Typography} from "antd";
 import {Pie} from "@ant-design/charts";
-import dayjs from "dayjs";
-import {Bill, BillType, ElectricBillData, WaterBillData} from "@apartment-tracker/types";
+import {Bill, BillType} from "@apartment-tracker/types";
 import {useBillsStore} from "@/store/billsStore";
 import {BILL_TYPE_COLOR, BILL_TYPE_LABEL} from "@/lib/billTypes";
+import {billDurationMonths, fmtPrice} from "@/lib/billUtils";
 import {useTheme} from "./ThemeProvider";
-
-const fmtPrice = (n: number) =>
-    `₪${n.toLocaleString("en", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-
-function getDurationMonths(bill: Bill): number {
-    const d = bill.data as Partial<ElectricBillData & WaterBillData>;
-    if (d.period != null) return 2;
-    const diff = dayjs(bill.end_date).diff(dayjs(bill.start_date), "day") / 30;
-    return diff > 0 ? diff : 1;
-}
 
 interface SliceItem {
     type: BillType;
@@ -37,7 +27,7 @@ function buildSlices(bills: Bill[]): SliceItem[] {
         // sum all bills in the group, divide by the duration of the first bill
         // (all bills in a group are from the same period so duration is the same)
         const totalPrice = typeBills.reduce((s, b) => s + Number(b.price), 0);
-        const months = getDurationMonths(typeBills[0]);
+        const months = billDurationMonths(typeBills[0].start_date, typeBills[0].end_date, typeBills[0].data);
         items.push({
             type,
             label: BILL_TYPE_LABEL[type] ?? type,
@@ -59,6 +49,7 @@ const TAG_COLOR_HEX: Record<string, string> = {
     cyan: "#13c2c2",
     red: "#f5222d",
     magenta: "#eb2f96",
+    volcano: "#fa541c",
 };
 
 function colorHex(type: BillType): string {

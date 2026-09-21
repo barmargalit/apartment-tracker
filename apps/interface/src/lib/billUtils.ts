@@ -1,5 +1,19 @@
 import dayjs from "dayjs";
-import type { Bill, ElectricBillData, WaterBillData } from "@apartment-tracker/types";
+import type { Bill, BillData, ElectricBillData, WaterBillData } from "@apartment-tracker/types";
+
+export const fmtPrice = (n: number) =>
+    `₪${n.toLocaleString("en", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+export function billDurationMonths(
+    startDate: Bill["start_date"] | string | Date,
+    endDate: Bill["end_date"] | string | Date,
+    data: BillData,
+): number {
+    const d = data as Partial<ElectricBillData & WaterBillData>;
+    if (d.period != null) return 2;
+    const days = dayjs(endDate).diff(dayjs(startDate), "day");
+    return Math.max(1, Math.round(days / 30));
+}
 
 /**
  * Calculates the number of days covered by a group of bills for the same period.

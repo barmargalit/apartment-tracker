@@ -49,6 +49,24 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
   const selectedResidenceId = Form.useWatch("residence_id", form);
   const selectedResidentId = Form.useWatch("resident_id", form);
   const selectedContractId = Form.useWatch("contract_id", form);
+  const watchedStart: Dayjs | undefined = Form.useWatch("start_date", form);
+  const watchedEnd: Dayjs | undefined = Form.useWatch("end_date", form);
+
+  const monthPickerValue: Dayjs | null = (() => {
+    if (!watchedStart || !watchedEnd) return null;
+    const isFullMonth =
+      watchedStart.isSame(watchedStart.startOf("month"), "day") &&
+      watchedEnd.isSame(watchedStart.endOf("month"), "day");
+    return isFullMonth ? watchedStart : null;
+  })();
+
+  const handleMonthSelect = (month: Dayjs | null) => {
+    if (!month) return;
+    form.setFieldsValue({
+      start_date: month.startOf("month"),
+      end_date: month.endOf("month"),
+    });
+  };
   const showUsage = USAGE_TYPES.has(selectedType);
   const showYear = YEAR_TYPES.has(selectedType);
   const usageSuffix = selectedType === "electric" ? "kWh" : "m³";
@@ -200,6 +218,17 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
           <Select options={BILL_TYPE_OPTIONS} />
         </Form.Item>
 
+        <Form.Item label="Month" extra={<span style={{ fontSize: 12 }}>Selecting a month will auto-fill the start and end dates.</span>}>
+          <DatePicker
+            picker="month"
+            format="MMMM YYYY"
+            value={monthPickerValue}
+            onChange={handleMonthSelect}
+            style={{ width: "100%" }}
+            placeholder="Pick a month to auto-fill dates"
+          />
+        </Form.Item>
+
         <div style={{ display: "flex", gap: 24 }}>
           <Form.Item
             name="start_date"
@@ -320,7 +349,7 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
           <Input.TextArea maxLength={200} showCount autoSize={{ minRows: 2, maxRows: 4 }} />
         </Form.Item>
 
-        <Form.Item name="contract_id" label="Contract">
+        <Form.Item name="contract_id" label="Contract" extra={<span style={{ fontSize: 12 }}>Selecting a contract will auto-fill the provider, residence, resident, and price.</span>}>
           <Select allowClear placeholder="None" options={contractOptions} />
         </Form.Item>
 
