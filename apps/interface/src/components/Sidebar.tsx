@@ -111,8 +111,9 @@ export default function Sidebar() {
                         <Image
                             src="/logo-v2-sidebar.png"
                             alt="Apartment Tracker"
-                            fill
-                            style={{objectFit: "contain", objectPosition: "center"}}
+                            width={160}
+                            height={48}
+                            style={{objectFit: "contain"}}
                         />
                     )}
                 </div>

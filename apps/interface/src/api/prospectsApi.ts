@@ -22,6 +22,14 @@ export interface CreateProspectPayload {
   safe_space: SafeSpace;
   contractor?: string | null;
   comment?: string | null;
+  price?: number | null;
+  realtor?: boolean;
+  realtor_fee?: number | null;
+  floor_plan_url?: string | null;
+  video_url?: string | null;
+  floor?: number | null;
+  property_tax?: number | null;
+  building_fees?: number | null;
 }
 
 export interface UpdateProspectPayload {
@@ -34,6 +42,14 @@ export interface UpdateProspectPayload {
   safe_space?: SafeSpace;
   contractor?: string | null;
   comment?: string | null;
+  price?: number | null;
+  realtor?: boolean;
+  realtor_fee?: number | null;
+  floor_plan_url?: string | null;
+  video_url?: string | null;
+  floor?: number | null;
+  property_tax?: number | null;
+  building_fees?: number | null;
 }
 
 export const prospectsApi = {
@@ -48,4 +64,7 @@ export const prospectsApi = {
 
   delete: (id: string): Promise<void> =>
     request<void>(`/prospects/${id}`, { method: "DELETE" }),
+
+  openFile: (path: string): Promise<void> =>
+    request<void>("/prospects/open-file", { method: "POST", body: JSON.stringify({ path }) }),
 };

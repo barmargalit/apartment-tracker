@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { Button, Space } from "antd";
-import { CheckOutlined, CloseOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { CheckOutlined, CloseOutlined, EditOutlined, DeleteOutlined, FilePdfOutlined, PlayCircleOutlined } from "@ant-design/icons";
 import type { TableColumnsType } from "antd";
 import type { Prospect } from "@apartment-tracker/types";
 import { useProspectsStore } from "@/store/prospectsStore";
+import { prospectsApi } from "@/api/prospectsApi";
 import DataTable from "./DataTable";
 import ProspectModal from "./ProspectModal";
 
@@ -43,10 +44,29 @@ export default function ProspectsTable({ createOpen, onCreateClose }: Props) {
     },
     { title: "Safe Space", dataIndex: "safe_space", key: "safe_space" },
     {
-      title: "Contractor",
-      dataIndex: "contractor",
-      key: "contractor",
-      render: (v: string | null) => v ?? "-",
+      title: "Floor",
+      dataIndex: "floor",
+      key: "floor",
+      render: (v: number | null) => v ?? "-",
+    },
+    {
+      title: "Price (₪M)",
+      dataIndex: "price",
+      key: "price",
+      render: (v: number | null) => v != null ? `₪${v}M` : "-",
+    },
+    {
+      title: "Realtor",
+      dataIndex: "realtor",
+      key: "realtor",
+      render: (v: boolean) =>
+        v ? <CheckOutlined style={{ color: "#52c41a" }} /> : <CloseOutlined style={{ color: "#ff4d4f" }} />,
+    },
+    {
+      title: "Realtor Fee",
+      key: "realtor_fee",
+      render: (_: unknown, record: Prospect) =>
+        record.realtor && record.realtor_fee != null ? `${record.realtor_fee}%` : "-",
     },
     {
       title: "Comment",
@@ -57,9 +77,21 @@ export default function ProspectsTable({ createOpen, onCreateClose }: Props) {
     {
       key: "actions",
       fixed: "right",
-      width: 80,
+      width: 140,
       render: (_: unknown, prospect: Prospect) => (
         <Space style={{ opacity: hoveredId === prospect.id ? 1 : 0, transition: "opacity 0.15s" }}>
+          {prospect.floor_plan_url && (
+            <a href={prospect.floor_plan_url} target="_blank" rel="noopener noreferrer">
+              <Button type="text" icon={<FilePdfOutlined style={{ color: "#1677ff" }} />} />
+            </a>
+          )}
+          {prospect.video_url && (
+            <Button
+              type="text"
+              icon={<PlayCircleOutlined style={{ color: "#1677ff" }} />}
+              onClick={() => prospectsApi.openFile(prospect.video_url!)}
+            />
+          )}
           <Button type="text" icon={<EditOutlined />} onClick={() => setEditingProspect(prospect)} />
           <Button type="text" danger icon={<DeleteOutlined />} onClick={() => deleteProspect(prospect.id)} />
         </Space>

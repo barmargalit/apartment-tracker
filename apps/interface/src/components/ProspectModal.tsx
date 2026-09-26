@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { Form, Input, Modal, Select, Switch } from "antd";
+import { Divider, Form, Input, Modal, Select, Space, Switch } from "antd";
 import NumericInput from "./NumericInput";
 import type { Prospect, SafeSpace } from "@apartment-tracker/types";
 import { useProspectsStore } from "@/store/prospectsStore";
@@ -22,6 +22,14 @@ interface FormValues {
   safe_space: SafeSpace;
   contractor?: string | null;
   comment?: string | null;
+  price?: number | null;
+  realtor?: boolean;
+  realtor_fee?: number | null;
+  floor_plan_url?: string | null;
+  video_url?: string | null;
+  floor?: number | null;
+  property_tax?: number | null;
+  building_fees?: number | null;
 }
 
 const SAFE_SPACE_OPTIONS = [
@@ -35,6 +43,7 @@ export default function ProspectModal({ open, prospect, onClose }: Props) {
   const [form] = Form.useForm<FormValues>();
   const { createProspect, updateProspect } = useProspectsStore();
   const isEdit = !!prospect;
+  const isRealtor = Form.useWatch("realtor", form);
 
   useEffect(() => {
     if (open) {
@@ -49,10 +58,18 @@ export default function ProspectModal({ open, prospect, onClose }: Props) {
           safe_space: prospect.safe_space,
           contractor: prospect.contractor,
           comment: prospect.comment,
+          price: prospect.price,
+          realtor: prospect.realtor,
+          realtor_fee: prospect.realtor_fee,
+          floor_plan_url: prospect.floor_plan_url,
+          video_url: prospect.video_url,
+          floor: prospect.floor,
+          property_tax: prospect.property_tax,
+          building_fees: prospect.building_fees,
         });
       } else {
         form.resetFields();
-        form.setFieldsValue({ parking: false, safe_space: "None" as SafeSpace });
+        form.setFieldsValue({ parking: false, safe_space: "None" as SafeSpace, realtor: false });
       }
     }
   }, [open, prospect]);
@@ -63,6 +80,14 @@ export default function ProspectModal({ open, prospect, onClose }: Props) {
       ...values,
       balcony_square_meters: values.balcony_square_meters ?? null,
       comment: values.comment ?? null,
+      price: values.price ?? null,
+      realtor: values.realtor ?? false,
+      realtor_fee: values.realtor ? (values.realtor_fee ?? null) : null,
+      floor_plan_url: values.floor_plan_url ?? null,
+      video_url: values.video_url ?? null,
+      floor: values.floor ?? null,
+      property_tax: values.property_tax ?? null,
+      building_fees: values.building_fees ?? null,
     };
     if (isEdit) {
       await updateProspect(prospect.id, payload);
@@ -80,8 +105,11 @@ export default function ProspectModal({ open, prospect, onClose }: Props) {
       onOk={handleOk}
       okText="Save"
       destroyOnHidden
+      width={700}
     >
       <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
+
+        <Divider orientation="left" styles={{ content: { marginInlineStart: 0 } }} style={{ marginTop: 0 }}>Location</Divider>
         <div style={{ display: "flex", gap: 16 }}>
           <Form.Item name="street" label="Street" rules={[{ required: true, message: "Required" }]} style={{ flex: 2 }}>
             <Input />
@@ -91,6 +119,7 @@ export default function ProspectModal({ open, prospect, onClose }: Props) {
           </Form.Item>
         </div>
 
+        <Divider orientation="left" styles={{ content: { marginInlineStart: 0 } }}>Property</Divider>
         <div style={{ display: "flex", gap: 16 }}>
           <Form.Item name="square_meters" label="m²" rules={[{ required: true, message: "Required" }]} style={{ flex: 1 }}>
             <NumericInput min={1} precision={1} style={{ width: "100%" }} />
@@ -101,24 +130,66 @@ export default function ProspectModal({ open, prospect, onClose }: Props) {
           <Form.Item name="rooms" label="Rooms" rules={[{ required: true, message: "Required" }]} style={{ flex: 1 }}>
             <NumericInput min={1} step={0.5} precision={1} style={{ width: "100%" }} />
           </Form.Item>
+          <Form.Item name="floor" label="Floor" style={{ flex: 1 }}>
+            <NumericInput min={0} precision={0} style={{ width: "100%" }} />
+          </Form.Item>
         </div>
 
+        <Divider orientation="left" styles={{ content: { marginInlineStart: 0 } }}>Features</Divider>
         <div style={{ display: "flex", gap: 16 }}>
-          <Form.Item name="safe_space" label="Safe Space" rules={[{ required: true, message: "Required" }]} style={{ flex: 1 }}>
+          <Form.Item name="safe_space" label="Safe Space" rules={[{ required: true, message: "Required" }]} style={{ flex: 2 }}>
             <Select options={SAFE_SPACE_OPTIONS} />
           </Form.Item>
           <Form.Item name="parking" label="Parking" valuePropName="checked" style={{ flex: 1 }}>
             <Switch />
           </Form.Item>
+          <Form.Item name="realtor" label="Realtor" valuePropName="checked" style={{ flex: 1 }}>
+            <Switch onChange={(checked) => { if (!checked) form.setFieldValue("realtor_fee", null); }} />
+          </Form.Item>
+          <Form.Item name="realtor_fee" label="Realtor Fee (%)" style={{ flex: 1 }}>
+            <NumericInput min={0} max={100} precision={2} disabled={!isRealtor} style={{ width: "100%" }} />
+          </Form.Item>
         </div>
 
-        <Form.Item name="contractor" label="Contractor">
-          <Input />
+        <Divider orientation="left" styles={{ content: { marginInlineStart: 0 } }}>Financials</Divider>
+        <div style={{ display: "flex", gap: 16 }}>
+          <Form.Item name="price" label="Price (₪M)" style={{ flex: 1 }}>
+            <NumericInput min={0} precision={2} style={{ width: "100%" }} />
+          </Form.Item>
+          <Form.Item label="Property Tax (₪)" style={{ flex: 1 }}>
+            <Space.Compact style={{ width: "100%" }}>
+              <Form.Item name="property_tax" noStyle>
+                <NumericInput min={0} precision={2} style={{ width: "100%" }} />
+              </Form.Item>
+              <Input value="bi-monthly" disabled style={{ width: "auto", color: "inherit" }} />
+            </Space.Compact>
+          </Form.Item>
+          <Form.Item label="Building Fees (₪)" style={{ flex: 1 }}>
+            <Space.Compact style={{ width: "100%" }}>
+              <Form.Item name="building_fees" noStyle>
+                <NumericInput min={0} precision={2} style={{ width: "100%" }} />
+              </Form.Item>
+              <Input value="monthly" disabled style={{ width: "auto", color: "inherit" }} />
+            </Space.Compact>
+          </Form.Item>
+        </div>
+
+        <Divider orientation="left" styles={{ content: { marginInlineStart: 0 } }}>Details</Divider>
+        <div style={{ display: "flex", gap: 16 }}>
+          <Form.Item name="contractor" label="Contractor" style={{ flex: 1 }}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="floor_plan_url" label="Floor Plan (PDF URL)" style={{ flex: 1 }}>
+            <Input placeholder="https://..." />
+          </Form.Item>
+          <Form.Item name="video_url" label="Video URL" style={{ flex: 1 }}>
+            <Input placeholder="file:///..." />
+          </Form.Item>
+        </div>
+        <Form.Item name="comment" label="Comment">
+          <Input.TextArea maxLength={500} showCount autoSize={{ minRows: 2, maxRows: 4 }} />
         </Form.Item>
 
-        <Form.Item name="comment" label="Comment">
-          <Input.TextArea maxLength={200} showCount autoSize={{ minRows: 2, maxRows: 4 }} />
-        </Form.Item>
       </Form>
     </Modal>
   );

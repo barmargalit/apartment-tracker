@@ -1,4 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { exec } from 'child_process';
 import { Pool } from 'pg';
 import { DATABASE_POOL } from '../database/database.provider';
 import { ProspectEntity } from './prospect.entity';
@@ -14,6 +15,14 @@ export interface CreateProspectDto {
   safe_space: SafeSpace;
   contractor?: string | null;
   comment?: string | null;
+  price?: number | null;
+  realtor?: boolean;
+  realtor_fee?: number | null;
+  floor_plan_url?: string | null;
+  video_url?: string | null;
+  floor?: number | null;
+  property_tax?: number | null;
+  building_fees?: number | null;
 }
 
 export interface UpdateProspectDto {
@@ -26,6 +35,14 @@ export interface UpdateProspectDto {
   safe_space?: SafeSpace;
   contractor?: string | null;
   comment?: string | null;
+  price?: number | null;
+  realtor?: boolean;
+  realtor_fee?: number | null;
+  floor_plan_url?: string | null;
+  video_url?: string | null;
+  floor?: number | null;
+  property_tax?: number | null;
+  building_fees?: number | null;
 }
 
 @Injectable()
@@ -45,10 +62,10 @@ export class ProspectsService {
   async create(dto: CreateProspectDto): Promise<ProspectEntity> {
     this.logger.log(`Creating prospect "${dto.street}, ${dto.city}"`);
     const result = await this.pool.query<ProspectEntity>(
-      `INSERT INTO prospects (street, city, square_meters, balcony_square_meters, rooms, parking, safe_space, contractor, comment)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      `INSERT INTO prospects (street, city, square_meters, balcony_square_meters, rooms, parking, safe_space, contractor, comment, price, realtor, realtor_fee, floor_plan_url, video_url, floor, property_tax, building_fees)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
        RETURNING *`,
-      [dto.street, dto.city, dto.square_meters, dto.balcony_square_meters ?? null, dto.rooms, dto.parking, dto.safe_space, dto.contractor ?? null, dto.comment ?? null],
+      [dto.street, dto.city, dto.square_meters, dto.balcony_square_meters ?? null, dto.rooms, dto.parking, dto.safe_space, dto.contractor ?? null, dto.comment ?? null, dto.price ?? null, dto.realtor ?? false, dto.realtor_fee ?? null, dto.floor_plan_url ?? null, dto.video_url ?? null, dto.floor ?? null, dto.property_tax ?? null, dto.building_fees ?? null],
     );
     return result.rows[0];
   }
@@ -68,6 +85,14 @@ export class ProspectsService {
     if (dto.safe_space !== undefined)           { fields.push(`safe_space = $${idx++}`);            values.push(dto.safe_space); }
     if (dto.contractor !== undefined)           { fields.push(`contractor = $${idx++}`);            values.push(dto.contractor); }
     if (dto.comment !== undefined)              { fields.push(`comment = $${idx++}`);               values.push(dto.comment); }
+    if (dto.price !== undefined)                { fields.push(`price = $${idx++}`);                 values.push(dto.price); }
+    if (dto.realtor !== undefined)              { fields.push(`realtor = $${idx++}`);               values.push(dto.realtor); }
+    if (dto.realtor_fee !== undefined)          { fields.push(`realtor_fee = $${idx++}`);           values.push(dto.realtor_fee); }
+    if (dto.floor_plan_url !== undefined)       { fields.push(`floor_plan_url = $${idx++}`);        values.push(dto.floor_plan_url); }
+    if (dto.video_url !== undefined)            { fields.push(`video_url = $${idx++}`);             values.push(dto.video_url); }
+    if (dto.floor !== undefined)                { fields.push(`floor = $${idx++}`);                 values.push(dto.floor); }
+    if (dto.property_tax !== undefined)         { fields.push(`property_tax = $${idx++}`);          values.push(dto.property_tax); }
+    if (dto.building_fees !== undefined)        { fields.push(`building_fees = $${idx++}`);         values.push(dto.building_fees); }
 
     values.push(id);
     const result = await this.pool.query<ProspectEntity>(
@@ -80,5 +105,10 @@ export class ProspectsService {
   async delete(id: string): Promise<void> {
     this.logger.log(`Deleting prospect id="${id}"`);
     await this.pool.query('UPDATE prospects SET state = 1 WHERE id = $1', [id]);
+  }
+
+  openFile(path: string): void {
+    this.logger.log(`Opening file: ${path}`);
+    exec(`open "${path.replace(/"/g, '\\"')}"`);
   }
 }

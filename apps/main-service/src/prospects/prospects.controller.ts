@@ -10,6 +10,12 @@ export class ProspectsController {
     return this.prospectsService.findAll();
   }
 
+  @HttpCode(204)
+  @Post('open-file')
+  openFile(@Body() body: { path: string }) {
+    return this.prospectsService.openFile(body.path);
+  }
+
   @Post()
   create(@Body() dto: CreateProspectDto) {
     return this.prospectsService.create(dto);

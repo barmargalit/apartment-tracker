@@ -19,4 +19,12 @@ export interface Prospect {
   safe_space: SafeSpace;
   contractor: string | null;
   comment: string | null;
+  price: number | null;
+  realtor: boolean;
+  realtor_fee: number | null;
+  floor_plan_url: string | null;
+  video_url: string | null;
+  floor: number | null;
+  property_tax: number | null;
+  building_fees: number | null;
 }

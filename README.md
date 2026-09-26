@@ -78,15 +78,25 @@ Track your current and past residences. Bills can be scoped to a specific reside
 ### Prospects Tracking
 Keep a shortlist of apartments you are evaluating for purchase. Each prospect records:
 
+**Location & Property**
 - Street and city
-- Size (m²) and balcony size
-- Number of rooms
-- Parking (yes/no)
-- Safe space / shelter type — Room, Floor, Building, or None
-- Contractor (for new-build apartments)
-- Free-text notes
+- Size (m²), balcony size, number of rooms, and floor number
+- Parking (yes/no) and safe space / shelter type — Room, Floor, Building, or None
 
-Full create, edit, and delete support with a clean table view.
+**Financials**
+- Asking price (₪M)
+- Property tax (bi-monthly, ₪) and building fees (monthly, ₪)
+
+**Realtor**
+- Realtor flag — when enabled, a realtor fee (%) field appears for later price calculation
+
+**Details**
+- Contractor (for new-build apartments)
+- Floor plan — attach a PDF URL, opened in one click from the table
+- Video — attach a local file path; clicking the play icon in the table opens it in the system's default media player via the backend
+- Free-text notes (up to 500 characters)
+
+Full create, edit, and delete support with a sectioned modal (Location, Property, Features, Financials, Details) and a streamlined table view.
 
 ### Mortgage Calculator
 Model a mortgage before committing. Supports multiple **plans**, each composed of multiple **tracks** (loan tranches) — matching the way Israeli banks structure mortgages.
