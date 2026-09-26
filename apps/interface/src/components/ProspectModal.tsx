@@ -109,7 +109,7 @@ export default function ProspectModal({ open, prospect, onClose }: Props) {
     >
       <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
 
-        <Divider orientation="left" styles={{ content: { marginInlineStart: 0 } }} style={{ marginTop: 0 }}>Location</Divider>
+        <Divider titlePlacement="start" style={{ marginTop: 0 }}>Location</Divider>
         <div style={{ display: "flex", gap: 16 }}>
           <Form.Item name="street" label="Street" rules={[{ required: true, message: "Required" }]} style={{ flex: 2 }}>
             <Input />
@@ -119,7 +119,7 @@ export default function ProspectModal({ open, prospect, onClose }: Props) {
           </Form.Item>
         </div>
 
-        <Divider orientation="left" styles={{ content: { marginInlineStart: 0 } }}>Property</Divider>
+        <Divider titlePlacement="start">Property</Divider>
         <div style={{ display: "flex", gap: 16 }}>
           <Form.Item name="square_meters" label="m²" rules={[{ required: true, message: "Required" }]} style={{ flex: 1 }}>
             <NumericInput min={1} precision={1} style={{ width: "100%" }} />
@@ -135,7 +135,7 @@ export default function ProspectModal({ open, prospect, onClose }: Props) {
           </Form.Item>
         </div>
 
-        <Divider orientation="left" styles={{ content: { marginInlineStart: 0 } }}>Features</Divider>
+        <Divider titlePlacement="start">Features</Divider>
         <div style={{ display: "flex", gap: 16 }}>
           <Form.Item name="safe_space" label="Safe Space" rules={[{ required: true, message: "Required" }]} style={{ flex: 2 }}>
             <Select options={SAFE_SPACE_OPTIONS} />
@@ -151,7 +151,7 @@ export default function ProspectModal({ open, prospect, onClose }: Props) {
           </Form.Item>
         </div>
 
-        <Divider orientation="left" styles={{ content: { marginInlineStart: 0 } }}>Financials</Divider>
+        <Divider titlePlacement="start">Financials</Divider>
         <div style={{ display: "flex", gap: 16 }}>
           <Form.Item name="price" label="Price (₪M)" style={{ flex: 1 }}>
             <NumericInput min={0} precision={2} style={{ width: "100%" }} />
@@ -174,7 +174,7 @@ export default function ProspectModal({ open, prospect, onClose }: Props) {
           </Form.Item>
         </div>
 
-        <Divider orientation="left" styles={{ content: { marginInlineStart: 0 } }}>Details</Divider>
+        <Divider titlePlacement="start">Details</Divider>
         <div style={{ display: "flex", gap: 16 }}>
           <Form.Item name="contractor" label="Contractor" style={{ flex: 1 }}>
             <Input />
