@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dayjs from "dayjs";
 import { Button, Space } from "antd";
 import { CheckOutlined, CloseOutlined, EditOutlined, DeleteOutlined, FilePdfOutlined, PlayCircleOutlined } from "@ant-design/icons";
 import type { TableColumnsType } from "antd";
@@ -73,6 +74,12 @@ export default function ProspectsTable({ createOpen, onCreateClose }: Props) {
       dataIndex: "comment",
       key: "comment",
       render: (v: string | null) => v ?? "-",
+    },
+    {
+      title: "Visited",
+      dataIndex: "visited",
+      key: "visited",
+      render: (v: string | null) => v ? dayjs(v).format("DD/MM/YY") : "-",
     },
     {
       key: "actions",

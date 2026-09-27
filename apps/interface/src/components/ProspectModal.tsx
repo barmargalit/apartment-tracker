@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
-import { Divider, Form, Input, Modal, Select, Space, Switch } from "antd";
+import dayjs from "dayjs";
+import { DatePicker, Divider, Form, Input, Modal, Select, Space, Switch } from "antd";
+import type { Dayjs } from "dayjs";
 import NumericInput from "./NumericInput";
 import type { Prospect, SafeSpace } from "@apartment-tracker/types";
 import { useProspectsStore } from "@/store/prospectsStore";
@@ -30,6 +32,7 @@ interface FormValues {
   floor?: number | null;
   property_tax?: number | null;
   building_fees?: number | null;
+  visited?: Dayjs | null;
 }
 
 const SAFE_SPACE_OPTIONS = [
@@ -66,6 +69,7 @@ export default function ProspectModal({ open, prospect, onClose }: Props) {
           floor: prospect.floor,
           property_tax: prospect.property_tax,
           building_fees: prospect.building_fees,
+          visited: prospect.visited ? dayjs(prospect.visited) : null,
         });
       } else {
         form.resetFields();
@@ -88,6 +92,7 @@ export default function ProspectModal({ open, prospect, onClose }: Props) {
       floor: values.floor ?? null,
       property_tax: values.property_tax ?? null,
       building_fees: values.building_fees ?? null,
+      visited: values.visited ? values.visited.toISOString() : null,
     };
     if (isEdit) {
       await updateProspect(prospect.id, payload);
@@ -178,6 +183,9 @@ export default function ProspectModal({ open, prospect, onClose }: Props) {
         <div style={{ display: "flex", gap: 16 }}>
           <Form.Item name="contractor" label="Contractor" style={{ flex: 1 }}>
             <Input />
+          </Form.Item>
+          <Form.Item name="visited" label="Visited" style={{ flex: 1 }}>
+            <DatePicker format="DD/MM/YY" style={{ width: "100%" }} />
           </Form.Item>
           <Form.Item name="floor_plan_url" label="Floor Plan (PDF URL)" style={{ flex: 1 }}>
             <Input placeholder="https://..." />

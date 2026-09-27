@@ -27,4 +27,5 @@ export interface Prospect {
   floor: number | null;
   property_tax: number | null;
   building_fees: number | null;
+  visited: Date | null;
 }

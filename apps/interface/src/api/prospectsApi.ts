@@ -30,6 +30,7 @@ export interface CreateProspectPayload {
   floor?: number | null;
   property_tax?: number | null;
   building_fees?: number | null;
+  visited?: string | null;
 }
 
 export interface UpdateProspectPayload {
@@ -50,6 +51,7 @@ export interface UpdateProspectPayload {
   floor?: number | null;
   property_tax?: number | null;
   building_fees?: number | null;
+  visited?: string | null;
 }
 
 export const prospectsApi = {

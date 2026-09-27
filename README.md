@@ -95,6 +95,7 @@ Keep a shortlist of apartments you are evaluating for purchase. Each prospect re
 - Floor plan — attach a PDF URL, opened in one click from the table
 - Video — attach a local file path; clicking the play icon in the table opens it in the system's default media player via the backend
 - Free-text notes (up to 500 characters)
+- **Visited date** — record when you physically visited the apartment; the table is sorted by visited date (most recent first)
 
 Full create, edit, and delete support with a sectioned modal (Location, Property, Features, Financials, Details) and a streamlined table view.
 
@@ -256,7 +257,7 @@ for f in apps/main-service/src/migrations/*.sql; do
 done
 ```
 
-Or apply them one by one using your preferred PostgreSQL client. The migration files are sequential — they must be run in order (001 → 029).
+Or apply them one by one using your preferred PostgreSQL client. The migration files are sequential — they must be run in order (001 → 030).
 
 ### 6. Build the shared types package
 
