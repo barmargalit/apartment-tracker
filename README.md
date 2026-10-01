@@ -21,7 +21,7 @@ Track recurring and one-off household expenses across eight bill types:
 | Rent | — |
 
 - Attach a **provider**, **residence**, **resident**, and **contract** to each bill
-- Selecting a contract auto-fills the provider, residence/resident, and monthly price
+- Selecting a contract auto-fills the provider, residence/resident, and monthly price — the contract selector is grouped by **Active** / **Ended**
 - Add free-text **comments** per bill
 - Electric and Water bills display a **usage-over-time chart** on the bills page
 
@@ -29,10 +29,13 @@ Track recurring and one-off household expenses across eight bill types:
 Track service provider contracts (cellular plans, internet subscriptions, and more) independently of individual bills:
 
 - Supports **type-specific fields**: data allowance, unlimited calls/SMS for cellular; speed for internet
-- **Active / Ended** status derived automatically from the end date
+- The table is split into two sections, **Active** and **Ended** (ended below active), each with its own `Divider` title — status is derived automatically from the end date
 - Optionally linked to a **residence** or a **resident**
 - **Expiry alerts** — contracts expiring in the next 2 months are highlighted with a warning row colour and icon in the table, and surfaced as an alert banner on the Contracts page and the home dashboard
-- Filter the table by provider, type, status, and date ranges
+- Filter the tables by provider, type, and date ranges; a **refresh** button next to "New" in the page header re-fetches the list
+- Deleting a contract is done from the **edit modal** (Delete button with a confirmation popover), not from the table row
+- **Compare Offers** — log competing offers from other providers against a contract and compare them side by side against the current terms (price delta, data/speed deltas, status)
+  - Accepting an offer no longer overwrites the contract: it prompts for an **effective date** (and an optional **end date**, with 6/12/18/24-month quick-select presets anchored to the effective date), closes out the previous contract the day before, and creates a brand-new contract row with the offer's terms — so historical pricing is preserved instead of being lost
 
 ### Residents
 Manage the people living at your residences from the **My Residence** page:
@@ -257,7 +260,7 @@ for f in apps/main-service/src/migrations/*.sql; do
 done
 ```
 
-Or apply them one by one using your preferred PostgreSQL client. The migration files are sequential — they must be run in order (001 → 030).
+Or apply them one by one using your preferred PostgreSQL client. The migration files are sequential — they must be run in order (001 → 031).
 
 ### 6. Build the shared types package
 

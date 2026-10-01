@@ -1,17 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Button, DatePicker, Divider, Form, Input, InputNumber, Modal, Select } from "antd";
+import { useEffect, useRef } from "react";
+import { DatePicker, Form, Input, InputNumber, Modal, Select } from "antd";
 import NumericInput from "./NumericInput";
-import { PlusOutlined } from "@ant-design/icons";
 import dayjs, { Dayjs } from "dayjs";
-import type { Bill, BillPeriod, BillType, ElectricBillData, Provider, WaterBillData } from "@apartment-tracker/types";
+import type { Bill, BillPeriod, BillType, Contract, ElectricBillData, WaterBillData } from "@apartment-tracker/types";
 import { useBillsStore } from "@/store/billsStore";
 import { useResidencesStore } from "@/store/residencesStore";
 import { useProvidersStore } from "@/store/providersStore";
 import { useContractsStore } from "@/store/contractsStore";
 import { useResidentsStore } from "@/store/residentsStore";
-import ProviderModal from "./ProviderModal";
+import ProviderSelect from "./ProviderSelect";
 import { BILL_TYPE_OPTIONS } from "@/lib/billTypes";
 
 interface Props {
@@ -71,24 +70,14 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
   const showYear = YEAR_TYPES.has(selectedType);
   const usageSuffix = selectedType === "electric" ? "kWh" : "m³";
 
-  const [providerModalOpen, setProviderModalOpen] = useState(false);
   const skipContractPriceFill = useRef(false);
 
   const { bills, createBill, updateBill } = useBillsStore();
   const { residences, fetchAll: fetchResidences } = useResidencesStore();
-  const { providers, fetchAll: fetchProviders } = useProvidersStore();
+  const { providers } = useProvidersStore();
   const { contracts, fetchAll: fetchContracts } = useContractsStore();
   const { residents, fetchAll: fetchResidents } = useResidentsStore();
   const isEdit = !!bill;
-
-  const handleProviderCreated = (created?: Provider) => {
-    setProviderModalOpen(false);
-    if (created) form.setFieldValue("provider_id", created.id);
-  };
-
-  useEffect(() => {
-    if (selectedType) fetchProviders(selectedType as BillType);
-  }, [selectedType]);
 
   useEffect(() => {
     if (!open || isEdit) return;
@@ -190,19 +179,26 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
   const residenceById = Object.fromEntries(residences.map((r) => [r.id, r]));
   const residentById = Object.fromEntries(residents.map((r) => [r.id, r]));
 
-  const contractOptions = contracts
-    .filter((c) => !selectedType || c.bill_type === selectedType)
-    .map((c) => {
-      const providerName = providerById[c.provider_id]?.name ?? c.bill_type;
-      const assignee = c.resident_id
-        ? residentById[c.resident_id]?.name
-        : c.residence_id
-        ? (() => { const r = residenceById[c.residence_id!]; return r ? `${r.street}, ${r.city}` : undefined; })()
-        : undefined;
-      const dates = `${dayjs(c.start_date).format("DD/MM/YY")}${c.end_date ? ` → ${dayjs(c.end_date).format("DD/MM/YY")}` : ""}`;
-      const label = [providerName, assignee, dates].filter(Boolean).join(" · ");
-      return { value: c.id, label };
-    });
+  const isContractEnded = (c: Contract) => !!c.end_date && dayjs(c.end_date).isBefore(dayjs(), "day");
+
+  const contractToOption = (c: Contract) => {
+    const providerName = providerById[c.provider_id]?.name ?? c.bill_type;
+    const assignee = c.resident_id
+      ? residentById[c.resident_id]?.name
+      : c.residence_id
+      ? (() => { const r = residenceById[c.residence_id!]; return r ? `${r.street}, ${r.city}` : undefined; })()
+      : undefined;
+    const dates = `${dayjs(c.start_date).format("DD/MM/YY")}${c.end_date ? ` → ${dayjs(c.end_date).format("DD/MM/YY")}` : ""}`;
+    const label = [providerName, assignee, dates].filter(Boolean).join(" · ");
+    return { value: c.id, label };
+  };
+
+  const filteredContracts = contracts.filter((c) => !selectedType || c.bill_type === selectedType);
+
+  const contractOptions = [
+    { label: "Active", options: filteredContracts.filter((c) => !isContractEnded(c)).map(contractToOption) },
+    { label: "Ended", options: filteredContracts.filter(isContractEnded).map(contractToOption) },
+  ];
 
   return (
     <Modal
@@ -262,6 +258,10 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
             <DatePicker format="DD/MM/YY" style={{ width: "100%" }} />
           </Form.Item>
         </div>
+
+        <Form.Item name="contract_id" label="Contract" extra={<span style={{ fontSize: 12 }}>Selecting a contract will auto-fill the provider, residence, resident, and price.</span>}>
+          <Select allowClear placeholder="None" options={contractOptions} />
+        </Form.Item>
 
         {showUsage ? (
           <div style={{ display: "flex", gap: 24 }}>
@@ -349,10 +349,6 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
           <Input.TextArea maxLength={200} showCount autoSize={{ minRows: 2, maxRows: 4 }} />
         </Form.Item>
 
-        <Form.Item name="contract_id" label="Contract" extra={<span style={{ fontSize: 12 }}>Selecting a contract will auto-fill the provider, residence, resident, and price.</span>}>
-          <Select allowClear placeholder="None" options={contractOptions} />
-        </Form.Item>
-
         <div style={{ display: "flex", gap: 24 }}>
           <Form.Item name="residence_id" label="Residence" style={{ flex: 1 }}>
             <Select
@@ -374,34 +370,9 @@ export default function BillModal({ open, bill, defaultType, onClose }: Props) {
         </div>
 
         <Form.Item name="provider_id" label="Provider">
-          <Select
-            allowClear
-            placeholder="None"
-            options={providers.map((p) => ({ value: p.id, label: p.name }))}
-            popupRender={(menu) => (
-              <>
-                {menu}
-                <Divider style={{ margin: 0 }} />
-                <Button
-                  type="text"
-                  icon={<PlusOutlined />}
-                  style={{ width: "100%", textAlign: "left", margin: "6px 0" }}
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => setProviderModalOpen(true)}
-                >
-                  Add provider
-                </Button>
-              </>
-            )}
-          />
+          <ProviderSelect billType={selectedType as BillType} allowClear placeholder="None" />
         </Form.Item>
       </Form>
-
-      <ProviderModal
-        open={providerModalOpen}
-        defaultType={selectedType as BillType}
-        onClose={handleProviderCreated}
-      />
     </Modal>
   );
 }

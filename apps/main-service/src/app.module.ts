@@ -13,6 +13,7 @@ import { MortgageTracksModule } from "./mortgage-tracks/mortgage-tracks.module";
 import { UsagesModule } from "./usages/usages.module";
 import { PricesModule } from "./prices/prices.module";
 import { ContractsModule } from "./contracts/contracts.module";
+import { ContractOffersModule } from "./contract-offers/contract-offers.module";
 import { ResidentsModule } from "./residents/residents.module";
 import config from "./config";
 
@@ -33,6 +34,7 @@ import config from "./config";
     UsagesModule,
     PricesModule,
     ContractsModule,
+    ContractOffersModule,
     ResidentsModule,
   ],
   controllers: [AppController],

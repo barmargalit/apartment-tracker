@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import { Button, DatePicker, Space, Tag, theme, Tooltip } from "antd";
-import { EditOutlined, DeleteOutlined, SearchOutlined, WarningOutlined } from "@ant-design/icons";
+import { Button, DatePicker, Divider, Space, theme, Tooltip } from "antd";
+import { EditOutlined, SearchOutlined, SwapOutlined, WarningOutlined } from "@ant-design/icons";
 import type { TableColumnsType } from "antd";
 
 interface FilterDropdownProps {
@@ -63,10 +63,10 @@ interface Props {
   residences?: Residence[];
   residents?: Resident[];
   onEdit: (contract: Contract) => void;
-  onDelete: (contract: Contract) => void;
+  onCompare: (contract: Contract) => void;
 }
 
-export default function ContractsTable({ data, loading, providers, residences = [], residents = [], onEdit, onDelete }: Props) {
+export default function ContractsTable({ data, loading, providers, residences = [], residents = [], onEdit, onCompare }: Props) {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const { token } = theme.useToken();
   const providerById = Object.fromEntries(providers.map((p) => [p.id, p]));
@@ -112,20 +112,6 @@ export default function ContractsTable({ data, loading, providers, residences = 
       onFilter: (value, row) => row.bill_type === value,
     },
     {
-      title: "Status",
-      key: "status",
-      render: (_: unknown, row: Contract) =>
-        isEnded(row.end_date)
-          ? <Tag color="red">Ended</Tag>
-          : <Tag color="green">Active</Tag>,
-      filters: [
-        { text: <Tag color="green">Active</Tag>, value: "active" },
-        { text: <Tag color="red">Ended</Tag>, value: "ended" },
-      ],
-      onFilter: (value, row) =>
-        value === "ended" ? isEnded(row.end_date) : !isEnded(row.end_date),
-    },
-    {
       title: "Start Date",
       dataIndex: "start_date",
       key: "start_date",
@@ -153,26 +139,45 @@ export default function ContractsTable({ data, loading, providers, residences = 
     {
       key: "actions",
       fixed: "right",
-      width: 80,
+      width: 72,
       render: (_: unknown, row: Contract) => (
-        <Space style={{ opacity: hoveredId === row.id ? 1 : 0, transition: "opacity 0.15s" }}>
+        <Space size={0} style={{ opacity: hoveredId === row.id ? 1 : 0, transition: "opacity 0.15s" }}>
+          <Tooltip title="Compare Offers">
+            <Button type="text" icon={<SwapOutlined />} onClick={() => onCompare(row)} />
+          </Tooltip>
           <Button type="text" icon={<EditOutlined />} onClick={() => onEdit(row)} />
-          <Button type="text" danger icon={<DeleteOutlined />} onClick={() => onDelete(row)} />
         </Space>
       ),
     },
   ];
 
+  const activeContracts = data.filter((row) => !isEnded(row.end_date));
+  const endedContracts = data.filter((row) => isEnded(row.end_date));
+
+  const rowProps = (row: Contract) => ({
+    onMouseEnter: () => setHoveredId(row.id),
+    onMouseLeave: () => setHoveredId(null),
+  });
+
   return (
-    <DataTable<Contract>
-      rowKey="id"
-      columns={columns}
-      dataSource={data}
-      loading={loading}
-      onRow={(row) => ({
-        onMouseEnter: () => setHoveredId(row.id),
-        onMouseLeave: () => setHoveredId(null),
-      })}
-    />
+    <>
+      <Divider titlePlacement="start" style={{ marginTop: 0 }}>Active</Divider>
+      <DataTable<Contract>
+        rowKey="id"
+        columns={columns}
+        dataSource={activeContracts}
+        loading={loading}
+        onRow={rowProps}
+      />
+
+      <Divider titlePlacement="start">Ended</Divider>
+      <DataTable<Contract>
+        rowKey="id"
+        columns={columns}
+        dataSource={endedContracts}
+        loading={loading}
+        onRow={rowProps}
+      />
+    </>
   );
 }

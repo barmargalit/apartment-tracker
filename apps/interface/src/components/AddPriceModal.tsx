@@ -1,11 +1,11 @@
 "use client";
 
 import {useEffect} from "react";
-import {DatePicker, Form, Input, InputNumber, Modal, Select} from "antd";
+import {DatePicker, Form, Input, InputNumber, Modal} from "antd";
 import dayjs from "dayjs";
 import {BillType, PriceHistory} from "@apartment-tracker/types";
-import {useProvidersStore} from "@/store/providersStore";
 import {usePricesStore} from "@/store/pricesStore";
+import ProviderSelect from "./ProviderSelect";
 
 interface Props {
     open: boolean;
@@ -23,13 +23,8 @@ interface FormValues {
 
 export default function AddPriceModal({open, billType, editRecord, onClose}: Props) {
     const [form] = Form.useForm<FormValues>();
-    const {providers, fetchAll} = useProvidersStore();
     const {upsertPrice, updateHistoryPrice} = usePricesStore();
     const isEdit = !!editRecord;
-
-    useEffect(() => {
-        if (open) fetchAll(billType);
-    }, [open, billType]);
 
     useEffect(() => {
         if (open && editRecord) {
@@ -95,11 +90,7 @@ export default function AddPriceModal({open, billType, editRecord, onClose}: Pro
                     />
                 </Form.Item>
                 <Form.Item name="provider_id" label="Provider">
-                    <Select
-                        allowClear
-                        placeholder="Select provider"
-                        options={providers.map((p) => ({value: p.id, label: p.name}))}
-                    />
+                    <ProviderSelect billType={billType} allowClear placeholder="Select provider" />
                 </Form.Item>
                 <Form.Item name="valid_from" label="Date set">
                     <DatePicker

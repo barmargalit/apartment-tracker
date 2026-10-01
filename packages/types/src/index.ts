@@ -7,4 +7,5 @@ export * from './residence';
 export * from './price';
 export * from './usage';
 export * from './contract';
+export * from './contractOffer';
 export * from './resident';

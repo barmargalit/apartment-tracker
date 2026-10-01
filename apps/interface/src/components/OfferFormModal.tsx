@@ -1,32 +1,33 @@
 "use client";
 
 import { useEffect } from "react";
-import { Button, Checkbox, DatePicker, Form, Input, InputNumber, Modal, Popconfirm, Select } from "antd";
-import { DeleteOutlined } from "@ant-design/icons";
+import { Checkbox, DatePicker, Form, Input, InputNumber, Modal, Select } from "antd";
 import dayjs, { Dayjs } from "dayjs";
-import type { BillType, CellularContractData, Contract, InternetContractData } from "@apartment-tracker/types";
-import { useContractsStore } from "@/store/contractsStore";
-import { useResidencesStore } from "@/store/residencesStore";
-import { useResidentsStore } from "@/store/residentsStore";
-import { BILL_TYPE_OPTIONS } from "@/lib/billTypes";
+import type { BillType, CellularContractData, ContractOffer, ContractOfferStatus, InternetContractData } from "@apartment-tracker/types";
+import { useContractOffersStore } from "@/store/contractOffersStore";
 import NumericInput from "./NumericInput";
 import ProviderSelect from "./ProviderSelect";
 
+const STATUS_OPTIONS: { value: ContractOfferStatus; label: string }[] = [
+  { value: "pending", label: "Pending" },
+  { value: "accepted", label: "Accepted" },
+  { value: "rejected", label: "Rejected" },
+  { value: "expired", label: "Expired" },
+];
+
 interface Props {
   open: boolean;
-  contract?: Contract | null;
-  defaultType?: BillType;
+  contractId: string;
+  billType: BillType;
+  offer?: ContractOffer | null;
   onClose: () => void;
 }
 
 interface FormValues {
-  bill_type: BillType;
   provider_id: string;
-  residence_id?: string | null;
-  resident_id?: string | null;
   monthly_price: number;
-  start_date: Dayjs;
-  end_date?: Dayjs | null;
+  received_date: Dayjs;
+  status: ContractOfferStatus;
   comment?: string | null;
   // cellular
   data_gb?: number;
@@ -38,36 +39,28 @@ interface FormValues {
   speed_mbps?: number;
 }
 
-export default function ContractModal({ open, contract, defaultType, onClose }: Props) {
+export default function OfferFormModal({ open, contractId, billType, offer, onClose }: Props) {
   const [form] = Form.useForm<FormValues>();
-  const selectedType = Form.useWatch("bill_type", form);
   const callsUnlimited = Form.useWatch("calls_unlimited", form);
   const smsUnlimited = Form.useWatch("sms_unlimited", form);
 
-  const isCellular = selectedType === "cellular";
-  const isInternet = selectedType === "internet";
-  const isEdit = !!contract;
+  const isCellular = billType === "cellular";
+  const isInternet = billType === "internet";
+  const isEdit = !!offer;
 
-  const { createContract, updateContract, deleteContract } = useContractsStore();
-  const { residences, fetchAll: fetchResidences } = useResidencesStore();
-  const { residents, fetchAll: fetchResidents } = useResidentsStore();
+  const { createOffer, updateOffer } = useContractOffersStore();
 
   useEffect(() => {
     if (!open) return;
-    fetchResidences();
-    fetchResidents();
 
-    if (contract) {
-      const d = contract.data as Partial<CellularContractData & InternetContractData>;
+    if (offer) {
+      const d = offer.data as Partial<CellularContractData & InternetContractData>;
       form.setFieldsValue({
-        bill_type: contract.bill_type,
-        provider_id: contract.provider_id,
-        residence_id: contract.residence_id,
-        resident_id: contract.resident_id,
-        monthly_price: contract.monthly_price,
-        start_date: dayjs(contract.start_date),
-        end_date: contract.end_date ? dayjs(contract.end_date) : null,
-        comment: contract.comment,
+        provider_id: offer.provider_id,
+        monthly_price: offer.monthly_price,
+        received_date: dayjs(offer.received_date),
+        status: offer.status,
+        comment: offer.comment,
         data_gb: d.data_gb,
         calls_unlimited: d.calls_unlimited,
         calls_minutes: d.calls_minutes,
@@ -77,9 +70,9 @@ export default function ContractModal({ open, contract, defaultType, onClose }: 
       });
     } else {
       form.resetFields();
-      if (defaultType) form.setFieldValue("bill_type", defaultType);
+      form.setFieldsValue({ received_date: dayjs(), status: "pending" });
     }
-  }, [open, contract]);
+  }, [open, offer]);
 
   const handleOk = async () => {
     const values = await form.validateFields();
@@ -98,21 +91,19 @@ export default function ContractModal({ open, contract, defaultType, onClose }: 
     }
 
     const payload = {
-      bill_type: values.bill_type,
       provider_id: values.provider_id,
-      residence_id: values.residence_id ?? null,
-      resident_id: values.resident_id ?? null,
+      bill_type: billType,
       monthly_price: values.monthly_price,
-      start_date: values.start_date.format("YYYY-MM-DD"),
-      end_date: values.end_date ? values.end_date.format("YYYY-MM-DD") : null,
+      received_date: values.received_date.format("YYYY-MM-DD"),
+      status: values.status,
       comment: values.comment ?? null,
       data,
     };
 
     if (isEdit) {
-      await updateContract(contract.id, payload);
+      await updateOffer(offer.id, contractId, payload);
     } else {
-      await createContract(payload);
+      await createOffer({ ...payload, contract_id: contractId });
     }
     onClose();
   };
@@ -122,62 +113,18 @@ export default function ContractModal({ open, contract, defaultType, onClose }: 
     onClose();
   };
 
-  const handleDelete = async () => {
-    await deleteContract(contract!.id);
-    onClose();
-  };
-
   return (
     <Modal
-      title={isEdit ? "Edit Contract" : "New Contract"}
+      title={isEdit ? "Edit Offer" : "New Offer"}
       open={open}
       onOk={handleOk}
       onCancel={handleCancel}
       okText="Save"
       destroyOnHidden
-      footer={(_, { OkBtn, CancelBtn }) => (
-        <div style={{ display: "flex", width: "100%", justifyContent: isEdit ? "space-between" : "flex-end" }}>
-          {isEdit && (
-            <Popconfirm
-              title="Delete Contract"
-              description="Are you sure you want to delete this contract? This action cannot be undone."
-              okText="Delete"
-              okButtonProps={{ danger: true }}
-              onConfirm={handleDelete}
-            >
-              <Button danger icon={<DeleteOutlined />}>Delete</Button>
-            </Popconfirm>
-          )}
-          <div style={{ display: "flex", gap: 8 }}>
-            <CancelBtn />
-            <OkBtn />
-          </div>
-        </div>
-      )}
     >
       <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
-        <Form.Item name="bill_type" label="Type" rules={[{ required: true, message: "Required" }]}>
-          <Select options={BILL_TYPE_OPTIONS} />
-        </Form.Item>
-
         <Form.Item name="provider_id" label="Provider" rules={[{ required: true, message: "Required" }]}>
-          <ProviderSelect billType={selectedType as BillType} placeholder="Select provider" />
-        </Form.Item>
-
-        <Form.Item name="residence_id" label="Residence">
-          <Select
-            allowClear
-            placeholder="None"
-            options={residences.map((r) => ({ value: r.id, label: `${r.street}, ${r.city}` }))}
-          />
-        </Form.Item>
-
-        <Form.Item name="resident_id" label="Resident">
-          <Select
-            allowClear
-            placeholder="None"
-            options={residents.map((r) => ({ value: r.id, label: r.name }))}
-          />
+          <ProviderSelect billType={billType} placeholder="Select provider" />
         </Form.Item>
 
         <Form.Item name="monthly_price" label="Monthly Price" rules={[{ required: true, message: "Required" }]}>
@@ -185,11 +132,11 @@ export default function ContractModal({ open, contract, defaultType, onClose }: 
         </Form.Item>
 
         <div style={{ display: "flex", gap: 24 }}>
-          <Form.Item name="start_date" label="Start Date" rules={[{ required: true, message: "Required" }]} style={{ flex: 1 }}>
+          <Form.Item name="received_date" label="Received Date" rules={[{ required: true, message: "Required" }]} style={{ flex: 1 }}>
             <DatePicker format="DD/MM/YY" style={{ width: "100%" }} />
           </Form.Item>
-          <Form.Item name="end_date" label="End Date" style={{ flex: 1 }}>
-            <DatePicker format="DD/MM/YY" style={{ width: "100%" }} />
+          <Form.Item name="status" label="Status" rules={[{ required: true, message: "Required" }]} style={{ flex: 1 }}>
+            <Select options={STATUS_OPTIONS} />
           </Form.Item>
         </div>
 

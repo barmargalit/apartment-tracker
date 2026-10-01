@@ -52,6 +52,15 @@ export class ContractsService {
     return result.rows;
   }
 
+  async findOne(id: string): Promise<ContractEntity | null> {
+    this.logger.log(`Fetching contract id="${id}"`);
+    const result = await this.pool.query<ContractEntity>(
+      'SELECT * FROM contracts WHERE id = $1',
+      [id],
+    );
+    return result.rows[0] ?? null;
+  }
+
   async create(dto: CreateContractDto): Promise<ContractEntity> {
     this.logger.log(`Creating contract of type "${dto.bill_type}"`);
     const result = await this.pool.query<ContractEntity>(
@@ -93,6 +102,15 @@ export class ContractsService {
     const result = await this.pool.query<ContractEntity>(
       `UPDATE contracts SET ${fields.join(', ')} WHERE id = $${idx} RETURNING *`,
       values,
+    );
+    return result.rows[0];
+  }
+
+  async closeOutBefore(id: string, effectiveDate: string): Promise<ContractEntity> {
+    this.logger.log(`Closing out contract id="${id}" before effective_date="${effectiveDate}"`);
+    const result = await this.pool.query<ContractEntity>(
+      `UPDATE contracts SET end_date = ($1::date - interval '1 day')::date WHERE id = $2 RETURNING *`,
+      [effectiveDate, id],
     );
     return result.rows[0];
   }

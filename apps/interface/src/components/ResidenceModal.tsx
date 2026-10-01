@@ -4,10 +4,11 @@ import { useEffect } from "react";
 import { DatePicker, Form, Input, Modal, Select, Switch, Tabs } from "antd";
 import { ThunderboltOutlined, ExperimentOutlined } from "@ant-design/icons";
 import dayjs, { Dayjs } from "dayjs";
-import type { Residence, UtilitySettings } from "@apartment-tracker/types";
+import type { Provider, Residence, UtilitySettings } from "@apartment-tracker/types";
 import { BillType } from "@apartment-tracker/types";
 import { useResidencesStore } from "@/store/residencesStore";
 import { useProvidersStore } from "@/store/providersStore";
+import ProviderSelect from "./ProviderSelect";
 
 interface Props {
   open: boolean;
@@ -136,15 +137,12 @@ export default function ResidenceModal({ open, residence, onClose }: Props) {
   const utilityTab = (
     providerField: keyof FormValues,
     metersField: keyof FormValues,
-    providerOptions: { id: string; name: string }[],
+    providerType: BillType,
+    providerOptions: Provider[],
   ) => (
     <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
       <Form.Item name={providerField} label="Provider">
-        <Select
-          allowClear
-          placeholder="Select provider"
-          options={providerOptions.map((p) => ({ value: p.id, label: p.name }))}
-        />
+        <ProviderSelect billType={providerType} providers={providerOptions} allowClear placeholder="Select provider" />
       </Form.Item>
       <Form.Item name={metersField} label="Meter Numbers">
         <Select mode="tags" placeholder="Type a number and press Enter" open={false} />
@@ -157,12 +155,12 @@ export default function ResidenceModal({ open, residence, onClose }: Props) {
     {
       key: "electric",
       label: <span><ThunderboltOutlined /> Electric</span>,
-      children: utilityTab("electric_provider_id", "electric_meter_numbers", electricProviders),
+      children: utilityTab("electric_provider_id", "electric_meter_numbers", BillType.Electric, electricProviders),
     },
     {
       key: "water",
       label: <span><ExperimentOutlined /> Water</span>,
-      children: utilityTab("water_provider_id", "water_meter_numbers", waterProviders),
+      children: utilityTab("water_provider_id", "water_meter_numbers", BillType.Water, waterProviders),
     },
   ];
 
