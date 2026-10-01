@@ -25,7 +25,7 @@ export default function ProviderSelect({ billType, providers: providersOverride,
     if (!providersOverride) fetchAll();
   }, [providersOverride]);
 
-  const providers = providersOverride ?? (billType ? storeProviders.filter((p) => p.type === billType) : storeProviders);
+  const providers = providersOverride ?? (billType ? storeProviders.filter((p) => p.types.includes(billType)) : storeProviders);
 
   const handleProviderCreated = (created?: Provider) => {
     setProviderModalOpen(false);

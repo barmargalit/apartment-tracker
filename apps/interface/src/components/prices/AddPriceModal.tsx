@@ -5,7 +5,7 @@ import {DatePicker, Form, Input, InputNumber, Modal} from "antd";
 import dayjs from "dayjs";
 import {BillType, PriceHistory} from "@apartment-tracker/types";
 import {usePricesStore} from "@/store/pricesStore";
-import ProviderSelect from "./ProviderSelect";
+import ProviderSelect from "@/components/providers/ProviderSelect";
 
 interface Props {
     open: boolean;

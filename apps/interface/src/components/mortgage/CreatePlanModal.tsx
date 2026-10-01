@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { Button, Divider, Form, Modal, Select } from "antd";
-import NumericInput from "./NumericInput";
+import NumericInput from "@/components/shared/NumericInput";
 import { PlusOutlined } from "@ant-design/icons";
 import { useBanksStore } from "@/store/banksStore";
-import BankModal from "./BankModal";
+import BankModal from "@/components/banks/BankModal";
 import type { Bank } from "@apartment-tracker/types";
 
 interface Props {

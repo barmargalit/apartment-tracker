@@ -3,5 +3,5 @@ import { BillType, Provider } from '@apartment-tracker/types';
 
 export class ProviderEntity extends BaseEntity implements Provider {
   name: string;
-  type: BillType;
+  types: BillType[];
 }

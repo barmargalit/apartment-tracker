@@ -73,7 +73,7 @@ A dedicated **Prices** page tracks the per-unit cost charged by your utility pro
   - If the date is **on or after** the current price, it becomes the new current and the old one is archived automatically
 
 ### Providers
-Manage the utility companies behind your bills. Each provider has a name and an associated bill type, and can be linked to individual bill records.
+Manage the utility companies behind your bills. Each provider has a name and **one or more** associated bill types (e.g. a single telecom provider offering both cellular and internet plans), and can be linked to individual bill records and contracts.
 
 ### Residence Management
 Track your current and past residences. Bills can be scoped to a specific residence, making it easy to compare costs across homes.
@@ -139,6 +139,8 @@ For each plan you get:
 apartment-tracker/
 ├── apps/
 │   ├── interface/        # Next.js frontend  (port 3000)
+│   │   └── src/components/   # grouped into subject folders (bills, contracts, prices, mortgage, etc.)
+│   │                          # plus shared/ (generic primitives) and layout/ (app-shell, theming)
 │   └── main-service/     # NestJS backend     (port 3001)
 └── packages/
     └── types/            # Shared TypeScript interfaces
@@ -260,7 +262,7 @@ for f in apps/main-service/src/migrations/*.sql; do
 done
 ```
 
-Or apply them one by one using your preferred PostgreSQL client. The migration files are sequential — they must be run in order (001 → 031).
+Or apply them one by one using your preferred PostgreSQL client. The migration files are sequential — they must be run in order (001 → 032).
 
 ### 6. Build the shared types package
 

@@ -9,8 +9,8 @@ import { useContractsStore } from "@/store/contractsStore";
 import { useResidencesStore } from "@/store/residencesStore";
 import { useResidentsStore } from "@/store/residentsStore";
 import { BILL_TYPE_OPTIONS } from "@/lib/billTypes";
-import NumericInput from "./NumericInput";
-import ProviderSelect from "./ProviderSelect";
+import NumericInput from "@/components/shared/NumericInput";
+import ProviderSelect from "@/components/providers/ProviderSelect";
 
 interface Props {
   open: boolean;

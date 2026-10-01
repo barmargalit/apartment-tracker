@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { DatePicker, Form, Input, InputNumber, Modal, Select } from "antd";
-import NumericInput from "./NumericInput";
+import NumericInput from "@/components/shared/NumericInput";
 import dayjs, { Dayjs } from "dayjs";
 import type { Bill, BillPeriod, BillType, Contract, ElectricBillData, WaterBillData } from "@apartment-tracker/types";
 import { useBillsStore } from "@/store/billsStore";
@@ -10,7 +10,7 @@ import { useResidencesStore } from "@/store/residencesStore";
 import { useProvidersStore } from "@/store/providersStore";
 import { useContractsStore } from "@/store/contractsStore";
 import { useResidentsStore } from "@/store/residentsStore";
-import ProviderSelect from "./ProviderSelect";
+import ProviderSelect from "@/components/providers/ProviderSelect";
 import { BILL_TYPE_OPTIONS } from "@/lib/billTypes";
 
 interface Props {

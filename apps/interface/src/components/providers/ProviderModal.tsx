@@ -15,7 +15,7 @@ interface Props {
 
 interface FormValues {
   name: string;
-  type: BillType;
+  types: BillType[];
 }
 
 
@@ -27,21 +27,21 @@ export default function ProviderModal({ open, provider, defaultType, onClose }: 
   useEffect(() => {
     if (open) {
       if (provider) {
-        form.setFieldsValue({ name: provider.name, type: provider.type });
+        form.setFieldsValue({ name: provider.name, types: provider.types });
       } else {
         form.resetFields();
-        if (defaultType) form.setFieldValue("type", defaultType);
+        if (defaultType) form.setFieldValue("types", [defaultType]);
       }
     }
   }, [open, provider]);
 
   const handleOk = async () => {
-    const { name, type } = await form.validateFields();
+    const { name, types } = await form.validateFields();
     if (isEdit) {
-      await updateProvider(provider.id, name, type);
+      await updateProvider(provider.id, name, types);
       onClose();
     } else {
-      const created = await createProvider(name, type);
+      const created = await createProvider(name, types);
       onClose(created);
     }
   };
@@ -59,8 +59,8 @@ export default function ProviderModal({ open, provider, defaultType, onClose }: 
         <Form.Item name="name" label="Name" rules={[{ required: true, message: "Required" }]}>
           <Input placeholder="e.g. Israel Electric Corporation" />
         </Form.Item>
-        <Form.Item name="type" label="Type" rules={[{ required: true, message: "Required" }]}>
-          <Select options={BILL_TYPE_OPTIONS} />
+        <Form.Item name="types" label="Type" rules={[{ required: true, message: "Required" }]}>
+          <Select mode="multiple" options={BILL_TYPE_OPTIONS} />
         </Form.Item>
       </Form>
     </Modal>

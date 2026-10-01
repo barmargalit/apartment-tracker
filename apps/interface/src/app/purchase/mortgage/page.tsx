@@ -3,9 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Alert, Button, Spin, Tabs, Typography, theme, message } from "antd";
 import { PlusOutlined, SaveOutlined } from "@ant-design/icons";
-import CreatePlanModal from "@/components/CreatePlanModal";
-import MortgagePlanContent from "@/components/MortgagePlanContent";
-import { usePageHeader } from "@/components/PageHeaderContext";
+import CreatePlanModal from "@/components/mortgage/CreatePlanModal";
+import MortgagePlanContent from "@/components/mortgage/MortgagePlanContent";
+import { usePageHeader } from "@/components/layout/PageHeaderContext";
 import { LocalPlan, LocalTrack, deepClone, inputsToApiData, apiTrackToInputs } from "@/lib/mortgageUtils";
 import { mortgagePlansApi } from "@/api/mortgagePlansApi";
 import { mortgageTracksApi } from "@/api/mortgageTracksApi";

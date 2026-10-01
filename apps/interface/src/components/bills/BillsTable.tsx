@@ -8,7 +8,7 @@ import type { TableColumnsType } from "antd";
 import { BillType } from "@apartment-tracker/types";
 import type { Bill, ElectricBillData, Residence, Resident, WaterBillData } from "@apartment-tracker/types";
 import { calcPeriodDays, calcPeriodUsage } from "@/lib/billUtils";
-import DataTable from "./DataTable";
+import DataTable from "@/components/shared/DataTable";
 
 const DATE_FORMAT = "DD/MM/YY";
 

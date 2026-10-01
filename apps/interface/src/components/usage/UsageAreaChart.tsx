@@ -7,8 +7,8 @@ import dayjs, {Dayjs} from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import {BillType, Usage} from "@apartment-tracker/types";
 import {useUsagesStore} from "@/store/usagesStore";
-import {useTheme} from "./ThemeProvider";
-import EmptyState from "./EmptyState";
+import {useTheme} from "@/components/layout/ThemeProvider";
+import EmptyState from "@/components/shared/EmptyState";
 import UsageCompareChart from "./UsageCompareChart";
 import {
     ViewMode,

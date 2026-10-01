@@ -3,8 +3,8 @@
 import { Column } from "@ant-design/charts";
 import type { Bill, ElectricBillData, WaterBillData } from "@apartment-tracker/types";
 import { calcPeriodDays, calcPeriodUsage } from "@/lib/billUtils";
-import { useTheme } from "./ThemeProvider";
-import EmptyState from "./EmptyState";
+import { useTheme } from "@/components/layout/ThemeProvider";
+import EmptyState from "@/components/shared/EmptyState";
 import YearColorLegend, { useYearColors, colorForYear } from "./YearColorLegend";
 
 const STORAGE_KEY = "usage-chart-year-colors";

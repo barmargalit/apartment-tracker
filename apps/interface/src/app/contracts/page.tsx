@@ -3,15 +3,15 @@
 import {useEffect, useState} from "react";
 import {Button} from "antd";
 import {PlusOutlined, ReloadOutlined} from "@ant-design/icons";
-import {usePageHeader} from "@/components/PageHeaderContext";
+import {usePageHeader} from "@/components/layout/PageHeaderContext";
 import {useContractsStore} from "@/store/contractsStore";
 import {useProvidersStore} from "@/store/providersStore";
 import {useResidencesStore} from "@/store/residencesStore";
 import {useResidentsStore} from "@/store/residentsStore";
-import ContractModal from "@/components/ContractModal";
-import ContractsTable from "@/components/ContractsTable";
-import CompareOffersModal from "@/components/CompareOffersModal";
-import ExpiringContractsAlert from "@/components/ExpiringContractsAlert";
+import ContractModal from "@/components/contracts/ContractModal";
+import ContractsTable from "@/components/contracts/ContractsTable";
+import CompareOffersModal from "@/components/contracts/CompareOffersModal";
+import ExpiringContractsAlert from "@/components/contracts/ExpiringContractsAlert";
 import type {Contract} from "@apartment-tracker/types";
 
 export default function ContractsPage() {

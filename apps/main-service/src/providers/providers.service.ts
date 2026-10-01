@@ -6,12 +6,12 @@ import { BillType } from '@apartment-tracker/types';
 
 export interface CreateProviderDto {
   name: string;
-  type: BillType;
+  types: BillType[];
 }
 
 export interface UpdateProviderDto {
   name?: string;
-  type?: BillType;
+  types?: BillType[];
 }
 
 @Injectable()
@@ -24,7 +24,7 @@ export class ProvidersService {
     this.logger.log(type ? `Fetching providers of type "${type}"` : 'Fetching all providers');
     const result = type
       ? await this.pool.query<ProviderEntity>(
-          'SELECT * FROM providers WHERE state = 0 AND type = $1 ORDER BY name ASC',
+          'SELECT * FROM providers WHERE state = 0 AND types ? $1 ORDER BY name ASC',
           [type],
         )
       : await this.pool.query<ProviderEntity>(
@@ -43,10 +43,10 @@ export class ProvidersService {
   }
 
   async create(dto: CreateProviderDto): Promise<ProviderEntity> {
-    this.logger.log(`Creating provider name="${dto.name}" type="${dto.type}"`);
+    this.logger.log(`Creating provider name="${dto.name}" types="${dto.types}"`);
     const result = await this.pool.query<ProviderEntity>(
-      `INSERT INTO providers (name, type) VALUES ($1, $2) RETURNING *`,
-      [dto.name, dto.type],
+      `INSERT INTO providers (name, types) VALUES ($1, $2) RETURNING *`,
+      [dto.name, JSON.stringify(dto.types)],
     );
     return result.rows[0];
   }
@@ -58,7 +58,7 @@ export class ProvidersService {
     let idx = 1;
 
     if (dto.name !== undefined) { fields.push(`name = $${idx++}`); values.push(dto.name); }
-    if (dto.type !== undefined) { fields.push(`type = $${idx++}`); values.push(dto.type); }
+    if (dto.types !== undefined) { fields.push(`types = $${idx++}`); values.push(JSON.stringify(dto.types)); }
 
     values.push(id);
     const result = await this.pool.query<ProviderEntity>(

@@ -6,10 +6,10 @@ import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import type { TableColumnsType } from "antd";
 import dayjs from "dayjs";
 import type { Resident } from "@apartment-tracker/types";
-import DataTable from "./DataTable";
+import DataTable from "@/components/shared/DataTable";
 import ResidentModal from "./ResidentModal";
 import { useResidentsStore } from "@/store/residentsStore";
-import { useModal } from "./ThemeProvider";
+import { useModal } from "@/components/layout/ThemeProvider";
 
 const DATE_FORMAT = "DD/MM/YY";
 

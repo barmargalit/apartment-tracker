@@ -4,8 +4,8 @@ import { Line } from "@ant-design/charts";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { Price, PriceHistory } from "@apartment-tracker/types";
-import { useTheme } from "./ThemeProvider";
-import EmptyState from "./EmptyState";
+import { useTheme } from "@/components/layout/ThemeProvider";
+import EmptyState from "@/components/shared/EmptyState";
 
 dayjs.extend(customParseFormat);
 

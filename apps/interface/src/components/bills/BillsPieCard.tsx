@@ -7,7 +7,7 @@ import {Bill, BillType} from "@apartment-tracker/types";
 import {useBillsStore} from "@/store/billsStore";
 import {BILL_TYPE_COLOR, BILL_TYPE_LABEL} from "@/lib/billTypes";
 import {billDurationMonths, fmtPrice} from "@/lib/billUtils";
-import {useTheme} from "./ThemeProvider";
+import {useTheme} from "@/components/layout/ThemeProvider";
 
 interface SliceItem {
     type: BillType;

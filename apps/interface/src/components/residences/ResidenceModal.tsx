@@ -8,7 +8,7 @@ import type { Provider, Residence, UtilitySettings } from "@apartment-tracker/ty
 import { BillType } from "@apartment-tracker/types";
 import { useResidencesStore } from "@/store/residencesStore";
 import { useProvidersStore } from "@/store/providersStore";
-import ProviderSelect from "./ProviderSelect";
+import ProviderSelect from "@/components/providers/ProviderSelect";
 
 interface Props {
   open: boolean;
@@ -34,8 +34,8 @@ export default function ResidenceModal({ open, residence, onClose }: Props) {
   const { providers, fetchAll: fetchProviders } = useProvidersStore();
   const isEdit = !!residence;
 
-  const electricProviders = providers.filter((p) => p.type === BillType.Electric);
-  const waterProviders = providers.filter((p) => p.type === BillType.Water);
+  const electricProviders = providers.filter((p) => p.types.includes(BillType.Electric));
+  const waterProviders = providers.filter((p) => p.types.includes(BillType.Water));
 
   useEffect(() => {
     if (open) {

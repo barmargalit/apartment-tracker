@@ -1,7 +1,7 @@
 import type {Metadata} from "next";
 import "@/globals.css";
-import ThemeProvider from "@/components/ThemeProvider";
-import AppShell from "@/components/AppShell";
+import ThemeProvider from "@/components/layout/ThemeProvider";
+import AppShell from "@/components/layout/AppShell";
 
 export const metadata: Metadata = {
     title: "Apartment Tracker",

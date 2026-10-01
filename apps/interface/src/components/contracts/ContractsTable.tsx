@@ -13,7 +13,7 @@ interface FilterDropdownProps {
 }
 import dayjs, { Dayjs } from "dayjs";
 import type { Contract, Provider, Residence, Resident } from "@apartment-tracker/types";
-import DataTable from "./DataTable";
+import DataTable from "@/components/shared/DataTable";
 import { BillTypeTag, BILL_TYPE_LABEL } from "@/lib/billTypes";
 import { BillType } from "@apartment-tracker/types";
 

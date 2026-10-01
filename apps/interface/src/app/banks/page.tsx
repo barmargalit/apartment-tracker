@@ -5,10 +5,10 @@ import { Button, Space } from "antd";
 import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import type { TableColumnsType } from "antd";
 import type { Bank } from "@apartment-tracker/types";
-import { usePageHeader } from "@/components/PageHeaderContext";
+import { usePageHeader } from "@/components/layout/PageHeaderContext";
 import { useBanksStore } from "@/store/banksStore";
-import BankModal from "@/components/BankModal";
-import DataTable from "@/components/DataTable";
+import BankModal from "@/components/banks/BankModal";
+import DataTable from "@/components/shared/DataTable";
 
 export default function BanksPage() {
   const { banks, loading, fetchAll, deleteBank } = useBanksStore();

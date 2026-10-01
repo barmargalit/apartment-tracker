@@ -3,12 +3,12 @@
 import { useEffect, useState } from "react";
 import { Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { usePageHeader } from "@/components/PageHeaderContext";
+import { usePageHeader } from "@/components/layout/PageHeaderContext";
 import { useResidencesStore } from "@/store/residencesStore";
 import { useResidentsStore } from "@/store/residentsStore";
-import ResidenceCard from "@/components/ResidenceCard";
-import ResidenceModal from "@/components/ResidenceModal";
-import ResidentsCard from "@/components/ResidentsCard";
+import ResidenceCard from "@/components/residences/ResidenceCard";
+import ResidenceModal from "@/components/residences/ResidenceModal";
+import ResidentsCard from "@/components/residences/ResidentsCard";
 import type { Residence } from "@apartment-tracker/types";
 
 export default function MyAddressPage() {

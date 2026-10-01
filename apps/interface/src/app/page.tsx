@@ -1,9 +1,9 @@
 "use client";
 
-import { usePageHeader } from "@/components/PageHeaderContext";
-import LastBillsCard from "@/components/LastBillsCard";
-import BillsPieCard from "@/components/BillsPieCard";
-import ExpiringContractsCard from "@/components/ExpiringContractsCard";
+import { usePageHeader } from "@/components/layout/PageHeaderContext";
+import LastBillsCard from "@/components/bills/LastBillsCard";
+import BillsPieCard from "@/components/bills/BillsPieCard";
+import ExpiringContractsCard from "@/components/contracts/ExpiringContractsCard";
 
 export default function HomePage() {
   usePageHeader({ title: "Home" });

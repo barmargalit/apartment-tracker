@@ -5,8 +5,8 @@ import { Checkbox, DatePicker, Form, Input, InputNumber, Modal, Select } from "a
 import dayjs, { Dayjs } from "dayjs";
 import type { BillType, CellularContractData, ContractOffer, ContractOfferStatus, InternetContractData } from "@apartment-tracker/types";
 import { useContractOffersStore } from "@/store/contractOffersStore";
-import NumericInput from "./NumericInput";
-import ProviderSelect from "./ProviderSelect";
+import NumericInput from "@/components/shared/NumericInput";
+import ProviderSelect from "@/components/providers/ProviderSelect";
 
 const STATUS_OPTIONS: { value: ContractOfferStatus; label: string }[] = [
   { value: "pending", label: "Pending" },

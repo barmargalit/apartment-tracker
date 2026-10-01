@@ -7,5 +7,5 @@ export interface Provider {
   /** 0 = active, 1 = deleted */
   state: number;
   name: string;
-  type: BillType;
+  types: BillType[];
 }

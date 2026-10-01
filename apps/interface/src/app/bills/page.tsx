@@ -16,17 +16,17 @@ import {
     MobileOutlined,
     DollarOutlined
 } from "@ant-design/icons";
-import {usePageHeader} from "@/components/PageHeaderContext";
-import PageTabs from "@/components/PageTabs";
-import BillsTable from "@/components/BillsTable";
-import UsageChart from "@/components/UsageChart";
-import PriceChart from "@/components/PriceChart";
-import BillModal from "@/components/BillModal";
+import {usePageHeader} from "@/components/layout/PageHeaderContext";
+import PageTabs from "@/components/layout/PageTabs";
+import BillsTable from "@/components/bills/BillsTable";
+import UsageChart from "@/components/bills/UsageChart";
+import PriceChart from "@/components/bills/PriceChart";
+import BillModal from "@/components/bills/BillModal";
 import {useBillsStore} from "@/store/billsStore";
 import {useResidencesStore} from "@/store/residencesStore";
 import {useResidentsStore} from "@/store/residentsStore";
 import {Bill, BillType} from "@apartment-tracker/types";
-import {useModal} from "@/components/ThemeProvider";
+import {useModal} from "@/components/layout/ThemeProvider";
 import styles from "./bills.module.css";
 
 interface BillTabProps {

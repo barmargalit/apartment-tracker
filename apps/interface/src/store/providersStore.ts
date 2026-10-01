@@ -6,8 +6,8 @@ interface ProvidersState {
   providers: Provider[];
   loading: boolean;
   fetchAll: (type?: BillType) => Promise<void>;
-  createProvider: (name: string, type: BillType) => Promise<Provider>;
-  updateProvider: (id: string, name: string, type: BillType) => Promise<void>;
+  createProvider: (name: string, types: BillType[]) => Promise<Provider>;
+  updateProvider: (id: string, name: string, types: BillType[]) => Promise<void>;
   deleteProvider: (id: string) => Promise<void>;
 }
 
@@ -25,14 +25,14 @@ export const useProvidersStore = create<ProvidersState>((set) => ({
     }
   },
 
-  createProvider: async (name, type) => {
-    const created = await providersApi.create({ name, type });
+  createProvider: async (name, types) => {
+    const created = await providersApi.create({ name, types });
     set((s) => ({ providers: [...s.providers, created] }));
     return created;
   },
 
-  updateProvider: async (id, name, type) => {
-    const updated = await providersApi.update(id, { name, type });
+  updateProvider: async (id, name, types) => {
+    const updated = await providersApi.update(id, { name, types });
     set((s) => ({
       providers: s.providers.map((p) => (p.id === id ? updated : p)),
     }));

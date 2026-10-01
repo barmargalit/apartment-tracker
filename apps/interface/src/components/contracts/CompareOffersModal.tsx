@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 import type { CellularContractData, Contract, ContractOffer, InternetContractData, Provider } from "@apartment-tracker/types";
 import { useContractOffersStore } from "@/store/contractOffersStore";
 import { useContractsStore } from "@/store/contractsStore";
-import { useModal } from "@/components/ThemeProvider";
+import { useModal } from "@/components/layout/ThemeProvider";
 import OfferFormModal from "./OfferFormModal";
 
 const DATE_FORMAT = "DD/MM/YY";

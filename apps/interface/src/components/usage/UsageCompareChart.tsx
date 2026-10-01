@@ -10,8 +10,8 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 import {BillType, Usage} from "@apartment-tracker/types";
 import {usagesApi} from "@/api/usagesApi";
 import {usePricesStore} from "@/store/pricesStore";
-import {useTheme} from "./ThemeProvider";
-import EmptyState from "./EmptyState";
+import {useTheme} from "@/components/layout/ThemeProvider";
+import EmptyState from "@/components/shared/EmptyState";
 import {
     ViewMode,
     calcPeriodStats,

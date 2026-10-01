@@ -9,11 +9,11 @@ import {
     FireOutlined,
     LineChartOutlined,
 } from "@ant-design/icons";
-import {usePageHeader} from "@/components/PageHeaderContext";
-import ImportModal from "@/components/ImportModal";
-import SimulatorModal from "@/components/SimulatorModal";
-import PageTabs from "@/components/PageTabs";
-import UsageAreaChart from "@/components/UsageAreaChart";
+import {usePageHeader} from "@/components/layout/PageHeaderContext";
+import ImportModal from "@/components/usage/ImportModal";
+import SimulatorModal from "@/components/usage/SimulatorModal";
+import PageTabs from "@/components/layout/PageTabs";
+import UsageAreaChart from "@/components/usage/UsageAreaChart";
 import {useUsagesStore} from "@/store/usagesStore";
 import {BillType} from "@apartment-tracker/types";
 

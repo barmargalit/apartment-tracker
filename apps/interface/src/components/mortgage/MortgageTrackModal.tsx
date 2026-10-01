@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { Divider, Form, Modal, Select } from "antd";
-import NumericInput from "./NumericInput";
+import NumericInput from "@/components/shared/NumericInput";
 import { MortgageTrack, MortgageTrackType, TRACK_LABELS } from "./MortgageTrackCollapse";
 import { TrackInputs } from "@/lib/mortgageUtils";
 

@@ -8,7 +8,7 @@ import type { TableColumnsType } from "antd";
 import type { Prospect } from "@apartment-tracker/types";
 import { useProspectsStore } from "@/store/prospectsStore";
 import { prospectsApi } from "@/api/prospectsApi";
-import DataTable from "./DataTable";
+import DataTable from "@/components/shared/DataTable";
 import ProspectModal from "./ProspectModal";
 
 interface Props {

@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, Tag, Tooltip, Typography, theme } from "antd";
-import { useModal } from "./ThemeProvider";
+import { useModal } from "@/components/layout/ThemeProvider";
 import { DeleteOutlined, EditOutlined, HeartFilled, HeartOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { Residence } from "@apartment-tracker/types";

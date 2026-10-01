@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import dayjs from "dayjs";
 import { DatePicker, Divider, Form, Input, Modal, Select, Space, Switch } from "antd";
 import type { Dayjs } from "dayjs";
-import NumericInput from "./NumericInput";
+import NumericInput from "@/components/shared/NumericInput";
 import type { Prospect, SafeSpace } from "@apartment-tracker/types";
 import { useProspectsStore } from "@/store/prospectsStore";
 

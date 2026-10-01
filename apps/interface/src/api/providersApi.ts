@@ -16,10 +16,10 @@ export const providersApi = {
   fetchAll: (type?: BillType): Promise<Provider[]> =>
     request<Provider[]>(type ? `/providers?type=${type}` : "/providers"),
 
-  create: (payload: { name: string; type: BillType }): Promise<Provider> =>
+  create: (payload: { name: string; types: BillType[] }): Promise<Provider> =>
     request<Provider>("/providers", { method: "POST", body: JSON.stringify(payload) }),
 
-  update: (id: string, payload: { name?: string; type?: BillType }): Promise<Provider> =>
+  update: (id: string, payload: { name?: string; types?: BillType[] }): Promise<Provider> =>
     request<Provider>(`/providers/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
 
   delete: (id: string): Promise<void> =>
