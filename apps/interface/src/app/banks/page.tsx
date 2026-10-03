@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Button, Space } from "antd";
 import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import type { TableColumnsType } from "antd";
-import type { Bank } from "@apartment-tracker/types";
+import type { Bank } from "@xpensive/types";
 import { usePageHeader } from "@/components/layout/PageHeaderContext";
 import { useBanksStore } from "@/store/banksStore";
 import BankModal from "@/components/banks/BankModal";

@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { DatePicker, Form, Input, InputNumber, Modal, Select } from "antd";
 import NumericInput from "@/components/shared/NumericInput";
 import dayjs, { Dayjs } from "dayjs";
-import type { Bill, BillPeriod, BillType, Contract, ElectricBillData, WaterBillData } from "@apartment-tracker/types";
+import type { Bill, BillPeriod, BillType, Contract, ElectricBillData, WaterBillData } from "@xpensive/types";
 import { useBillsStore } from "@/store/billsStore";
 import { useResidencesStore } from "@/store/residencesStore";
 import { useProvidersStore } from "@/store/providersStore";

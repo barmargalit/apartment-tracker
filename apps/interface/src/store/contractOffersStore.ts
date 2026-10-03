@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { ContractOffer } from "@apartment-tracker/types";
+import { ContractOffer } from "@xpensive/types";
 import { contractOffersApi, CreateContractOfferPayload, UpdateContractOfferPayload } from "@/api/contractOffersApi";
 
 interface ContractOffersState {

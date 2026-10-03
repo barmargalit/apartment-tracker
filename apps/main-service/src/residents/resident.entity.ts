@@ -1,4 +1,4 @@
-import { Resident } from '@apartment-tracker/types';
+import { Resident } from '@xpensive/types';
 import { BaseEntity } from '../database/base.entity';
 
 export class ResidentEntity extends BaseEntity implements Resident {

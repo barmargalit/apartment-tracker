@@ -1,4 +1,4 @@
-import { ContractData, ContractOffer, ContractOfferStatus } from '@apartment-tracker/types';
+import { ContractData, ContractOffer, ContractOfferStatus } from '@xpensive/types';
 import { BillType } from '../bills/bill.entity';
 import { BaseEntity } from '../database/base.entity';
 

@@ -3,7 +3,7 @@ import { Pool } from 'pg';
 import { DATABASE_POOL } from '../database/database.provider';
 import { ContractEntity } from './contract.entity';
 import { BillType } from '../bills/bill.entity';
-import { ContractData } from '@apartment-tracker/types';
+import { ContractData } from '@xpensive/types';
 
 export interface CreateContractDto {
   bill_type: BillType;

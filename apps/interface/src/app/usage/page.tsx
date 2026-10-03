@@ -15,7 +15,7 @@ import SimulatorModal from "@/components/usage/SimulatorModal";
 import PageTabs from "@/components/layout/PageTabs";
 import UsageAreaChart from "@/components/usage/UsageAreaChart";
 import {useUsagesStore} from "@/store/usagesStore";
-import {BillType} from "@apartment-tracker/types";
+import {BillType} from "@xpensive/types";
 
 export default function UsagePage() {
     const [importOpen, setImportOpen] = useState(false);

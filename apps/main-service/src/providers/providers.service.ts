@@ -2,7 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Pool } from 'pg';
 import { DATABASE_POOL } from '../database/database.provider';
 import { ProviderEntity } from './provider.entity';
-import { BillType } from '@apartment-tracker/types';
+import { BillType } from '@xpensive/types';
 
 export interface CreateProviderDto {
   name: string;

@@ -1,5 +1,5 @@
 import { BaseEntity } from '../database/base.entity';
-import { Bill, BillData, BillType } from '@apartment-tracker/types';
+import { Bill, BillData, BillType } from '@xpensive/types';
 
 export { BillType };
 

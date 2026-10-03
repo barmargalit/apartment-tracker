@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState } from "react";
 import { App, ConfigProvider, theme } from "antd";
+import { colors } from "@/globals";
 type ModalType = ReturnType<typeof App.useApp>["modal"];
 
 const ModalContext = createContext<ModalType>(null as unknown as ModalType);
@@ -41,6 +42,11 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
       <ConfigProvider
         theme={{
           algorithm: isDark ? theme.darkAlgorithm : theme.defaultAlgorithm,
+          token: {
+            colorPrimary: colors.brand.primary,
+            colorBorderSecondary: colors.brand.palette.lighter,
+            colorSplit: colors.brand.palette.lighter,
+          },
         }}
       >
         <App>

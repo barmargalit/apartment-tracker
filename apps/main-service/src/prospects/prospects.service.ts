@@ -3,7 +3,7 @@ import { exec } from 'child_process';
 import { Pool } from 'pg';
 import { DATABASE_POOL } from '../database/database.provider';
 import { ProspectEntity } from './prospect.entity';
-import { SafeSpace } from '@apartment-tracker/types';
+import { SafeSpace } from '@xpensive/types';
 
 export interface CreateProspectDto {
   street: string;
@@ -24,6 +24,8 @@ export interface CreateProspectDto {
   property_tax?: number | null;
   building_fees?: number | null;
   visited?: string | null;
+  pros?: string[];
+  cons?: string[];
 }
 
 export interface UpdateProspectDto {
@@ -45,6 +47,8 @@ export interface UpdateProspectDto {
   property_tax?: number | null;
   building_fees?: number | null;
   visited?: string | null;
+  pros?: string[];
+  cons?: string[];
 }
 
 @Injectable()
@@ -64,10 +68,10 @@ export class ProspectsService {
   async create(dto: CreateProspectDto): Promise<ProspectEntity> {
     this.logger.log(`Creating prospect "${dto.street}, ${dto.city}"`);
     const result = await this.pool.query<ProspectEntity>(
-      `INSERT INTO prospects (street, city, square_meters, balcony_square_meters, rooms, parking, safe_space, contractor, comment, price, realtor, realtor_fee, floor_plan_url, video_url, floor, property_tax, building_fees, visited)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+      `INSERT INTO prospects (street, city, square_meters, balcony_square_meters, rooms, parking, safe_space, contractor, comment, price, realtor, realtor_fee, floor_plan_url, video_url, floor, property_tax, building_fees, visited, pros, cons)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
        RETURNING *`,
-      [dto.street, dto.city, dto.square_meters, dto.balcony_square_meters ?? null, dto.rooms, dto.parking, dto.safe_space, dto.contractor ?? null, dto.comment ?? null, dto.price ?? null, dto.realtor ?? false, dto.realtor_fee ?? null, dto.floor_plan_url ?? null, dto.video_url ?? null, dto.floor ?? null, dto.property_tax ?? null, dto.building_fees ?? null, dto.visited ?? null],
+      [dto.street, dto.city, dto.square_meters, dto.balcony_square_meters ?? null, dto.rooms, dto.parking, dto.safe_space, dto.contractor ?? null, dto.comment ?? null, dto.price ?? null, dto.realtor ?? false, dto.realtor_fee ?? null, dto.floor_plan_url ?? null, dto.video_url ?? null, dto.floor ?? null, dto.property_tax ?? null, dto.building_fees ?? null, dto.visited ?? null, JSON.stringify(dto.pros ?? []), JSON.stringify(dto.cons ?? [])],
     );
     return result.rows[0];
   }
@@ -96,6 +100,8 @@ export class ProspectsService {
     if (dto.property_tax !== undefined)         { fields.push(`property_tax = $${idx++}`);          values.push(dto.property_tax); }
     if (dto.building_fees !== undefined)        { fields.push(`building_fees = $${idx++}`);         values.push(dto.building_fees); }
     if (dto.visited !== undefined)              { fields.push(`visited = $${idx++}`);               values.push(dto.visited); }
+    if (dto.pros !== undefined)                 { fields.push(`pros = $${idx++}`);                  values.push(JSON.stringify(dto.pros)); }
+    if (dto.cons !== undefined)                 { fields.push(`cons = $${idx++}`);                  values.push(JSON.stringify(dto.cons)); }
 
     values.push(id);
     const result = await this.pool.query<ProspectEntity>(

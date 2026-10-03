@@ -12,7 +12,7 @@ import ContractModal from "@/components/contracts/ContractModal";
 import ContractsTable from "@/components/contracts/ContractsTable";
 import CompareOffersModal from "@/components/contracts/CompareOffersModal";
 import ExpiringContractsAlert from "@/components/contracts/ExpiringContractsAlert";
-import type {Contract} from "@apartment-tracker/types";
+import type {Contract} from "@xpensive/types";
 
 export default function ContractsPage() {
     const [modalOpen, setModalOpen] = useState(false);

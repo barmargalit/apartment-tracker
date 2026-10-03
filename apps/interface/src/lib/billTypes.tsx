@@ -1,5 +1,5 @@
 import { Tag } from "antd";
-import { BillType } from "@apartment-tracker/types";
+import { BillType } from "@xpensive/types";
 
 export const BILL_TYPE_COLOR: Record<BillType, string> = {
   [BillType.Electric]: "gold",

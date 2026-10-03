@@ -2,7 +2,7 @@
 
 import { Line } from "@ant-design/charts";
 import dayjs from "dayjs";
-import type { Bill, ElectricBillData, WaterBillData } from "@apartment-tracker/types";
+import type { Bill, ElectricBillData, WaterBillData } from "@xpensive/types";
 import { useTheme } from "@/components/layout/ThemeProvider";
 import EmptyState from "@/components/shared/EmptyState";
 import YearColorLegend, { useYearColors, colorForYear } from "./YearColorLegend";

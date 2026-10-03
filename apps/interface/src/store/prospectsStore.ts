@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Prospect } from "@apartment-tracker/types";
+import { Prospect } from "@xpensive/types";
 import { prospectsApi, CreateProspectPayload, UpdateProspectPayload } from "@/api/prospectsApi";
 
 interface ProspectsState {

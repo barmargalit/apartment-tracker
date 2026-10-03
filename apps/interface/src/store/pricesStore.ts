@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { BillType, Price, PriceHistory } from "@apartment-tracker/types";
+import { BillType, Price, PriceHistory } from "@xpensive/types";
 import { pricesApi, UpsertPricePayload, UpdateHistoryPayload } from "@/api/pricesApi";
 
 interface PricesState {

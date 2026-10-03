@@ -2,7 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Pool } from 'pg';
 import { DATABASE_POOL } from '../database/database.provider';
 import { MortgageTrackEntity } from './mortgage-track.entity';
-import { MortgageTrackType, MortgageTrackData } from '@apartment-tracker/types';
+import { MortgageTrackType, MortgageTrackData } from '@xpensive/types';
 
 export interface CreateMortgageTrackDto {
   plan_id: string;

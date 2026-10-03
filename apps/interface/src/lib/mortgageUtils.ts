@@ -1,4 +1,4 @@
-import type { MortgageTrackType, MortgageTrackData, MortgageTrack as ApiMortgageTrack } from "@apartment-tracker/types";
+import type { MortgageTrackType, MortgageTrackData, MortgageTrack as ApiMortgageTrack } from "@xpensive/types";
 
 export interface TrackInputs {
   principal: number;

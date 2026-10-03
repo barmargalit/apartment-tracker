@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { Button, Checkbox, DatePicker, Form, Input, InputNumber, Modal, Popconfirm, Select } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 import dayjs, { Dayjs } from "dayjs";
-import type { BillType, CellularContractData, Contract, InternetContractData } from "@apartment-tracker/types";
+import type { BillType, CellularContractData, Contract, InternetContractData } from "@xpensive/types";
 import { useContractsStore } from "@/store/contractsStore";
 import { useResidencesStore } from "@/store/residencesStore";
 import { useResidentsStore } from "@/store/residentsStore";

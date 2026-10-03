@@ -2,10 +2,10 @@
 
 import {useEffect, useState} from "react";
 import {Button, Space} from "antd";
-import type {BillType} from "@apartment-tracker/types";
+import type {BillType} from "@xpensive/types";
 import {EditOutlined, DeleteOutlined, PlusOutlined} from "@ant-design/icons";
 import type {TableColumnsType} from "antd";
-import type {Provider} from "@apartment-tracker/types";
+import type {Provider} from "@xpensive/types";
 import {usePageHeader} from "@/components/layout/PageHeaderContext";
 import {useProvidersStore} from "@/store/providersStore";
 import ProviderModal from "@/components/providers/ProviderModal";

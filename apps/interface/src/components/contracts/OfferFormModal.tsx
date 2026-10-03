@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { Checkbox, DatePicker, Form, Input, InputNumber, Modal, Select } from "antd";
 import dayjs, { Dayjs } from "dayjs";
-import type { BillType, CellularContractData, ContractOffer, ContractOfferStatus, InternetContractData } from "@apartment-tracker/types";
+import type { BillType, CellularContractData, ContractOffer, ContractOfferStatus, InternetContractData } from "@xpensive/types";
 import { useContractOffersStore } from "@/store/contractOffersStore";
 import NumericInput from "@/components/shared/NumericInput";
 import ProviderSelect from "@/components/providers/ProviderSelect";

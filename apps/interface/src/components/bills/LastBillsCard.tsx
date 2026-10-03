@@ -3,7 +3,7 @@
 import {useEffect, useState} from "react";
 import {Card, Checkbox, Divider, Skeleton, Tooltip, Typography} from "antd";
 import dayjs from "dayjs";
-import {Bill, BillType, ElectricBillData, WaterBillData} from "@apartment-tracker/types";
+import {Bill, BillType, ElectricBillData, WaterBillData} from "@xpensive/types";
 import {useBillsStore} from "@/store/billsStore";
 import {BILL_TYPE_LABEL, BillTypeTag} from "@/lib/billTypes";
 import {billDurationMonths, fmtPrice} from "@/lib/billUtils";

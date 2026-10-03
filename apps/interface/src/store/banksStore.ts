@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { Bank } from "@apartment-tracker/types";
+import type { Bank } from "@xpensive/types";
 import { banksApi } from "@/api/banksApi";
 
 interface BanksState {

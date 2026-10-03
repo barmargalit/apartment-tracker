@@ -3,7 +3,7 @@
 import {useEffect} from "react";
 import {Card, Skeleton, Typography} from "antd";
 import {Pie} from "@ant-design/charts";
-import {Bill, BillType} from "@apartment-tracker/types";
+import {Bill, BillType} from "@xpensive/types";
 import {useBillsStore} from "@/store/billsStore";
 import {BILL_TYPE_COLOR, BILL_TYPE_LABEL} from "@/lib/billTypes";
 import {billDurationMonths, fmtPrice} from "@/lib/billUtils";

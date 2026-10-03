@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { PricesService, UpsertPriceDto } from './prices.service';
-import { BillType } from '@apartment-tracker/types';
+import { BillType } from '@xpensive/types';
 
 @Controller('prices')
 export class PricesController {

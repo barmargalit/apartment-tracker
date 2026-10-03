@@ -1,5 +1,5 @@
 import { BaseEntity } from '../database/base.entity';
-import { Prospect, SafeSpace } from '@apartment-tracker/types';
+import { Prospect, SafeSpace } from '@xpensive/types';
 
 export class ProspectEntity extends BaseEntity implements Prospect {
   street: string;
@@ -20,4 +20,6 @@ export class ProspectEntity extends BaseEntity implements Prospect {
   property_tax: number | null;
   building_fees: number | null;
   visited: Date | null;
+  pros: string[];
+  cons: string[];
 }

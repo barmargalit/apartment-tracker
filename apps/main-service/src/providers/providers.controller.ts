@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query } from '@nestjs/common';
 import { ProvidersService, CreateProviderDto, UpdateProviderDto } from './providers.service';
-import { BillType } from '@apartment-tracker/types';
+import { BillType } from '@xpensive/types';
 
 @Controller('providers')
 export class ProvidersController {

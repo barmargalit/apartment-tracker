@@ -1,4 +1,4 @@
-# Apartment Tracker
+# XPensive
 
 A personal home management app for tracking household bills, monitoring utility usage, evaluating apartment purchase prospects, and planning mortgage financing.
 
@@ -38,7 +38,7 @@ Track service provider contracts (cellular plans, internet subscriptions, and mo
   - Accepting an offer no longer overwrites the contract: it prompts for an **effective date** (and an optional **end date**, with 6/12/18/24-month quick-select presets anchored to the effective date), closes out the previous contract the day before, and creates a brand-new contract row with the offer's terms — so historical pricing is preserved instead of being lost
 
 ### Residents
-Manage the people living at your residences from the **My Residence** page:
+Manage the people living at your residences from a dedicated **Residents** drawer, opened via the button in the **My Residence** page header:
 
 - Each resident has a **name** and **birth date**
 - Bills and contracts can be associated with a resident instead of (or instead of) a residence — the two selectors are mutually exclusive and disable each other when one is filled
@@ -99,6 +99,7 @@ Keep a shortlist of apartments you are evaluating for purchase. Each prospect re
 - Video — attach a local file path; clicking the play icon in the table opens it in the system's default media player via the backend
 - Free-text notes (up to 500 characters)
 - **Visited date** — record when you physically visited the apartment; the table is sorted by visited date (most recent first)
+- **Pros & Cons** — attach freeform pro and con bullet points to a prospect; hovering the row shows them side by side in a popover
 
 Full create, edit, and delete support with a sectioned modal (Location, Property, Features, Financials, Details) and a streamlined table view.
 
@@ -128,7 +129,7 @@ For each plan you get:
 |---|---|
 | Frontend | Next.js 15, React 19, Ant Design v6, Zustand, dayjs |
 | Backend | NestJS 10, PostgreSQL (`pg`), raw SQL |
-| Shared types | TypeScript package (`@apartment-tracker/types`) |
+| Shared types | TypeScript package (`@xpensive/types`) |
 | Package manager | pnpm (workspace monorepo) |
 
 ---
@@ -136,7 +137,7 @@ For each plan you get:
 ## Project Structure
 
 ```
-apartment-tracker/
+xpensive/
 ├── apps/
 │   ├── interface/        # Next.js frontend  (port 3000)
 │   │   └── src/components/   # grouped into subject folders (bills, contracts, prices, mortgage, etc.)
@@ -150,7 +151,7 @@ apartment-tracker/
 
 ## Running with Docker (recommended)
 
-The easiest way to run the app locally. Requires [Docker Desktop](https://www.docker.com/products/docker-desktop/) and an existing PostgreSQL instance with the `apartment_tracker` database and migrations already applied.
+The easiest way to run the app locally. Requires [Docker Desktop](https://www.docker.com/products/docker-desktop/) and an existing PostgreSQL instance with the `xpensive` database and migrations already applied.
 
 ### Prerequisites
 
@@ -162,7 +163,7 @@ DB_HOST=localhost
 DB_PORT=5432
 DB_USERNAME=postgres
 DB_PASSWORD=admin
-DB_NAME=apartment_tracker
+DB_NAME=xpensive
 ```
 
 If your credentials differ, update the `environment` block under `main-service` in `docker-compose.yml` before building.
@@ -210,8 +211,8 @@ Use `start` / `stop` for daily on/off — they preserve container state. Only re
 ### 1. Clone the repository
 
 ```bash
-git clone git@github.com:barmargalit/apartment-tracker.git
-cd apartment-tracker
+git clone git@github.com:barmargalit/xpensive.git
+cd xpensive
 ```
 
 ### 2. Install dependencies
@@ -229,7 +230,7 @@ DB_HOST=localhost
 DB_PORT=5432
 DB_USERNAME=your_db_user
 DB_PASSWORD=your_db_password
-DB_NAME=apartment_tracker
+DB_NAME=xpensive
 ```
 
 ### 4. Configure the frontend
@@ -251,23 +252,23 @@ NEXT_PUBLIC_API_URL=http://localhost:3001
 Create the database in PostgreSQL:
 
 ```bash
-createdb apartment_tracker
+createdb xpensive
 ```
 
 Then apply the migrations in order. From the repo root:
 
 ```bash
 for f in apps/main-service/src/migrations/*.sql; do
-  psql -U your_db_user -d apartment_tracker -f "$f"
+  psql -U your_db_user -d xpensive -f "$f"
 done
 ```
 
-Or apply them one by one using your preferred PostgreSQL client. The migration files are sequential — they must be run in order (001 → 032).
+Or apply them one by one using your preferred PostgreSQL client. The migration files are sequential — they must be run in order (001 → 033).
 
 ### 6. Build the shared types package
 
 ```bash
-pnpm --filter @apartment-tracker/types build
+pnpm --filter @xpensive/types build
 ```
 
 ### 7. Start the development servers

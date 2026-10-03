@@ -1,4 +1,4 @@
-import { Prospect, SafeSpace } from "@apartment-tracker/types";
+import { Prospect, SafeSpace } from "@xpensive/types";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
@@ -31,6 +31,8 @@ export interface CreateProspectPayload {
   property_tax?: number | null;
   building_fees?: number | null;
   visited?: string | null;
+  pros?: string[];
+  cons?: string[];
 }
 
 export interface UpdateProspectPayload {
@@ -52,6 +54,8 @@ export interface UpdateProspectPayload {
   property_tax?: number | null;
   building_fees?: number | null;
   visited?: string | null;
+  pros?: string[];
+  cons?: string[];
 }
 
 export const prospectsApi = {

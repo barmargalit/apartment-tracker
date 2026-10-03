@@ -25,7 +25,7 @@ import BillModal from "@/components/bills/BillModal";
 import {useBillsStore} from "@/store/billsStore";
 import {useResidencesStore} from "@/store/residencesStore";
 import {useResidentsStore} from "@/store/residentsStore";
-import {Bill, BillType} from "@apartment-tracker/types";
+import {Bill, BillType} from "@xpensive/types";
 import {useModal} from "@/components/layout/ThemeProvider";
 import styles from "./bills.module.css";
 

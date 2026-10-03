@@ -6,7 +6,7 @@ import { CaretRightOutlined, DeleteOutlined, EditOutlined, ExpandAltOutlined } f
 import TrackSummary from "./TrackSummary";
 import AmortizationTable from "./AmortizationTable";
 import { calcAmortization, TrackInputs } from "@/lib/mortgageUtils";
-import type { MortgageTrackType } from "@apartment-tracker/types";
+import type { MortgageTrackType } from "@xpensive/types";
 
 export type { MortgageTrackType };
 

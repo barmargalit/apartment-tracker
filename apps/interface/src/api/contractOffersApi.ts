@@ -1,4 +1,4 @@
-import { BillType, ContractData, ContractOffer, ContractOfferStatus } from "@apartment-tracker/types";
+import { BillType, ContractData, ContractOffer, ContractOfferStatus } from "@xpensive/types";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 

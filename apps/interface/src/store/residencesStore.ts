@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Residence } from "@apartment-tracker/types";
+import { Residence } from "@xpensive/types";
 import { residencesApi, CreateResidencePayload, UpdateResidencePayload } from "@/api/residencesApi";
 
 interface ResidencesState {

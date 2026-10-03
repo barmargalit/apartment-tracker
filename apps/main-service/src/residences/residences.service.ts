@@ -2,7 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Pool } from 'pg';
 import { DATABASE_POOL } from '../database/database.provider';
 import { ResidenceEntity } from './residence.entity';
-import { UtilitySettings } from '@apartment-tracker/types';
+import { UtilitySettings } from '@xpensive/types';
 
 export interface CreateResidenceDto {
   city: string;

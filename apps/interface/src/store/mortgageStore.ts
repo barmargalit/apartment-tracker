@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { MortgagePlan, MortgageTrack, MortgageTrackType, MortgageTrackData } from "@apartment-tracker/types";
+import type { MortgagePlan, MortgageTrack, MortgageTrackType, MortgageTrackData } from "@xpensive/types";
 import { mortgagePlansApi } from "@/api/mortgagePlansApi";
 import { mortgageTracksApi } from "@/api/mortgageTracksApi";
 

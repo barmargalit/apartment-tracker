@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import type { Bill, BillData, ElectricBillData, WaterBillData } from "@apartment-tracker/types";
+import type { Bill, BillData, ElectricBillData, WaterBillData } from "@xpensive/types";
 
 export const fmtPrice = (n: number) =>
     `₪${n.toLocaleString("en", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;

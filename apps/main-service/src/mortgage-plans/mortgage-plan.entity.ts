@@ -1,5 +1,5 @@
 import { BaseEntity } from '../database/base.entity';
-import { MortgagePlan } from '@apartment-tracker/types';
+import { MortgagePlan } from '@xpensive/types';
 
 export class MortgagePlanEntity extends BaseEntity implements MortgagePlan {
   total_loan: number;

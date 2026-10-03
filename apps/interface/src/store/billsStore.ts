@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Bill, BillType, ElectricBillData, WaterBillData } from "@apartment-tracker/types";
+import { Bill, BillType, ElectricBillData, WaterBillData } from "@xpensive/types";
 import { billsApi, CreateBillPayload, UpdateBillPayload } from "@/api/billsApi";
 
 function sortBills(bills: Bill[]): Bill[] {

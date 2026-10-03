@@ -4,9 +4,9 @@ import ThemeProvider from "@/components/layout/ThemeProvider";
 import AppShell from "@/components/layout/AppShell";
 
 export const metadata: Metadata = {
-    title: "Apartment Tracker",
+    title: "XPensive",
     description: "Track apartment finances",
-    icons: {icon: "/logo-v2.png"},
+    icons: {icon: "/xpensive3.png"},
 };
 
 export default function RootLayout({children}: { children: React.ReactNode }) {

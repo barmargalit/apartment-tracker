@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Button, DatePicker, Form, Modal, Space, Table, Tag, Typography, theme } from "antd";
 import { ArrowDownOutlined, ArrowUpOutlined, CheckOutlined, DeleteOutlined, EditOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
-import type { CellularContractData, Contract, ContractOffer, InternetContractData, Provider } from "@apartment-tracker/types";
+import type { CellularContractData, Contract, ContractOffer, InternetContractData, Provider } from "@xpensive/types";
 import { useContractOffersStore } from "@/store/contractOffersStore";
 import { useContractsStore } from "@/store/contractsStore";
 import { useModal } from "@/components/layout/ThemeProvider";

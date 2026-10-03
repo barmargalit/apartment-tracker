@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Usage, UsageBounds, BillType } from "@apartment-tracker/types";
+import { Usage, UsageBounds, BillType } from "@xpensive/types";
 import { usagesApi, CreateUsagePayload, UsageFilterParams } from "@/api/usagesApi";
 
 type UsagesByType = Record<BillType, Usage[]>;

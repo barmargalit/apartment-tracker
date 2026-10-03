@@ -1,5 +1,5 @@
 import { BaseEntity } from '../database/base.entity';
-import { Price, PriceHistory, BillType } from '@apartment-tracker/types';
+import { Price, PriceHistory, BillType } from '@xpensive/types';
 
 export class PriceEntity extends BaseEntity implements Price {
   type: BillType;

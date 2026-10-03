@@ -4,7 +4,7 @@ import {useState} from "react";
 import {Button, Form, Modal, Select, Upload, message} from "antd";
 import {InboxOutlined} from "@ant-design/icons";
 import type {UploadFile} from "antd";
-import {BillType} from "@apartment-tracker/types";
+import {BillType} from "@xpensive/types";
 import {BILL_TYPE_OPTIONS} from "@/lib/billTypes";
 import {useUsagesStore} from "@/store/usagesStore";
 import {CreateUsagePayload} from "@/api/usagesApi";

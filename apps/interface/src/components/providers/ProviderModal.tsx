@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { Form, Input, Modal, Select } from "antd";
-import type { BillType, Provider } from "@apartment-tracker/types";
+import type { BillType, Provider } from "@xpensive/types";
 import { useProvidersStore } from "@/store/providersStore";
 import { BILL_TYPE_OPTIONS } from "@/lib/billTypes";
 

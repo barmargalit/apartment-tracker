@@ -1,4 +1,4 @@
-import { Residence, UtilitySettings } from "@apartment-tracker/types";
+import { Residence, UtilitySettings } from "@xpensive/types";
 
 export interface CreateResidencePayload {
   city: string;

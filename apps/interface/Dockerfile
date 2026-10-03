@@ -14,10 +14,10 @@ RUN pnpm install --frozen-lockfile
 FROM deps AS build
 COPY packages/types ./packages/types
 COPY apps/interface ./apps/interface
-RUN pnpm --filter @apartment-tracker/types build
+RUN pnpm --filter @xpensive/types build
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
-RUN pnpm --filter @apartment-tracker/interface build
+RUN pnpm --filter @xpensive/interface build
 
 # ── runtime stage (standalone output) ────────────────────────────────────────
 FROM base AS runtime

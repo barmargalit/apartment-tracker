@@ -1,4 +1,4 @@
-import type { MortgagePlan } from "@apartment-tracker/types";
+import type { MortgagePlan } from "@xpensive/types";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 

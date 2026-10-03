@@ -1,5 +1,5 @@
 import { BaseEntity } from '../database/base.entity';
-import { Residence, UtilitySettings } from '@apartment-tracker/types';
+import { Residence, UtilitySettings } from '@xpensive/types';
 
 export class ResidenceEntity extends BaseEntity implements Residence {
   city: string;

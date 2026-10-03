@@ -2,7 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Pool } from 'pg';
 import { DATABASE_POOL } from '../database/database.provider';
 import { UsageEntity, BillType } from './usage.entity';
-import { UsageBounds } from '@apartment-tracker/types';
+import { UsageBounds } from '@xpensive/types';
 
 export interface CreateUsageDto {
   datetime: string;

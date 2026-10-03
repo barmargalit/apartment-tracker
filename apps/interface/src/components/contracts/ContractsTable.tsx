@@ -12,10 +12,10 @@ interface FilterDropdownProps {
   clearFilters?: () => void;
 }
 import dayjs, { Dayjs } from "dayjs";
-import type { Contract, Provider, Residence, Resident } from "@apartment-tracker/types";
+import type { Contract, Provider, Residence, Resident } from "@xpensive/types";
 import DataTable from "@/components/shared/DataTable";
 import { BillTypeTag, BILL_TYPE_LABEL } from "@/lib/billTypes";
-import { BillType } from "@apartment-tracker/types";
+import { BillType } from "@xpensive/types";
 
 const DATE_FORMAT = "DD/MM/YY";
 

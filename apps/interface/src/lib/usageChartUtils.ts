@@ -1,5 +1,5 @@
 import dayjs, { Dayjs } from "dayjs";
-import { Usage } from "@apartment-tracker/types";
+import { Usage } from "@xpensive/types";
 
 export type ViewMode = "all" | "day" | "week";
 

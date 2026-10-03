@@ -5,10 +5,11 @@ import {Button, ConfigProvider, DatePicker, Radio, Segmented, Spin, Statistic, t
 import {Area} from "@ant-design/charts";
 import dayjs, {Dayjs} from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import {BillType, Usage} from "@apartment-tracker/types";
+import {BillType, Usage} from "@xpensive/types";
 import {useUsagesStore} from "@/store/usagesStore";
 import {useTheme} from "@/components/layout/ThemeProvider";
 import EmptyState from "@/components/shared/EmptyState";
+import {colors} from "@/globals";
 import UsageCompareChart from "./UsageCompareChart";
 import {
     ViewMode,
@@ -183,7 +184,15 @@ export default function UsageAreaChart({type}: Props) {
             ) : (
                 <>
                     <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-                        <div style={{display: "flex", gap: 48}}>
+                        <div
+                            style={{
+                                display: "flex",
+                                gap: 48,
+                                padding: "12px 24px",
+                                borderRadius: token.borderRadiusLG,
+                                background: isDark ? undefined : colors.brand.palette.lightest,
+                            }}
+                        >
                             <Statistic title="Total Usage" value={totalUsage} precision={3} suffix="kWh"/>
                             <Statistic title={`Day Usage (07:00–23:00)${avgSuffix}`} value={dayUsage} precision={3}
                                        suffix="kWh"/>
@@ -203,7 +212,10 @@ export default function UsageAreaChart({type}: Props) {
                                 y: {title: "Usage"},
                                 x: {label: {autoRotate: true, autoHide: true}},
                             }}
-                            style={{fill: "linear-gradient(-90deg, #b0ed8a 0%, #ebd96c 50%, #e33d3d 100%)"}}
+                            style={{
+                                fill: `linear-gradient(-90deg, ${colors.brand.palette.lightest} 0%, ${colors.brand.palette.mid} 60%, ${colors.brand.palette.dark} 100%)`,
+                                stroke: colors.brand.palette.dark,
+                            }}
                             scale={{y: {domainMin: 0, nice: true}}}
                             tooltip={{title: (d) => d.datetime, items: [{field: "usage", name: "Usage"}]}}
                         />

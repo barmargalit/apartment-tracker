@@ -3,7 +3,7 @@
 import {useEffect} from "react";
 import {DatePicker, Form, Input, InputNumber, Modal} from "antd";
 import dayjs from "dayjs";
-import {BillType, PriceHistory} from "@apartment-tracker/types";
+import {BillType, PriceHistory} from "@xpensive/types";
 import {usePricesStore} from "@/store/pricesStore";
 import ProviderSelect from "@/components/providers/ProviderSelect";
 

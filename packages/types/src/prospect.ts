@@ -28,4 +28,6 @@ export interface Prospect {
   property_tax: number | null;
   building_fees: number | null;
   visited: Date | null;
+  pros: string[];
+  cons: string[];
 }

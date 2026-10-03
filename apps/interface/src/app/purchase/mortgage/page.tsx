@@ -9,7 +9,7 @@ import { usePageHeader } from "@/components/layout/PageHeaderContext";
 import { LocalPlan, LocalTrack, deepClone, inputsToApiData, apiTrackToInputs } from "@/lib/mortgageUtils";
 import { mortgagePlansApi } from "@/api/mortgagePlansApi";
 import { mortgageTracksApi } from "@/api/mortgageTracksApi";
-import type { MortgageTrackType } from "@apartment-tracker/types";
+import type { MortgageTrackType } from "@xpensive/types";
 import styles from "./mortgage.module.css";
 
 export default function MortgagePage() {

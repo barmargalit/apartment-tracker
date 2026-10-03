@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { DatePicker, Form, Input, Modal } from "antd";
 import dayjs, { Dayjs } from "dayjs";
-import type { Resident } from "@apartment-tracker/types";
+import type { Resident } from "@xpensive/types";
 import { useResidentsStore } from "@/store/residentsStore";
 
 interface Props {

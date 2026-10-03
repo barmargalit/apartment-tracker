@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button, Divider, Statistic, Typography } from "antd";
 import { PlusOutlined, ThunderboltOutlined, ExperimentOutlined } from "@ant-design/icons";
-import { BillType, PriceHistory } from "@apartment-tracker/types";
+import { BillType, PriceHistory } from "@xpensive/types";
 import { usePageHeader } from "@/components/layout/PageHeaderContext";
 import PageTabs from "@/components/layout/PageTabs";
 import PriceHistoryChart from "@/components/prices/PriceHistoryChart";

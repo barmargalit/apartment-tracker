@@ -4,7 +4,7 @@ import { Button, Space, Tag } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 import type { TableColumnsType } from "antd";
 import dayjs from "dayjs";
-import { Price, PriceHistory, Provider } from "@apartment-tracker/types";
+import { Price, PriceHistory, Provider } from "@xpensive/types";
 import DataTable from "@/components/shared/DataTable";
 
 const DATE_FORMAT = "DD/MM/YY";

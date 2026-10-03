@@ -7,7 +7,7 @@ import {PlusOutlined, CloseOutlined} from "@ant-design/icons";
 import type {TableColumnsType} from "antd";
 import dayjs, {Dayjs} from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import {BillType, Usage} from "@apartment-tracker/types";
+import {BillType, Usage} from "@xpensive/types";
 import {usagesApi} from "@/api/usagesApi";
 import {usePricesStore} from "@/store/pricesStore";
 import {useTheme} from "@/components/layout/ThemeProvider";

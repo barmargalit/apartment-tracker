@@ -1,18 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { Button, Space } from "antd";
+import { PlusOutlined, TeamOutlined } from "@ant-design/icons";
 import { usePageHeader } from "@/components/layout/PageHeaderContext";
 import { useResidencesStore } from "@/store/residencesStore";
 import { useResidentsStore } from "@/store/residentsStore";
 import ResidenceCard from "@/components/residences/ResidenceCard";
 import ResidenceModal from "@/components/residences/ResidenceModal";
-import ResidentsCard from "@/components/residences/ResidentsCard";
-import type { Residence } from "@apartment-tracker/types";
+import ResidentsDrawer from "@/components/residences/ResidentsDrawer";
+import type { Residence } from "@xpensive/types";
 
 export default function MyAddressPage() {
   const [modalOpen, setModalOpen] = useState(false);
+  const [residentsOpen, setResidentsOpen] = useState(false);
   const [selectedResidence, setSelectedResidence] = useState<Residence | null>(null);
   const { residences, fetchAll, updateResidence, deleteResidence } = useResidencesStore();
   const { fetchAll: fetchResidents } = useResidentsStore();
@@ -43,18 +44,19 @@ export default function MyAddressPage() {
   usePageHeader({
     title: "My Residence",
     actions: (
-      <Button type="primary" icon={<PlusOutlined />} onClick={() => { setSelectedResidence(null); setModalOpen(true); }}>
-        New
-      </Button>
+      <Space>
+        <Button icon={<TeamOutlined />} onClick={() => setResidentsOpen(true)}>
+          Residents
+        </Button>
+        <Button type="primary" icon={<PlusOutlined />} onClick={() => { setSelectedResidence(null); setModalOpen(true); }}>
+          New
+        </Button>
+      </Space>
     ),
   });
 
   return (
     <>
-      <div style={{ marginBottom: 24 }}>
-        <ResidentsCard />
-      </div>
-
       <div style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "flex-start" }}>
         {residences.map((r) => (
           <ResidenceCard
@@ -71,6 +73,11 @@ export default function MyAddressPage() {
         open={modalOpen}
         residence={selectedResidence}
         onClose={handleClose}
+      />
+
+      <ResidentsDrawer
+        open={residentsOpen}
+        onClose={() => setResidentsOpen(false)}
       />
     </>
   );

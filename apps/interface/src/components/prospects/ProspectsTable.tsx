@@ -3,13 +3,15 @@
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { Button, Space } from "antd";
-import { CheckOutlined, CloseOutlined, EditOutlined, DeleteOutlined, FilePdfOutlined, PlayCircleOutlined } from "@ant-design/icons";
+import { CheckOutlined, CloseOutlined, EditOutlined, DeleteOutlined, FilePdfOutlined, PlayCircleOutlined, LikeOutlined, DislikeOutlined } from "@ant-design/icons";
 import type { TableColumnsType } from "antd";
-import type { Prospect } from "@apartment-tracker/types";
+import type { Prospect } from "@xpensive/types";
 import { useProspectsStore } from "@/store/prospectsStore";
 import { prospectsApi } from "@/api/prospectsApi";
 import DataTable from "@/components/shared/DataTable";
 import ProspectModal from "./ProspectModal";
+import ProsConsPopover from "./ProsConsPopover";
+import { colors } from "@/globals";
 
 interface Props {
   createOpen: boolean;
@@ -74,6 +76,18 @@ export default function ProspectsTable({ createOpen, onCreateClose }: Props) {
       dataIndex: "comment",
       key: "comment",
       render: (v: string | null) => v ?? "-",
+    },
+    {
+      title: "Pros/Cons",
+      key: "pros_cons",
+      render: (_: unknown, record: Prospect) => (
+        <ProsConsPopover pros={record.pros ?? []} cons={record.cons ?? []}>
+          <Space size={12}>
+            <span style={{ color: colors.semantic.pro }}><LikeOutlined /> {record.pros?.length ?? 0}</span>
+            <span style={{ color: colors.semantic.con }}><DislikeOutlined /> {record.cons?.length ?? 0}</span>
+          </Space>
+        </ProsConsPopover>
+      ),
     },
     {
       title: "Visited",

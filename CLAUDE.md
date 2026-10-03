@@ -1,4 +1,4 @@
-# apartment-tracker — Development Guidelines
+# xpensive — Development Guidelines
 
 ## Monorepo Structure
 

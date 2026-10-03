@@ -4,7 +4,7 @@ import {useState} from "react";
 import {Button, Collapse, InputNumber, Modal, Statistic, Tag, TimePicker, Tooltip, Typography, theme} from "antd";
 import {CaretRightOutlined, DeleteOutlined, InfoCircleOutlined, PlusOutlined} from "@ant-design/icons";
 import dayjs from "dayjs";
-import {Usage} from "@apartment-tracker/types";
+import {Usage} from "@xpensive/types";
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 

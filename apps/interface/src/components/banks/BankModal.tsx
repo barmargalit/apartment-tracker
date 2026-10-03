@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { Form, Input, Modal } from "antd";
-import type { Bank } from "@apartment-tracker/types";
+import type { Bank } from "@xpensive/types";
 import { useBanksStore } from "@/store/banksStore";
 
 interface Props {

@@ -4,7 +4,7 @@ import { Card, Tag, Tooltip, Typography, theme } from "antd";
 import { useModal } from "@/components/layout/ThemeProvider";
 import { DeleteOutlined, EditOutlined, HeartFilled, HeartOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
-import { Residence } from "@apartment-tracker/types";
+import { Residence } from "@xpensive/types";
 
 const DATE_FORMAT = "DD/MM/YY";
 

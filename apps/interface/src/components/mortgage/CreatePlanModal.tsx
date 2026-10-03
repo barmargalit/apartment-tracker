@@ -6,7 +6,7 @@ import NumericInput from "@/components/shared/NumericInput";
 import { PlusOutlined } from "@ant-design/icons";
 import { useBanksStore } from "@/store/banksStore";
 import BankModal from "@/components/banks/BankModal";
-import type { Bank } from "@apartment-tracker/types";
+import type { Bank } from "@xpensive/types";
 
 interface Props {
   open: boolean;

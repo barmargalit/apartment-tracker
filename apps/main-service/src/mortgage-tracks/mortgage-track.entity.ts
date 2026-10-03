@@ -1,5 +1,5 @@
 import { BaseEntity } from '../database/base.entity';
-import { MortgageTrack, MortgageTrackType, MortgageTrackData } from '@apartment-tracker/types';
+import { MortgageTrack, MortgageTrackType, MortgageTrackData } from '@xpensive/types';
 
 export class MortgageTrackEntity extends BaseEntity implements MortgageTrack {
   plan_id: string;

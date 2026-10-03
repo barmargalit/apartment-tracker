@@ -3,7 +3,7 @@ import { Pool } from 'pg';
 import { DATABASE_POOL } from '../database/database.provider';
 import { ContractOfferEntity } from './contract-offer.entity';
 import { BillType } from '../bills/bill.entity';
-import { ContractData, ContractOfferStatus } from '@apartment-tracker/types';
+import { ContractData, ContractOfferStatus } from '@xpensive/types';
 import { ContractsService } from '../contracts/contracts.service';
 
 export interface CreateContractOfferDto {

@@ -1,7 +1,7 @@
 "use client";
 
 import { Column } from "@ant-design/charts";
-import type { Bill, ElectricBillData, WaterBillData } from "@apartment-tracker/types";
+import type { Bill, ElectricBillData, WaterBillData } from "@xpensive/types";
 import { calcPeriodDays, calcPeriodUsage } from "@/lib/billUtils";
 import { useTheme } from "@/components/layout/ThemeProvider";
 import EmptyState from "@/components/shared/EmptyState";

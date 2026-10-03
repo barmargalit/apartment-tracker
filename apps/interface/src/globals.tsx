@@ -1,15 +1,31 @@
 export const colors = {
+  brand: {
+    primary: "#325b61",
+    palette: {
+      lightest: "#f3f3f1",
+      lighter: "#d6dee0",
+      light: "#b5d2b9",
+      mid: "#8cc1b0",
+      midDark: "#6eafa6",
+      dark: "#325b61",
+      darkest: "#313536",
+    },
+  },
   sidebar: {
-    bgLight: "#ffffff",
-    bgDark: "#001529",
+    bgLight: "#f3f3f1",
+    bgDark: "#313536",
     shadow: "rgba(0, 0, 0, 0.08)",
   },
   menu: {
-    itemSelectedBg: "#e6f4ff",
-    itemSelectedColor: "#1677ff",
+    itemSelectedBg: "#e6eeef",
+    itemSelectedColor: "#325b61",
   },
   table: {
     rowWarningBg: "var(--color-row-warning-bg)",
+  },
+  semantic: {
+    pro: "var(--color-pro)",
+    con: "var(--color-con)",
   },
   text: {
     secondaryLight: "rgba(0, 0, 0, 0.65)",

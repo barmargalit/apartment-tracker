@@ -14,10 +14,10 @@ RUN pnpm install --frozen-lockfile
 FROM deps AS build
 COPY packages/types ./packages/types
 COPY apps/main-service ./apps/main-service
-RUN pnpm --filter @apartment-tracker/types build
-RUN pnpm --filter @apartment-tracker/main-service build
+RUN pnpm --filter @xpensive/types build
+RUN pnpm --filter @xpensive/main-service build
 # pnpm deploy produces a self-contained dir: prod node_modules + dist, no workspace symlinks
-RUN pnpm --filter @apartment-tracker/main-service deploy --prod --legacy /app/deploy
+RUN pnpm --filter @xpensive/main-service deploy --prod --legacy /app/deploy
 
 # ── runtime stage ─────────────────────────────────────────────────────────────
 FROM base AS runtime

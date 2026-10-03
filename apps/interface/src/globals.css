@@ -3,17 +3,31 @@
 }
 
 :root {
+  /* Brand */
+  --color-brand-primary: #325b61;
+  --color-brand-lightest: #f3f3f1;
+  --color-brand-lighter: #d6dee0;
+  --color-brand-light: #b5d2b9;
+  --color-brand-mid: #8cc1b0;
+  --color-brand-mid-dark: #6eafa6;
+  --color-brand-dark: #325b61;
+  --color-brand-darkest: #313536;
+
   /* Sidebar */
-  --color-sidebar-bg-light: #ffffff;
-  --color-sidebar-bg-dark: #001529;
+  --color-sidebar-bg-light: #f3f3f1;
+  --color-sidebar-bg-dark: #313536;
   --color-sidebar-shadow: rgba(0, 0, 0, 0.08);
 
   /* Menu */
-  --color-menu-item-selected-bg: #e6f4ff;
-  --color-menu-item-selected: #1677ff;
+  --color-menu-item-selected-bg: #e6eeef;
+  --color-menu-item-selected: #325b61;
 
   /* Table */
   --color-row-warning-bg: rgba(250, 173, 20, 0.12);
+
+  /* Semantic */
+  --color-pro: #52c41a;
+  --color-con: #ff4d4f;
 
   /* Text */
   --color-text-secondary-light: rgba(0, 0, 0, 0.65);

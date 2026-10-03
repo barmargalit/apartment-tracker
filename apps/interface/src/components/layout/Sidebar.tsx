@@ -17,7 +17,9 @@ import {
     DollarOutlined,
     ThunderboltOutlined,
     StockOutlined,
-    FileTextOutlined
+    FileTextOutlined,
+    MenuFoldOutlined,
+    MenuUnfoldOutlined
 } from "@ant-design/icons";
 import Image from "next/image";
 import {useTheme} from "./ThemeProvider";
@@ -79,6 +81,20 @@ export default function Sidebar() {
             onCollapse={setCollapsed}
             style={{background: siderBg, boxShadow: `2px 0 8px 0 ${colors.sidebar.shadow}`}}
             theme={isDark ? "dark" : "light"}
+            trigger={
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        height: "100%",
+                        background: siderBg,
+                        color: settingsColor,
+                    }}
+                >
+                    {collapsed ? <MenuUnfoldOutlined/> : <MenuFoldOutlined/>}
+                </div>
+            }
         >
             <div
                 style={{
@@ -91,30 +107,25 @@ export default function Sidebar() {
                 <div
                     style={{
                         height: 48,
-                        margin: "12px 16px",
+                        marginLeft: collapsed ? 0 : 24,
+                        marginTop: 12,
                         position: "relative",
                         display: "flex",
                         alignItems: "center",
-                        justifyContent: "center",
+                        justifyContent: collapsed ? "center" : "flex-start",
+                        gap: 10,
                         overflow: "hidden",
                     }}
                 >
-                    {collapsed ? (
-                        <Image
-                            src="/logo-v2.png"
-                            alt="Apartment Tracker"
-                            width={32}
-                            height={32}
-                            style={{objectFit: "contain"}}
-                        />
-                    ) : (
-                        <Image
-                            src="/logo-v2-sidebar.png"
-                            alt="Apartment Tracker"
-                            width={160}
-                            height={48}
-                            style={{objectFit: "contain"}}
-                        />
+                    <Image
+                        src="/xpensive3.png"
+                        alt="XPensive"
+                        width={32}
+                        height={32}
+                        style={{objectFit: "contain"}}
+                    />
+                    {!collapsed && (
+                        <Text style={{fontSize: 18, fontWeight: 600}}>XPensive</Text>
                     )}
                 </div>
 

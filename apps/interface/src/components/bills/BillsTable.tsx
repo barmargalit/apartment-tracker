@@ -5,8 +5,8 @@ import dayjs from "dayjs";
 import { Button, Space, Table } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import type { TableColumnsType } from "antd";
-import { BillType } from "@apartment-tracker/types";
-import type { Bill, ElectricBillData, Residence, Resident, WaterBillData } from "@apartment-tracker/types";
+import { BillType } from "@xpensive/types";
+import type { Bill, ElectricBillData, Residence, Resident, WaterBillData } from "@xpensive/types";
 import { calcPeriodDays, calcPeriodUsage } from "@/lib/billUtils";
 import DataTable from "@/components/shared/DataTable";
 

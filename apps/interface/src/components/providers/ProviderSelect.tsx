@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Button, Divider, Select } from "antd";
 import type { SelectProps } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import type { BillType, Provider } from "@apartment-tracker/types";
+import type { BillType, Provider } from "@xpensive/types";
 import { useProvidersStore } from "@/store/providersStore";
 import ProviderModal from "./ProviderModal";
 

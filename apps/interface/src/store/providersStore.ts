@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { BillType, Provider } from "@apartment-tracker/types";
+import { BillType, Provider } from "@xpensive/types";
 import { providersApi } from "@/api/providersApi";
 
 interface ProvidersState {
