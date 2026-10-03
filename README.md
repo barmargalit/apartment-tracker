@@ -1,5 +1,7 @@
 # XPensive
 
+<img src="apps/interface/public/xpensive3.png" alt="XPensive logo" width="120" />
+
 A personal home management app for tracking household bills, monitoring utility usage, evaluating apartment purchase prospects, and planning mortgage financing.
 
 ---
